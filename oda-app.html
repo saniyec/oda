@@ -817,7 +817,7 @@ Rules:
     } else {
       messages=[{role:'user',content:'Session notes:\n\n'+rawNotes}];
     }
-    const res=await fetch('/.netlify/functions/generate',{
+    const res=await fetch('/api/generate',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({system:sys,messages,max_tokens:1600})
