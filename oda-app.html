@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oda — Terapistlerin klinik alanı</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;background:#F7F6F3;color:#1A1C18;overflow:hidden;height:100vh}
+input,select,textarea,button{font-family:inherit;font-size:13px}
+button{cursor:pointer}
+
+/* OVERLAYS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;max-width:520px;width:100%;padding:32px;max-height:90vh;overflow-y:auto;border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.modal-logo{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#9A7B3E;margin-bottom:4px}
+.modal-title{font-size:20px;font-weight:600;margin-bottom:6px;color:#1A1C18}
+.modal-sub{font-size:13px;color:#6B6862;margin-bottom:22px;line-height:1.6}
+.modal-section{margin-bottom:16px}
+.modal-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#6B6862;margin-bottom:8px}
+.modal-item{font-size:13px;padding:7px 0;border-bottom:1px solid #F0EDE8;line-height:1.55;color:#1A1C18;display:flex;gap:9px}
+.modal-item:last-child{border-bottom:none}
+.modal-item::before{content:'—';color:#C4B48A;flex-shrink:0}
+.modal-accept{width:100%;padding:13px;font-size:13px;font-weight:600;background:#1A1C18;color:#fff;border:none;border-radius:2px;margin-top:20px}
+.modal-accept:hover{background:#2D3028}
+.modal-input{width:100%;padding:11px 13px;border:1px solid #E0DDD7;border-radius:2px;font-size:13px;background:#FAFAF9;color:#1A1C18;margin-bottom:8px}
+.modal-input:focus{outline:none;border-color:#9A7B3E}
+
+/* LAYOUT */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:232px;flex-shrink:0;background:#111410;display:flex;flex-direction:column;height:100vh}
+.sb-head{padding:15px 16px 13px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between}
+.sb-head-left{display:flex;align-items:center;gap:9px}
+.sb-brand{display:flex;flex-direction:column;gap:1px}
+.sb-logo-label{font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:rgba(255,255,255,0.22);line-height:1}
+.sb-logo{font-size:17px;font-weight:600;color:#fff;letter-spacing:-0.01em;line-height:1.2}
+.sb-logo span{color:#C4A860}
+.sb-lang{display:flex;border:1px solid rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.sb-lang-btn{padding:3px 7px;font-size:10px;font-weight:500;background:transparent;border:none;color:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.15s}
+.sb-lang-btn.active{background:rgba(196,168,96,0.2);color:#C4A860}
+
+/* SIDEBAR NAV TABS */
+.sb-nav{display:flex;border-bottom:1px solid rgba(255,255,255,0.07)}
+.sb-nav-btn{flex:1;padding:9px 6px;font-size:11px;font-weight:500;background:transparent;border:none;color:rgba(255,255,255,0.35);transition:all 0.15s;letter-spacing:0.02em}
+.sb-nav-btn:hover{color:rgba(255,255,255,0.65)}
+.sb-nav-btn.active{color:#C4A860;border-bottom:2px solid #C4A860}
+
+.sb-body{flex:1;overflow-y:auto;padding:6px 0}
+.sb-section-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.22);padding:10px 16px 4px}
+.client-row{padding:8px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background 0.15s}
+.client-row:hover,.client-row.active{background:rgba(255,255,255,0.06)}
+.client-row-inner{display:flex;align-items:center;gap:9px;overflow:hidden;min-width:0}
+.client-avatar{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:#fff}
+.client-name{font-size:13px;font-weight:500;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.client-sub{font-size:10px;color:rgba(255,255,255,0.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-meta{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:4px}
+.client-count{font-size:10px;color:rgba(255,255,255,0.22)}
+.session-row{padding:5px 16px 5px 51px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.32);transition:all 0.15s;display:flex;align-items:center;justify-content:space-between}
+.session-row:hover,.session-row.active{color:rgba(255,255,255,0.75);font-weight:500}
+.session-row-dot{width:5px;height:5px;border-radius:50%;background:#27AE60;flex-shrink:0}
+.sb-foot{padding:10px 16px;border-top:1px solid rgba(255,255,255,0.07)}
+.sb-btn{width:100%;padding:8px;font-size:12px;background:transparent;border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.55);border-radius:2px;transition:all 0.15s}
+.sb-btn:hover{border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.85)}
+.sb-icon-btn{background:transparent;border:none;color:rgba(255,255,255,0.18);padding:2px 4px;font-size:11px;transition:color 0.15s}
+.sb-icon-btn:hover{color:rgba(255,255,255,0.55)}
+.sb-foot-row{display:flex;gap:6px;margin-top:6px}
+.sb-settings-btn{flex:1;padding:7px;font-size:11px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.28);border-radius:2px}
+.sb-settings-btn:hover{color:rgba(255,255,255,0.6);border-color:rgba(255,255,255,0.2)}
+
+/* CLIENT AVATAR COLORS */
+.ca-0{background:#7B68EE}.ca-1{background:#48A999}.ca-2{background:#C4727A}.ca-3{background:#6BAB8C}.ca-4{background:#D4855A}.ca-5{background:#7A9EC4}.ca-6{background:#B8860B}.ca-7{background:#7A6B55}
+
+/* CALENDAR */
+.cal-wrap{padding:14px 12px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.cal-month{font-size:12px;font-weight:600;color:rgba(255,255,255,0.7)}
+.cal-nav{background:transparent;border:none;color:rgba(255,255,255,0.3);font-size:15px;padding:2px 6px;line-height:1}
+.cal-nav:hover{color:rgba(255,255,255,0.7)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px}
+.cal-day-label{font-size:8px;font-weight:600;text-align:center;color:rgba(255,255,255,0.22);padding:3px 0;text-transform:uppercase;letter-spacing:0.04em}
+.cal-day{font-size:11px;text-align:center;padding:4px 2px;border-radius:3px;color:rgba(255,255,255,0.32);cursor:pointer;transition:all 0.12s;min-height:26px;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
+.cal-day:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7)}
+.cal-day.today{color:#C4A860;font-weight:700}
+.cal-day.has-session{color:rgba(255,255,255,0.75)}
+.cal-dot{width:4px;height:4px;border-radius:50%;display:block;flex-shrink:0}
+.cal-day.other-month{color:rgba(255,255,255,0.1)}
+.cal-sessions{margin-top:12px}
+.cal-date-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.22);margin-bottom:6px}
+.cal-session-item{padding:8px 10px;margin-bottom:4px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:8px;transition:filter 0.12s}
+.cal-session-item:hover{filter:brightness(1.12)}
+.cal-session-time{font-size:10px;font-weight:600;color:rgba(0,0,0,0.5);flex-shrink:0;min-width:32px}
+.cal-session-name{font-size:11px;font-weight:600;color:rgba(0,0,0,0.72);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal-session-mod{font-size:10px;color:rgba(0,0,0,0.42)}
+.cal-empty{font-size:11px;color:rgba(255,255,255,0.18);text-align:center;padding:16px 0}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:#F7F6F3}
+.main-inner{flex:1;overflow-y:auto;padding:24px 28px}
+
+/* BREADCRUMB */
+.bc{display:flex;align-items:center;gap:6px;margin-bottom:20px;flex-wrap:wrap}
+.bc-link{color:#6B6862;cursor:pointer;font-size:12px}
+.bc-link:hover{color:#1A1C18}
+.bc-sep{color:#C4B8A8;font-size:12px}
+.bc-cur{font-size:12px;font-weight:500;color:#1A1C18}
+.bc-badge{font-size:10px;padding:2px 8px;border-radius:12px;background:#EBF4FB;color:#2980B9;border:1px solid #D0E8F5}
+.bc-date{margin-left:auto}
+.bc-date input{font-size:12px;border:1px solid #E0DDD7;border-radius:2px;padding:3px 8px;background:#fff;color:#1A1C18}
+
+/* CLIENT PROFILE */
+.profile-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:16px}
+.profile-header-left{display:flex;align-items:flex-start;gap:14px}
+.profile-avatar-lg{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex-shrink:0;color:#fff}
+.profile-name{font-size:21px;font-weight:600;color:#1A1C18;margin-bottom:3px}
+.profile-meta{font-size:12px;color:#6B6862;margin-bottom:7px}
+.profile-badges{display:flex;flex-wrap:wrap;gap:5px}
+.p-badge{font-size:11px;padding:3px 10px;border-radius:12px;background:#EBF4FB;color:#2980B9;border:1px solid #D0E8F5}
+.client-info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;padding:14px 16px;background:#fff;border:1px solid #E8E5E0;border-radius:4px}
+.ci-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:#9A9690;margin-bottom:4px}
+.ci-value{font-size:13px;font-weight:500;color:#1A1C18}
+.ci-value.placeholder{color:#C4B8A8;font-weight:400}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:#fff;border:1px solid #E8E5E0;border-radius:4px;padding:18px}
+.card-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#9A9690;margin-bottom:12px}
+.diag-row{display:grid;grid-template-columns:56px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.diag-lbl{font-size:11px;color:#6B6862;font-weight:500}
+.diag-input{padding:5px 8px;border:1px solid #E8E5E0;border-radius:2px;background:#FAFAF9;color:#1A1C18;width:100%}
+.diag-input:focus{outline:none;border-color:#C4A860}
+.gen-plan-btn{font-size:11px;padding:6px 12px;border:1px solid #E0DDD7;background:#fff;color:#6B6862;border-radius:2px;transition:all 0.15s}
+.gen-plan-btn:hover{border-color:#C4A860;color:#9A7B3E}
+.plan-box{margin-top:10px;padding:12px;background:#FAFAF9;border:1px solid #F0EDE8;border-radius:2px;font-size:12px;line-height:1.75;color:#1A1C18;white-space:pre-wrap;max-height:160px;overflow-y:auto}
+.outcome-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.outcome-lbl{font-size:12px;font-weight:600;width:52px;flex-shrink:0;color:#1A1C18}
+.outcome-val{font-size:18px;font-weight:600;width:32px;text-align:right;flex-shrink:0}
+.outcome-sev{font-size:10px;width:74px;flex-shrink:0;font-weight:600}
+.sessions-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.session-card{background:#fff;border:1px solid #E8E5E0;border-radius:4px;padding:13px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;transition:all 0.15s}
+.session-card:hover{border-color:#C4A860;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.sc-meta{font-size:12px;color:#6B6862;margin-top:2px}
+.sc-right{display:flex;align-items:center;gap:8px}
+
+/* SESSION EDITOR */
+.input-tabs{display:flex;border-bottom:1px solid #E8E5E0;margin-bottom:12px;gap:0}
+.input-tab{padding:8px 16px;font-size:12px;border:none;background:transparent;border-bottom:2px solid transparent;color:#6B6862;transition:all 0.15s;margin-bottom:-1px}
+.input-tab.active{border-bottom-color:#1A1C18;color:#1A1C18;font-weight:600}
+.input-tab:hover:not(.active){color:#1A1C18}
+.notes-textarea{width:100%;height:140px;resize:vertical;padding:12px 14px;border:1px solid #E8E5E0;border-radius:2px;background:#fff;color:#1A1C18;line-height:1.8;font-size:13px}
+.notes-textarea:focus{outline:none;border-color:#C4A860}
+.input-panel{background:#fff;border:1px solid #E8E5E0;border-radius:2px;padding:16px;min-height:110px}
+.voice-hint{font-size:12px;color:#9A9690;margin-bottom:12px;line-height:1.5}
+.rec-btn{font-size:12px;padding:8px 18px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#1A1C18;transition:all 0.15s}
+.rec-btn:hover{border-color:#C4A860}
+.rec-btn.recording{border-color:#DC3545;color:#DC3545;background:#FFF5F5;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.photo-upload-label{display:inline-block;font-size:12px;padding:8px 16px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#6B6862;cursor:pointer;transition:all 0.15s}
+.photo-upload-label:hover{border-color:#C4A860;color:#9A7B3E}
+.photo-preview{max-width:100%;max-height:160px;border-radius:3px;margin-bottom:10px;display:block;border:1px solid #E8E5E0}
+.measure-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #F0EDE8}
+.measure-row:last-child{border-bottom:none}
+.measure-name{width:54px;font-size:12px;font-weight:600;color:#1A1C18}
+.measure-range-hint{font-size:10px;color:#9A9690;width:32px}
+.measure-input{width:68px;padding:5px 8px;border:1px solid #E8E5E0;border-radius:2px;text-align:center;background:#FAFAF9;color:#1A1C18}
+.measure-input:focus{outline:none;border-color:#C4A860}
+.sev-label{font-size:11px;font-weight:600;min-width:80px}
+
+/* NOTE TYPE */
+.note-type-section{margin:16px 0}
+.field-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6B6862;margin-bottom:6px}
+.note-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;margin-top:12px}
+.note-cat-row:first-child{margin-top:0}
+.note-cat-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em}
+.note-cat-label.private{color:#9A6B00}
+.note-cat-label.official{color:#2980B9}
+.note-cat-divider{flex:1;height:1px;background:#E8E5E0}
+.note-pills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px}
+.note-pill{font-size:11px;padding:5px 12px;border-radius:20px;border:1px solid #E0DDD7;color:#6B6862;background:#fff;transition:all 0.15s}
+.note-pill:hover:not(.active){border-color:#C4A860}
+.note-pill.active{border-color:#1A1C18;color:#1A1C18;font-weight:600;background:#F0EDE8}
+.note-pill.priv{border-color:#F0DFA0}
+.note-pill.priv:hover:not(.active){border-color:#C4A860}
+.note-pill.priv.active{background:#FEF9EC;border-color:#C4A860;color:#7A5F00}
+.pill-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#27AE60;margin-left:4px;vertical-align:middle}
+
+/* GENERATE */
+.gen-btn{width:100%;padding:11px;font-size:13px;font-weight:600;background:#1A1C18;color:#fff;border:none;border-radius:2px;margin-top:10px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover:not(:disabled){background:#2D3028}
+.gen-btn:disabled{opacity:0.4;cursor:not-allowed}
+.error-msg{font-size:12px;color:#DC3545;margin-top:8px;padding:8px 10px;background:#FFF5F5;border-radius:2px;border-left:3px solid #DC3545}
+
+/* OUTPUT */
+.output-section{margin-top:20px}
+.output-header{display:flex;align-items:center;gap:7px;margin-bottom:9px;flex-wrap:wrap}
+.output-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#6B6862}
+.private-badge{font-size:10px;padding:2px 8px;border-radius:12px;background:#FEF9EC;color:#9A6B00;border:1px solid #F0DFA0}
+.gen-at{font-size:10px;color:#C4B8A8}
+.output-actions{margin-left:auto;display:flex;gap:6px}
+.out-btn{font-size:11px;padding:4px 10px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#6B6862;transition:all 0.15s}
+.out-btn:hover{border-color:#C4A860;color:#9A7B3E}
+.output-box{background:#fff;border:1px solid #E8E5E0;border-radius:4px;padding:16px 18px;font-size:13px;line-height:1.9;color:#1A1C18;white-space:pre-wrap;min-height:80px}
+mark.risk{background:rgba(231,76,60,0.1);color:#C0392B;border-radius:2px;padding:0 2px;font-weight:500}
+.sup-bar{display:flex;align-items:center;gap:8px;margin-top:9px;padding:9px 13px;background:#fff;border:1px solid #E8E5E0;border-radius:2px;flex-wrap:wrap}
+.sup-bar-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#9A9690}
+.sup-status{font-size:12px;font-weight:600}
+.sup-draft{color:#9A9690}.sup-submitted{color:#2980B9}.sup-reviewed{color:#27AE60}
+.sup-action-btn{font-size:11px;padding:3px 10px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#6B6862;margin-left:auto}
+.sup-action-btn:hover{color:#1A1C18;border-color:#C4A860}
+.other-notes{margin-top:16px;padding-top:14px;border-top:1px solid #E8E5E0}
+.other-notes-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:#9A9690;margin-bottom:7px}
+
+/* MISC */
+.btn-primary{padding:8px 16px;font-size:12px;font-weight:600;background:#1A1C18;color:#fff;border:none;border-radius:2px;transition:background 0.15s}
+.btn-primary:hover{background:#2D3028}
+.btn-secondary{padding:7px 14px;font-size:12px;border:1px solid #E0DDD7;background:#fff;color:#6B6862;border-radius:2px}
+.btn-secondary:hover{border-color:#C4A860;color:#9A7B3E}
+.del-btn{background:transparent;border:none;color:#C4B8A8;font-size:12px;padding:2px 4px}
+.del-btn:hover{color:#DC3545}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* CONSENT */
+.consent-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
+.consent-modal{background:#fff;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.consent-modal-header{padding:18px 24px;border-bottom:1px solid #E8E5E0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:10}
+.consent-modal-title{font-size:15px;font-weight:600;color:#1A1C18}
+.consent-modal-body{padding:24px}
+.consent-section{margin-bottom:20px}
+.consent-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#6B6862;margin-bottom:10px}
+.consent-field{margin-bottom:10px}
+.consent-label{font-size:12px;color:#6B6862;margin-bottom:4px;display:block}
+.consent-input{width:100%;padding:8px 10px;border:1px solid #E8E5E0;border-radius:2px;font-size:13px;background:#FAFAF9;color:#1A1C18}
+.consent-input:focus{outline:none;border-color:#C4A860}
+.consent-textarea{width:100%;padding:8px 10px;border:1px solid #E8E5E0;border-radius:2px;font-size:13px;background:#FAFAF9;color:#1A1C18;height:70px;resize:vertical}
+.consent-textarea:focus{outline:none;border-color:#C4A860}
+.consent-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.consent-lang-toggle{display:flex;gap:0;border:1px solid #E8E5E0;border-radius:2px;overflow:hidden;margin-bottom:16px}
+.consent-lang-btn{flex:1;padding:7px;font-size:12px;font-weight:500;border:none;background:transparent;color:#6B6862;cursor:pointer}
+.consent-lang-btn.active{background:#1A1C18;color:#fff}
+.consent-actions{display:flex;gap:8px;margin-top:16px}
+.consent-client-row{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #E8E5E0;border-radius:2px;margin-bottom:6px}
+.consent-client-name{font-size:13px;font-weight:500}
+.consent-client-meta{font-size:11px;color:#9A9690}
+.consent-signed{font-size:11px;color:#27AE60;font-weight:500}
+.consent-unsigned{font-size:11px;color:#9A9690}
+
+/* MOBILE */
+@media(max-width:680px){
+  body{overflow:auto;height:auto}
+  .app{flex-direction:column;height:auto;overflow:visible;min-height:100vh}
+  .sidebar{width:100%;height:auto;flex-shrink:0}
+  .sb-body{max-height:240px;overflow-y:auto}
+  .sb-foot{padding:8px 12px}
+  .main{flex:1;overflow:visible}
+  .main-inner{padding:16px 14px;overflow:visible}
+  .client-info-grid{grid-template-columns:1fr 1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .r2{grid-template-columns:1fr}
+  .notes-textarea{height:110px}
+  .output-box{font-size:12px;line-height:1.75}
+  .session-card{flex-wrap:wrap;gap:6px}
+  .bc{flex-wrap:wrap}
+  .bc-date{width:100%;margin-left:0;margin-top:4px}
+}
+
+/* PRINT */
+@media print{body{overflow:visible}#print-area{display:block!important}.app,.overlay{display:none!important}}
+#print-area{display:none;font-family:Georgia,serif;max-width:680px;margin:40px auto;line-height:1.8;font-size:14px;color:#111}
+#print-area .ph{border-bottom:2px solid #111;padding-bottom:14px;margin-bottom:20px}
+#print-area .pn{font-size:22px;font-weight:bold}
+#print-area .pm{font-size:12px;color:#555;margin-top:4px}
+#print-area .ppw{background:#FFF3CD;border:1px solid #FFD700;padding:8px 14px;font-size:12px;margin-bottom:18px}
+#print-area .pl{font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:bold;margin-bottom:10px}
+#print-area .pc{white-space:pre-wrap}
+#print-area .pf{margin-top:40px;padding-top:12px;border-top:1px solid #ddd;font-size:11px;color:#999}
+</style>
+</head>
+<body>
+
+<!-- KVKK Modal -->
+<div class="overlay" id="kvkk-overlay" style="display:none">
+<div class="modal">
+  <div class="modal-logo">Oda</div>
+  <div class="modal-title">Veri Koruma / KVKK Bildirimi</div>
+  <div class="modal-sub">Oda'yı kullanmadan önce lütfen okuyun. KVKK (Türkiye) kapsamında zorunludur.</div>
+  <div class="modal-section">
+    <div class="modal-section-title" id="kvkk-s1t">Veri sorumlusu olarak sorumluluklarınız</div>
+    <div class="modal-item">Asla gerçek danışan adı veya kimlik bilgisi girmeyin. Yalnızca anonimleştirilmiş kodlar kullanın (örn. "Danışan A").</div>
+    <div class="modal-item">KVKK kapsamında veri sorumlusu sizsiniz ve oluşturulan tüm klinik notlardan yasal olarak siz sorumlusunuz.</div>
+    <div class="modal-item">Özel notlar (süreç, karşıaktarım) resmi tıbbi kayıtlardan ayrı saklanmalıdır.</div>
+  </div>
+  <div class="modal-section">
+    <div class="modal-section-title">Veriler nasıl işlenir</div>
+    <div class="modal-item">Notlar yapay zeka ile oluşturma için Anthropic Claude API'ye gönderilir. Not metniniz bu sunucudan geçer.</div>
+    <div class="modal-item">Danışan kayıtları yalnızca tarayıcınızın yerel depolama alanına kaydedilir — hiçbir yere yüklenmez.</div>
+    <div class="modal-item">Yapay zeka tarafından oluşturulan tüm notlar, klinik kullanımdan önce sizin tarafınızdan incelenmelidir.</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="modal-accept" style="flex:1;margin:0" onclick="setLang('tr');acceptKVKK()">Anladım ve kabul ediyorum</button>
+    <button style="flex:1;padding:13px;font-size:13px;font-weight:600;background:#F7F6F3;color:#1A1C18;border:1px solid #E0DDD7;border-radius:2px" onclick="setLang('en');acceptKVKK()">I understand — English</button>
+  </div>
+</div>
+</div>
+
+<!-- Settings Modal — no API key needed, Netlify handles it -->
+<div class="overlay" id="settings-overlay" style="display:none" onclick="if(event.target===this)closeSettings()">
+<div class="modal" style="max-width:400px">
+  <div class="modal-title" id="stg-title">Ayarlar</div>
+  <div class="modal-section" style="margin-top:16px">
+    <div class="modal-section-title" id="stg-s1">Dil / Language</div>
+    <div style="display:flex;gap:8px">
+      <button onclick="setLang('tr');closeSettings()" id="stg-tr-btn" style="flex:1;padding:11px;font-size:13px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#6B6862">🇹🇷 Türkçe</button>
+      <button onclick="setLang('en');closeSettings()" id="stg-en-btn" style="flex:1;padding:11px;font-size:13px;border:1px solid #E0DDD7;border-radius:2px;background:#fff;color:#6B6862">🇬🇧 English</button>
+    </div>
+  </div>
+  <div class="modal-section" style="margin-top:20px;padding:14px;background:#FAFAF9;border:1px solid #F0EDE8;border-radius:2px">
+    <div style="font-size:12px;color:#6B6862;line-height:1.65" id="stg-info">Oda klinik dökümantasyon asistanıdır. Yapay zeka destekli not oluşturma güvenli sunucu tarafında gerçekleştirilir. API anahtarı gerekmez.</div>
+  </div>
+  <button onclick="closeSettings()" style="width:100%;margin-top:12px;padding:10px;border:1px solid #E0DDD7;background:#fff;color:#6B6862;border-radius:2px" id="stg-close-btn">Kapat</button>
+</div>
+</div>
+
+<!-- Consent Overlay -->
+<div class="consent-overlay" id="consent-overlay" style="display:none" onclick="if(event.target===this)closeConsent()"></div>
+
+<!-- New Client Modal — fully bilingual -->
+<div class="overlay" id="nc-overlay" style="display:none" onclick="if(event.target===this)document.getElementById('nc-overlay').style.display='none'">
+<div class="modal" style="max-width:430px">
+  <div class="modal-title" id="nc-title">Yeni Danışan</div>
+  <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+    <div>
+      <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-code">Danışan kodu</div>
+      <input class="modal-input" style="margin:0" id="nc-code" placeholder="örn. Danışan A" onkeydown="if(event.key==='Enter')addClient()">
+    </div>
+    <div class="r2">
+      <div>
+        <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-age">Yaş</div>
+        <input class="modal-input" style="margin:0" id="nc-age" type="number" placeholder="34" min="1" max="120">
+      </div>
+      <div>
+        <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-gender">Cinsiyet</div>
+        <select class="modal-input" style="margin:0" id="nc-gender">
+          <option value="">—</option>
+          <option value="Kadın" id="nc-g-f">Kadın</option>
+          <option value="Erkek" id="nc-g-m">Erkek</option>
+          <option value="Non-binary">Non-binary</option>
+          <option value="Diğer" id="nc-g-o">Diğer</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-pres">Başvuru şikayeti</div>
+      <input class="modal-input" style="margin:0" id="nc-presenting" placeholder="örn. Kaygı, ilişki güçlükleri...">
+    </div>
+    <div>
+      <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-mod">Modalite</div>
+      <select class="modal-input" style="margin:0" id="nc-mod">
+        <option value="integrative">Bütünleşik / Integrative</option>
+        <option value="psychodynamic">Psikanalitik / Psikodinamik</option>
+        <option value="cbt">BDT / CBT</option>
+        <option value="schema">Şema Terapisi / Schema</option>
+        <option value="dbt">DBT</option>
+        <option value="act">ACT</option>
+      </select>
+    </div>
+    <div class="r2">
+      <div>
+        <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-day">Seans günü</div>
+        <select class="modal-input" style="margin:0" id="nc-day">
+          <option value="">—</option>
+          <option value="Pazartesi" id="nc-d-mon">Pazartesi</option>
+          <option value="Salı" id="nc-d-tue">Salı</option>
+          <option value="Çarşamba" id="nc-d-wed">Çarşamba</option>
+          <option value="Perşembe" id="nc-d-thu">Perşembe</option>
+          <option value="Cuma" id="nc-d-fri">Cuma</option>
+          <option value="Cumartesi" id="nc-d-sat">Cumartesi</option>
+          <option value="Pazar" id="nc-d-sun">Pazar</option>
+        </select>
+      </div>
+      <div>
+        <div class="field-label" style="color:#6B6862;margin-bottom:5px" id="nc-l-time">Seans saati</div>
+        <input class="modal-input" style="margin:0" id="nc-time" type="time">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="modal-accept" style="margin:0" onclick="addClient()" id="nc-add-btn">Danışan ekle</button>
+      <button onclick="document.getElementById('nc-overlay').style.display='none'" style="flex:1;padding:13px;border:1px solid #E0DDD7;background:#fff;color:#6B6862;border-radius:2px" id="nc-cancel-btn">İptal</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="print-area"></div>
+
+<div class="app" id="app" style="display:none">
+  <div id="sidebar-container"></div>
+  <div class="main"><div class="main-inner" id="main-content"></div></div>
+</div>
+
+<script>
+// ── CONSTANTS ──────────────────────────────────────────
+const MODALITIES=[
+  {id:'psychodynamic',tr:'Psikanalitik / Psikodinamik',en:'Psychoanalytic / Psychodynamic'},
+  {id:'cbt',tr:'BDT / Bilişsel Davranışçı',en:'CBT / Cognitive Behavioural'},
+  {id:'schema',tr:'Şema Terapisi',en:'Schema Therapy'},
+  {id:'dbt',tr:'DBT / Diyalektik Davranış',en:'DBT / Dialectical Behaviour'},
+  {id:'act',tr:'ACT / Kabul ve Kararlılık',en:'ACT / Acceptance & Commitment'},
+  {id:'integrative',tr:'Bütünleşik',en:'Integrative'},
+];
+
+const NOTE_TYPES=[
+  {id:'process', tr:'Süreç Notu',         en:'Process Note',        c:'private', dtr:'Odada olananların anlatısı',      den:'Narrative of what happened'},
+  {id:'ct',      tr:'Karşıaktarım',        en:'Countertransference', c:'private', dtr:'Terapistin iç deneyimi',          den:'Therapist internal experience'},
+  {id:'clinical',tr:'Klinik Not (DAP)',    en:'Clinical Note (DAP)', c:'official',dtr:'Yapılandırılmış kayıt (DAP)',     den:'Structured record (DAP)'},
+  {id:'risk',    tr:'Risk Değerlendirmesi',en:'Risk Assessment',     c:'official',dtr:'Güvenlik değerlendirmesi',        den:'Safety evaluation'},
+  {id:'sum',     tr:'Seans Özeti',         en:'Session Summary',     c:'official',dtr:'Kısa anlatı kaydı',              den:'Brief narrative record'},
+];
+
+const MEASURES=[
+  {id:'phq9',l:'PHQ-9',max:27,rs:[{t:4,s:'Minimal'},{t:9,s:'Hafif'},{t:14,s:'Orta'},{t:19,s:'Orta-Ağır'},{t:27,s:'Ağır'}]},
+  {id:'gad7',l:'GAD-7',max:21,rs:[{t:4,s:'Minimal'},{t:9,s:'Hafif'},{t:14,s:'Orta'},{t:21,s:'Ağır'}]},
+  {id:'bdi', l:'BDI-II',max:63,rs:[{t:13,s:'Minimal'},{t:19,s:'Hafif'},{t:28,s:'Orta'},{t:63,s:'Ağır'}]},
+  {id:'bai', l:'BAI',   max:63,rs:[{t:7,s:'Minimal'},{t:15,s:'Hafif'},{t:25,s:'Orta'},{t:63,s:'Ağır'}]},
+];
+const SEV_COLORS={Minimal:'#27AE60',Hafif:'#8BC34A',Orta:'#F59E0B','Orta-Ağır':'#F97316',Ağır:'#EF4444'};
+const RISK_WORDS=['suicide','suicidal','self-harm','self harm','homicide','kill','overdose','cutting','hurt myself','end my life','intihar','kendine zarar','ölmek','öldürmek','kriz','istismar','tehlike','acil','şiddet','silah','kendini öldür','yaşamak istemiyorum','yaşamak istemi','öldürmek istiyorum'];
+const CA=['#7B68EE','#48A999','#C4727A','#6BAB8C','#D4855A','#7A9EC4','#B8860B','#7A6B55'];
+const DAY_MAP={Pazartesi:1,Salı:2,Çarşamba:3,Perşembe:4,Cuma:5,Cumartesi:6,Pazar:0,Monday:1,Tuesday:2,Wednesday:3,Thursday:4,Friday:5,Saturday:6,Sunday:0};
+const MONTH_NAMES_TR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const MONTH_NAMES_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+// ── MODALITY PROMPTS ──────────────────────────────────
+const MOD_CTX={
+psychodynamic:`Modality: Psychoanalytic / Psychodynamic.
+OUTPUT STYLE: Write in flowing narrative prose — no bullet points ever. Use tentative, non-declarative language throughout ("appeared to," "seemed to suggest," "may indicate," "the therapist observed"). Preserve the client's exact words in quotation marks wherever they appear in the notes — these are clinically significant. Note silences, pauses, and voice tone changes as meaningful clinical events. Describe affect shifts with precision. Frame all interpretations as hypotheses, never as facts. Where relevant, note transference material and the therapist's countertransference reactions. Key concepts: transference, countertransference, defense mechanisms (repression, projection, splitting, intellectualization, rationalization), object relations, unconscious communication, therapeutic frame, resistance.`,
+cbt:`Modality: CBT — Cognitive Behavioural.
+OUTPUT STYLE: Clear and structured. Document automatic thoughts, cognitive distortions, and the thought-feeling-behavior chain. Be specific about which interventions were used in this session. Note homework assigned or reviewed. Relevant concepts: cognitive distortions, thought records, behavioral experiments, core beliefs, schema activation, safety behaviors, avoidance, psychoeducation.`,
+schema:`Modality: Schema Therapy.
+OUTPUT STYLE: Narrative with clear schema and mode references. Name Early Maladaptive Schemas when identifiable in the material — do not force if absent. Note mode shifts that occurred. Document limited reparenting moments. Relevant concepts: EMS, schema modes (vulnerable child, punitive/demanding parent, detached protector, healthy adult), mode work, chair work, imagery rescripting.`,
+dbt:`Modality: DBT — Dialectical Behaviour Therapy.
+OUTPUT STYLE: Clear and skills-referenced. Name which DBT skills were practiced, discussed, or struggled with. Document chain analysis if relevant. Note diary card review if mentioned. Relevant concepts: dialectics, emotion regulation, distress tolerance, interpersonal effectiveness, mindfulness, validation strategies, chain analysis.`,
+act:`Modality: ACT — Acceptance and Commitment Therapy.
+OUTPUT STYLE: Values-oriented narrative, avoid pathologizing language. Frame psychological flexibility as the therapeutic goal. Relevant concepts: acceptance, cognitive defusion, present-moment awareness, self-as-context, values clarification, committed action, experiential avoidance, psychological flexibility.`,
+integrative:`Modality: Integrative.
+OUTPUT STYLE: Narrative prose. Draw on whichever theoretical framework best fits the clinical material. Be explicit when drawing on a specific modality lens. Do not force a single theory. Note when you are shifting frameworks and why the material calls for it.`
+};
+
+const NOTE_PROMPTS={
+process:`Generate a PRIVATE Process Note. Mark it clearly as PRIVATE / ÖZEL at the top.
+
+Write a detailed, sequential clinical narrative of the session as it unfolded — not a summary. Include: how the session opened and the client's initial presentation, what the client brought and how they brought it, key moments and turning points, significant things the client said (preserve exact words in quotes), silences and their context, affect shifts and non-verbal observations, moments of connection or rupture in the therapeutic relationship, how the session closed, and any lingering questions for supervision.
+
+Write in flowing prose. Do not flatten or over-interpret. A supervisor reading this should feel they were in the room.`,
+ct:`Generate a PRIVATE Countertransference Note. Mark it clearly as PRIVATE / ÖZEL at the top.
+
+Document the therapist's own internal experience during this session: emotional reactions, bodily sensations, thoughts, fantasies, moments of boredom, anxiety, tenderness, irritation, confusion, or unexpected feeling states. What did the therapist notice in themselves?
+
+Then: what might these reactions reveal about the therapeutic relationship, the client's unconscious communications, or projective identification processes? How were (or could) these reactions be used clinically?
+
+Write in first person from the therapist's perspective. Be honest and non-defensive. This is a strictly private clinical document.`,
+clinical:`Generate a Clinical Note in DAP format for the official record.
+
+DATA: Observable presentation (affect, appearance, behavior), what the client reported, main content and themes of the session.
+ASSESSMENT: Clinical interpretation, formulation relevant to presenting concerns, patterns observed, progress toward treatment goals, any risk factors present.
+PLAN: Interventions used in session, focus for next session, homework assigned, any referrals or actions.
+
+Write in professional third-person clinical language ("the client"). Be concise and medico-legally defensible.`,
+risk:`Generate a formal Risk Assessment for the official record.
+
+Cover systematically: suicidal ideation (passive/active, frequency, intensity, plan, intent, means access, timeline), self-harm history and current urges, homicidal ideation, substance use and its relationship to risk, recent stressors and precipitants, protective factors (reasons for living, social support, future orientation, therapeutic alliance), current safety status (low/moderate/high), safety plan reviewed or developed, actions taken (family contact, referral, emergency services, duty-of-care obligations).
+
+If information is not available in the notes, write "not reported in this session." Be thorough — this is a medico-legal document.`,
+sum:`Generate a Session Summary for the official clinical record.
+
+Write in clear narrative prose, 2–3 paragraphs. Cover: the main themes or concerns the client brought, the client's emotional presentation and how it shifted, key moments or insights from the session, the therapist's clinical observations, and the plan for the next session.
+
+Concise, readable, professional.`
+};
+
+// ── STATE ──────────────────────────────────────────────
+let S={
+  kvkk:false,lang:'tr',
+  clients:[],sessions:[],
+  cid:null,sid:null,
+  sbTab:'clients',
+  calYear:new Date().getFullYear(),calMonth:new Date().getMonth(),
+  nt:'process',inputTab:'text',
+  vt:'',pb64:null,pmime:null,pp:null,rec:false,
+  outs:{},rn:'',
+  gen:false,gp:false,err:'',
+  consentView:'settings',consentLang:'tr',
+  therapistInfo:{name:'',title:'',license:'',institution:'',phone:'',email:'',fee:'',cancellation:''}
+};
+let recog=null;
+
+// ── STORAGE ─────────────────────────────────────────────
+function load(){
+  // URL param takes priority — lets the landing page pass its current language
+  const urlLang=new URLSearchParams(window.location.search).get('lang');
+  try{S.kvkk=localStorage.getItem('oda_kvkk')==='1';}catch(e){}
+  try{S.lang=urlLang||localStorage.getItem('oda_lang')||'tr';}catch(e){S.lang=urlLang||'tr';}
+  if(urlLang)try{localStorage.setItem('oda_lang',urlLang);}catch(e){}
+  try{const c=localStorage.getItem('oda_clients');if(c)S.clients=JSON.parse(c);}catch(e){}
+  try{const s=localStorage.getItem('oda_sessions');if(s)S.sessions=JSON.parse(s);}catch(e){}
+  try{const th=localStorage.getItem('oda_therapist');if(th)S.therapistInfo=JSON.parse(th);}catch(e){}
+}
+function saveC(){try{localStorage.setItem('oda_clients',JSON.stringify(S.clients));}catch(e){}}
+function saveS(){try{localStorage.setItem('oda_sessions',JSON.stringify(S.sessions));}catch(e){}}
+
+// ── LANGUAGE ────────────────────────────────────────────
+const TR={
+  appLabel:'Klinik Alan',
+  calendar:'Takvim',clients:'Danışanlar',
+  settings:'Ayarlar',consent:'Onam',
+  newClient:'+ Yeni danışan',
+  noClients:'Henüz danışan yok.',
+  welcome:'Oda\'ya Hoş Geldiniz',
+  welcomeSub:'Klinik dökümantasyona başlamak için soldaki menüden danışan oluşturun.',
+  step1:'Sol menüden danışan oluştur',
+  step2:'Seans notlarını gir',
+  step3:'Yapay zeka notu oluşturur',
+  newSession:'+ Yeni seans',
+  sessions:'Seanslar',noSessions:'Henüz seans yok.',
+  since:'Başlangıç',sessCount:'Seans',recurring:'Tekrarlayan seans',modality:'Modalite',
+  diagPlan:'Tanı & Tedevi Planı',outcomes:'Sonuç Ölçümleri',
+  genPlan:'Tedavi planı oluştur',generating:'Oluşturuluyor...',
+  noteType:'Not türü',noteTypeHint:'— oluşturmadan önce seçin',
+  forSupervision:'Süpervizyon için · özel',forRecord:'Kayıt için · resmi',
+  generate:'Oluştur',copy:'Kopyala',copied:'Kopyalandı!',pdf:'PDF',
+  supStatus:'Süpervizyon',draft:'Taslak',submitted:'Gönderildi',reviewed:'✓ İncelendi',
+  submitSup:'Süpervizöre gönder',markReviewed:'İncelendi olarak işaretle',
+  supComplete:'Süpervizyon tamamlandı',otherNotes:'Bu seanstaki diğer notlar',
+  private:'Özel',official:'Resmi',
+  inputText:'Notlar',inputVoice:'Ses',inputPhoto:'Fotoğraf',inputOutcomes:'Ölçümler',
+  voiceHint:'Kaydı başlat ve seans notlarını sesli söyle. Chrome\'da en iyi çalışır.',
+  startRec:'⏺ Kaydı başlat',stopRec:'⏹ Durdur',
+  photoHint:'El yazılı seans notlarınızın fotoğrafını yükleyin. Yapay zeka el yazısını okuyarak notu oluşturacak.',
+  photoUploaded:'Fotoğraf yüklendi — şimdi not türünü seçip Oluştur\'a basın.',
+  photoChange:'Fotoğrafı değiştir',photoUpload:'Fotoğraf yükle',
+  consentPending:'⚠ Onam bekleniyor',consentSigned:'✓ Onam alındı',
+  deleteClient:'Bu danışanı ve tüm seanslarını silmek istiyor musunuz?',
+  deleteSession:'Bu seansı silmek istiyor musunuz?',
+  noNotes:'Önce not girin.',noPhoto:'Fotoğraf yükleyin.',
+  errorPrefix:'Hata: ',
+  // new client modal
+  nc_title:'Yeni Danışan',nc_code:'Danışan kodu',nc_age:'Yaş',nc_gender:'Cinsiyet',
+  nc_pres:'Başvuru şikayeti',nc_mod:'Modalite',nc_day:'Seans günü',nc_time:'Seans saati',
+  nc_add:'Danışan ekle',nc_cancel:'İptal',
+  nc_pres_ph:'örn. Kaygı, ilişki güçlükleri...',nc_code_ph:'örn. Danışan A',
+  nc_gF:'Kadın',nc_gM:'Erkek',nc_gO:'Diğer',
+  nc_dMon:'Pazartesi',nc_dTue:'Salı',nc_dWed:'Çarşamba',nc_dThu:'Perşembe',
+  nc_dFri:'Cuma',nc_dSat:'Cumartesi',nc_dSun:'Pazar',
+  // settings modal
+  stg_title:'Ayarlar',stg_lang:'Dil',stg_info:'Oda klinik dökümantasyon asistanıdır. Yapay zeka destekli not oluşturma güvenli sunucu tarafında gerçekleştirilir.',stg_close:'Kapat',
+  // consent modal
+  cnt_title:'Bilgilendirilmiş Onam',cnt_therapist:'Terapist Bilgileri',cnt_forms:'Danışan Formları',
+  cnt_formLang:'Form dili',cnt_therapistSec:'Terapist bilgileri',
+  cnt_name:'Ad Soyad',cnt_titleF:'Unvan',cnt_license:'Lisans No',cnt_inst:'Kurum',
+  cnt_phone:'Telefon',cnt_email:'E-posta',cnt_policies:'Politikalar',
+  cnt_fee:'Seans ücreti',cnt_cancel:'İptal politikası',cnt_next:'Danışan formları →',
+  cnt_clientSec:'Danışan onam durumu',cnt_none:'Henüz danışan yok.',
+  cnt_signed:'İmzalandı',cnt_pending:'Bekleniyor',cnt_back:'← Geri',
+  cnt_markSigned:'İmzalandı',cnt_revoke:'Geri al',
+};
+const EN={
+  appLabel:'Clinical workspace',
+  calendar:'Calendar',clients:'Clients',
+  settings:'Settings',consent:'Consent',
+  newClient:'+ New client',
+  noClients:'No clients yet.',
+  welcome:'Welcome to Oda',
+  welcomeSub:'Add a client from the sidebar to start documenting.',
+  step1:'Add a client from the sidebar',
+  step2:'Write your session notes',
+  step3:'Generate structured clinical notes',
+  newSession:'+ New session',
+  sessions:'Sessions',noSessions:'No sessions yet.',
+  since:'Since',sessCount:'Sessions',recurring:'Recurring',modality:'Modality',
+  diagPlan:'Diagnosis & Treatment Plan',outcomes:'Outcome Measures',
+  genPlan:'Generate treatment plan',generating:'Generating...',
+  noteType:'Note type',noteTypeHint:'— select before generating',
+  forSupervision:'For supervision · private',forRecord:'For the record · official',
+  generate:'Generate',copy:'Copy',copied:'Copied!',pdf:'PDF',
+  supStatus:'Supervision',draft:'Draft',submitted:'Submitted',reviewed:'✓ Reviewed',
+  submitSup:'Submit for supervision',markReviewed:'Mark as reviewed',
+  supComplete:'Supervision complete',otherNotes:'Other notes this session',
+  private:'Private',official:'Official',
+  inputText:'Notes',inputVoice:'Voice',inputPhoto:'Photo',inputOutcomes:'Outcomes',
+  voiceHint:'Start recording and speak your session notes. Works best in Chrome.',
+  startRec:'⏺ Start recording',stopRec:'⏹ Stop',
+  photoHint:'Upload a photo of your handwritten session notes. AI will read the handwriting and generate the note.',
+  photoUploaded:'Photo uploaded — now select a note type and click Generate.',
+  photoChange:'Change photo',photoUpload:'Upload photo',
+  consentPending:'⚠ Consent pending',consentSigned:'✓ Consent signed',
+  deleteClient:'Delete this client and all their sessions?',
+  deleteSession:'Delete this session?',
+  noNotes:'Please enter notes first.',noPhoto:'Please upload a photo.',
+  errorPrefix:'Error: ',
+  // new client modal
+  nc_title:'New Client',nc_code:'Client code',nc_age:'Age',nc_gender:'Gender',
+  nc_pres:'Presenting concern',nc_mod:'Modality',nc_day:'Session day',nc_time:'Session time',
+  nc_add:'Add client',nc_cancel:'Cancel',
+  nc_pres_ph:'e.g. Anxiety, relationship difficulties...',nc_code_ph:'e.g. Client A',
+  nc_gF:'Female',nc_gM:'Male',nc_gO:'Other',
+  nc_dMon:'Monday',nc_dTue:'Tuesday',nc_dWed:'Wednesday',nc_dThu:'Thursday',
+  nc_dFri:'Friday',nc_dSat:'Saturday',nc_dSun:'Sunday',
+  // settings modal
+  stg_title:'Settings',stg_lang:'Language',stg_info:'Oda is a clinical documentation assistant. AI-powered note generation runs securely server-side — no API key required.',stg_close:'Close',
+  // consent modal
+  cnt_title:'Informed Consent',cnt_therapist:'Therapist Info',cnt_forms:'Client Forms',
+  cnt_formLang:'Form language',cnt_therapistSec:'Therapist details',
+  cnt_name:'Full name',cnt_titleF:'Title',cnt_license:'Licence no.',cnt_inst:'Institution',
+  cnt_phone:'Phone',cnt_email:'Email',cnt_policies:'Policies',
+  cnt_fee:'Session fee',cnt_cancel:'Cancellation policy',cnt_next:'Client forms →',
+  cnt_clientSec:'Client consent status',cnt_none:'No clients yet.',
+  cnt_signed:'Signed',cnt_pending:'Pending',cnt_back:'← Back',
+  cnt_markSigned:'Mark signed',cnt_revoke:'Revoke',
+};
+function t(k){return(S.lang==='tr'?TR:EN)[k]||k;}
+function modL(id){const m=MODALITIES.find(x=>x.id===id)||MODALITIES[5];return S.lang==='tr'?m.tr:m.en;}
+function noteL(id){const n=NOTE_TYPES.find(x=>x.id===id);if(!n)return id;return S.lang==='tr'?n.tr:n.en;}
+
+function setLang(l){
+  S.lang=l;
+  try{localStorage.setItem('oda_lang',l);}catch(e){}
+  // Update new client modal text
+  const ncMap={
+    'nc-title':'nc_title','nc-l-code':'nc_code','nc-l-age':'nc_age','nc-l-gender':'nc_gender',
+    'nc-l-pres':'nc_pres','nc-l-mod':'nc_mod','nc-l-day':'nc_day','nc-l-time':'nc_time',
+    'nc-add-btn':'nc_add','nc-cancel-btn':'nc_cancel',
+    'nc-g-f':'nc_gF','nc-g-m':'nc_gM','nc-g-o':'nc_gO',
+    'nc-d-mon':'nc_dMon','nc-d-tue':'nc_dTue','nc-d-wed':'nc_dWed','nc-d-thu':'nc_dThu',
+    'nc-d-fri':'nc_dFri','nc-d-sat':'nc_dSat','nc-d-sun':'nc_dSun',
+  };
+  for(const[id,key]of Object.entries(ncMap)){const el=document.getElementById(id);if(el)el.textContent=t(key);}
+  const cp=document.getElementById('nc-code');if(cp)cp.placeholder=t('nc_code_ph');
+  const pp=document.getElementById('nc-presenting');if(pp)pp.placeholder=t('nc_pres_ph');
+  // Update settings modal
+  const stgMap={'stg-title':'stg_title','stg-s1':'stg_lang','stg-info':'stg_info','stg-close-btn':'stg_close'};
+  for(const[id,key]of Object.entries(stgMap)){const el=document.getElementById(id);if(el)el.textContent=t(key);}
+  if(document.getElementById('app').style.display!=='none')render();
+}
+
+// ── INIT / KVKK ─────────────────────────────────────────
+function acceptKVKK(){localStorage.setItem('oda_kvkk','1');S.kvkk=true;document.getElementById('kvkk-overlay').style.display='none';showApp();}
+function showApp(){document.getElementById('app').style.display='flex';render();}
+function closeSettings(){document.getElementById('settings-overlay').style.display='none';}
+function openSettings(){document.getElementById('settings-overlay').style.display='flex';setLang(S.lang);}
+
+// ── UTILS ────────────────────────────────────────────────
+function gid(){return Date.now().toString(36)+Math.random().toString(36).slice(2);}
+function getSev(id,v){if(v===''||v==null)return null;const m=MEASURES.find(x=>x.id===id);if(!m)return null;const n=parseInt(v);for(const r of m.rs)if(n<=r.t)return r.s;return m.rs[m.rs.length-1].s;}
+function getSevColor(id,v){const s=getSev(id,v);return SEV_COLORS[s]||'#9A9690';}
+function hlRisk(text){
+  if(!text)return'';
+  let r=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  RISK_WORDS.forEach(w=>{const e=w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');r=r.replace(new RegExp('('+e+')','gi'),'<mark class="risk">$1</mark>');});
+  return r;
+}
+function sparkline(sc,max){
+  const w=130,h=34;
+  if(sc.length<2)return'<span style="font-size:10px;color:#C4B8A8">—</span>';
+  const pts=sc.map((s,i)=>((i/(sc.length-1))*w)+','+(h-(s/max)*h));
+  return'<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts.join(' ')+'" fill="none" stroke="#C4A860" stroke-width="1.5"/>'+sc.map((s,i)=>'<circle cx="'+((i/(sc.length-1))*w)+'" cy="'+(h-(s/max)*h)+'" r="2.5" fill="#C4A860"/>').join('')+'</svg>';
+}
+function cidx(id){return S.clients.findIndex(c=>c.id===id);}
+function cinit(name){return(name||'?')[0].toUpperCase();}
+function getScheduledDates(cl,year,month){
+  const dates=[];if(!cl.sessionDay)return dates;
+  const dn=DAY_MAP[cl.sessionDay];if(dn===undefined)return dates;
+  const d=new Date(year,month,1);
+  while(d.getMonth()===month){if(d.getDay()===dn)dates.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1);}
+  return dates;
+}
+
+// ── CLIENT CRUD ───────────────────────────────────────────
+function openNewClient(){
+  // reset form
+  ['nc-code','nc-age','nc-presenting','nc-time'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['nc-gender','nc-mod','nc-day'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  document.getElementById('nc-mod').value='integrative';
+  setLang(S.lang); // apply current language to modal
+  document.getElementById('nc-overlay').style.display='flex';
+  setTimeout(()=>document.getElementById('nc-code')?.focus(),100);
+}
+function addClient(){
+  const code=(document.getElementById('nc-code')?.value||'').trim();if(!code)return;
+  const c={
+    id:gid(),name:code,
+    age:document.getElementById('nc-age')?.value||'',
+    gender:document.getElementById('nc-gender')?.value||'',
+    presenting:(document.getElementById('nc-presenting')?.value||'').trim(),
+    mod:document.getElementById('nc-mod')?.value||'integrative',
+    sessionDay:document.getElementById('nc-day')?.value||'',
+    sessionTime:document.getElementById('nc-time')?.value||'',
+    createdAt:new Date().toISOString(),
+    icd10:'',dsm5:'',tp:'',tpd:null,
+    consentSigned:false,consentDate:null
+  };
+  S.clients=[...S.clients,c];S.cid=c.id;S.sid=null;S.outs={};
+  document.getElementById('nc-overlay').style.display='none';
+  saveC();render();
+}
+function deleteClient(id){
+  if(!confirm(t('deleteClient')))return;
+  S.clients=S.clients.filter(c=>c.id!==id);
+  S.sessions=S.sessions.filter(s=>s.cid!==id);
+  if(S.cid===id){S.cid=null;S.sid=null;}
+  saveC();saveS();render();
+}
+function updateClient(id,k,v){S.clients=S.clients.map(c=>c.id===id?{...c,[k]:v}:c);saveC();}
+function updateClientD(id,up){S.clients=S.clients.map(c=>c.id===id?{...c,...up}:c);saveC();}
+
+// ── SESSION CRUD ──────────────────────────────────────────
+function addSession(dateStr){
+  const cs=S.sessions.filter(s=>s.cid===S.cid);
+  const se={id:gid(),cid:S.cid,n:cs.length+1,date:dateStr||new Date().toISOString().slice(0,10),rn:'',outs:{},oc:{phq9:'',gad7:'',bdi:'',bai:''},sup:{st:'draft',sa:null},createdAt:new Date().toISOString()};
+  S.sessions=[...S.sessions,se];S.sid=se.id;S.nt='process';S.outs={};S.rn='';S.inputTab='text';S.vt='';S.pb64=null;S.pmime=null;S.pp=null;S.err='';
+  saveS();render();
+}
+function deleteSession(id){
+  if(!confirm(t('deleteSession')))return;
+  S.sessions=S.sessions.filter(s=>s.id!==id);
+  if(S.sid===id){S.sid=null;S.outs={};}
+  S.sessions.filter(s=>s.cid===S.cid).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).forEach((s,i)=>{s.n=i+1;});
+  saveS();render();
+}
+function selectSession(id){
+  const s=S.sessions.find(x=>x.id===id);if(!s)return;
+  S.cid=s.cid;S.sid=id;S.nt='process';S.outs=s.outs||{};S.rn=s.rn||'';
+  S.inputTab='text';S.vt='';S.pb64=null;S.pmime=null;S.pp=null;S.err='';S.sbTab='clients';
+  render();
+}
+function updateSession(up){S.sessions=S.sessions.map(s=>s.id===S.sid?{...s,...up}:s);saveS();}
+function updateOutcome(id,v){const se=S.sessions.find(s=>s.id===S.sid);if(!se)return;updateSession({oc:{...se.oc,[id]:v}});}
+function updateSupervision(st){
+  const se=S.sessions.find(s=>s.id===S.sid);if(!se)return;
+  updateSession({sup:{st,sa:st==='submitted'?new Date().toISOString():se.sup?.sa}});
+  render();
+}
+function calClickDate(ds){
+  const ex=S.sessions.find(s=>s.date===ds);
+  if(ex){selectSession(ex.id);return;}
+  if(S.cid)addSession(ds);
+}
+
+// ── VOICE ─────────────────────────────────────────────────
+function startRec(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){S.err=S.lang==='tr'?'Ses tanıma desteklenmiyor. Chrome kullanın.':'Speech recognition not supported. Use Chrome.';render();return;}
+  recog=new SR();recog.continuous=true;recog.interimResults=true;
+  recog.lang=S.lang==='tr'?'tr-TR':'en-US';
+  recog.onresult=e=>{let tx='';for(let i=0;i<e.results.length;i++)tx+=e.results[i][0].transcript;S.vt=tx;const vp=document.getElementById('vp-text');if(vp)vp.textContent=tx;};
+  recog.start();S.rec=true;
+  const vb=document.getElementById('vp-btn');
+  if(vb){vb.className='rec-btn recording';vb.textContent=t('stopRec');vb.onclick=stopRec;}
+}
+function stopRec(){if(recog)recog.stop();S.rec=false;updateSession({rn:S.vt});render();}
+function handlePhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    S.pp=ev.target.result;
+    S.pmime=f.type||'image/jpeg';
+    S.pb64=ev.target.result.split(',')[1];
+    render();
+  };
+  r.readAsDataURL(f);
+}
+
+// ── AI GENERATION ─────────────────────────────────────────
+async function generate(){
+  const se=S.sessions.find(s=>s.id===S.sid);
+  let rawNotes='';
+  if(S.inputTab==='text'){
+    rawNotes=(document.getElementById('notes-ta')?.value||'').trim();
+    if(!rawNotes){S.err=t('noNotes');render();return;}
+  } else if(S.inputTab==='voice'){
+    rawNotes=S.vt.trim();
+    if(!rawNotes){S.err=t('noNotes');render();return;}
+  } else if(S.inputTab==='photo'){
+    if(!S.pb64){S.err=t('noPhoto');render();return;}
+  }
+  S.err='';S.gen=true;render();
+
+  const cl=S.clients.find(c=>c.id===S.cid);
+  const mod=cl?.mod||'integrative';
+  const clientCtx=[
+    cl?.age?`Client: ${cl.age} year old${cl.gender?' '+cl.gender:''}`:'',
+    cl?.presenting?`Presenting concern: ${cl.presenting}`:'',
+    cl&&(cl.icd10||cl.dsm5)?'Diagnosis: '+[cl.icd10,cl.dsm5].filter(Boolean).join(' / '):''
+  ].filter(Boolean).join('\n');
+  const ni=NOTE_TYPES.find(n=>n.id===S.nt);
+  const outputLang=S.lang==='tr'?'Turkish':'English';
+
+  const sys=`You are an expert clinical documentation assistant for licensed psychologists and psychotherapists.
+
+${MOD_CTX[mod]||MOD_CTX.integrative}
+
+${clientCtx}
+
+Task: ${NOTE_PROMPTS[S.nt]}
+
+Write entirely in ${outputLang} using professional clinical terminology.
+Rules:
+- Always refer to "the client" / "danışan" — never use a name
+- Do not invent clinical details absent from the notes
+- Do not be more certain than the source material warrants
+- Output only the clinical note — no preamble, no commentary`;
+
+  try{
+    let messages;
+    if(S.inputTab==='photo'&&S.pb64){
+      messages=[{role:'user',content:[
+        {type:'image',source:{type:'base64',media_type:S.pmime||'image/jpeg',data:S.pb64}},
+        {type:'text',text:'These are handwritten session notes. Please read all text carefully and completely, then generate the clinical documentation requested in the system prompt. Transcribe what you can read before generating the note.'}
+      ]}];
+    } else {
+      messages=[{role:'user',content:'Session notes:\n\n'+rawNotes}];
+    }
+    const res=await fetch('/.netlify/functions/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system:sys,messages,max_tokens:1600})
+    });
+    if(!res.ok){
+      const errText=await res.text();
+      throw new Error('Server error '+res.status+': '+errText.slice(0,200));
+    }
+    const d=await res.json();
+    if(d.error)throw new Error(d.error.message||JSON.stringify(d.error));
+    const txt=d.content.map(b=>b.text||'').join('');
+    const newOuts={...S.outs,[S.nt]:{text:txt,genAt:new Date().toISOString()}};
+    S.outs=newOuts;
+    if(S.inputTab==='text'){const ta=document.getElementById('notes-ta');if(ta)S.rn=ta.value;}
+    else if(S.inputTab==='voice')S.rn=S.vt;
+    updateSession({rn:S.rn,outs:newOuts});
+  }catch(err){
+    S.err=t('errorPrefix')+(err.message||'Network error. Please try again.');
+  }
+  S.gen=false;render();
+}
+
+async function generateTreatmentPlan(){
+  const cl=S.clients.find(c=>c.id===S.cid);if(!cl)return;
+  S.gp=true;render();
+  const prompt='Create a structured treatment plan.\nClient: '+(cl.age?cl.age+' year old ':'')+(cl.gender||'')+'\nPresenting: '+(cl.presenting||'Not specified')+'\nDiagnosis: '+([cl.icd10,cl.dsm5].filter(Boolean).join(' / ')||'Not specified')+'\nModality: '+modL(cl.mod||'integrative')+'\n\nInclude: PRESENTING PROBLEMS, TREATMENT GOALS (3–5 specific measurable), THERAPEUTIC APPROACH, FREQUENCY & DURATION, PROGRESS INDICATORS';
+  try{
+    const res=await fetch('/.netlify/functions/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system:'You are an expert clinical psychologist. Write in '+(S.lang==='tr'?'Turkish':'English')+'. Output only the treatment plan, no preamble.',messages:[{role:'user',content:prompt}],max_tokens:900})
+    });
+    if(!res.ok)throw new Error('Server error '+res.status);
+    const d=await res.json();if(d.error)throw new Error(d.error.message);
+    const txt=d.content.map(b=>b.text||'').join('');
+    updateClientD(S.cid,{tp:txt,tpd:new Date().toISOString()});
+    S.clients=S.clients.map(c=>c.id===S.cid?{...c,tp:txt,tpd:new Date().toISOString()}:c);
+  }catch(err){
+    alert(t('errorPrefix')+err.message);
+  }
+  S.gp=false;render();
+}
+
+// ── PDF EXPORT ────────────────────────────────────────────
+function exportPDF(){
+  const se=S.sessions.find(s=>s.id===S.sid);const cl=S.clients.find(c=>c.id===S.cid);
+  const out=S.outs[S.nt];if(!out)return;
+  const ni=NOTE_TYPES.find(n=>n.id===S.nt);const isPrivate=ni?.c==='private';
+  document.getElementById('print-area').innerHTML=
+    '<div class="ph"><div class="pn">'+cl.name+'</div><div class="pm">'+t('sessions').slice(0,5)+' '+se.n+' · '+se.date+' · '+modL(cl.mod||'integrative')+(cl.icd10?' · '+cl.icd10:'')+'</div></div>'+
+    (isPrivate?'<div class="ppw">⚠ ÖZEL / PRIVATE — Yalnızca süpervizyon amaçlı. Resmi tıbbi kaydın parçası değildir.</div>':'')+
+    '<div class="pl">'+noteL(S.nt)+'</div><div class="pc">'+out.text+'</div>'+
+    '<div class="pf">Oda · '+new Date().toLocaleDateString()+' · GİZLİ / CONFIDENTIAL</div>';
+  window.print();
+}
+
+// ── CONSENT ───────────────────────────────────────────────
+function openConsent(){S.consentView='settings';renderConsent();}
+function closeConsent(){document.getElementById('consent-overlay').style.display='none';}
+function updateTherapistInfo(k,v){S.therapistInfo[k]=v;try{localStorage.setItem('oda_therapist',JSON.stringify(S.therapistInfo));}catch(e){}}
+function markConsent(cid,signed){
+  S.clients=S.clients.map(c=>c.id===cid?{...c,consentSigned:signed,consentDate:signed?new Date().toISOString():null}:c);
+  saveC();renderConsent();
+}
+function generateConsentPDF(cid){
+  const cl=S.clients.find(c=>c.id===cid);const ti=S.therapistInfo;const isTR=S.consentLang==='tr';
+  const win=window.open('','_blank');
+  const body=isTR
+    ?`<h3>DANIŞAN BİLGİLENDİRİLMİŞ ONAM FORMU</h3><p class="sub">KVKK ve Mesleki Etik Kapsamında</p><section><h4>TERAPİST</h4><p>${ti.name||'___'} · ${ti.title||'___'} · Lisans: ${ti.license||'___'}<br>${ti.institution||'___'} · ${ti.phone||'___'}</p></section><section><h4>GİZLİLİK</h4><p>Seans içeriği gizlidir. İstisnalar: zarar riski, çocuk istismarı, mahkeme kararı.</p></section><section><h4>KVKK</h4><p>6698 sayılı KVKK kapsamında verileriniz yalnızca terapötik amaçla kullanılır.</p></section><section><h4>ÜCRET & İPTAL</h4><p>${ti.fee||'—'}<br>${ti.cancellation||'—'}</p></section>`
+    :`<h3>INFORMED CONSENT FORM</h3><p class="sub">KVKK &amp; Professional Ethics</p><section><h4>THERAPIST</h4><p>${ti.name||'___'} · ${ti.title||'___'} · Licence: ${ti.license||'___'}<br>${ti.institution||'___'} · ${ti.phone||'___'}</p></section><section><h4>CONFIDENTIALITY</h4><p>Session content is confidential. Exceptions: risk of harm, child abuse, court order.</p></section><section><h4>DATA PROTECTION (KVKK)</h4><p>Your data is processed under KVKK Law No. 6698 for therapeutic purposes only.</p></section><section><h4>FEE &amp; CANCELLATION</h4><p>${ti.fee||'—'}<br>${ti.cancellation||'—'}</p></section>`;
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Consent ${cl?.name}</title><style>body{font-family:Georgia,serif;max-width:620px;margin:40px auto;color:#111;line-height:1.8;font-size:14px}h3{text-align:center;font-size:17px}.sub{text-align:center;font-size:11px;color:#666;margin-bottom:20px}section{margin-bottom:14px}h4{font-size:10px;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid #ddd;padding-bottom:3px;margin-bottom:6px}.sigs{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;border-top:2px solid #111;padding-top:16px}.sl{border-bottom:1px solid #999;min-height:44px;margin-bottom:5px}.sl-lbl{font-size:10px;color:#666}.ci{background:#f9f9f9;padding:10px;margin-bottom:18px;font-size:12px}</style></head><body><div class="ci">Danışan / Client: ${cl?.name} &nbsp;|&nbsp; Tarih / Date: ${new Date().toLocaleDateString()}</div>${body}<div class="sigs"><div><div class="sl"></div><div class="sl-lbl">Danışan / Client</div></div><div><div class="sl"></div><div class="sl-lbl">Terapist / Therapist — ${ti.name||''}</div></div></div></body></html>`);
+  win.document.close();setTimeout(()=>win.print(),400);
+}
+
+function renderConsent(){
+  const o=document.getElementById('consent-overlay');o.style.display='flex';
+  const ti=S.therapistInfo;
+  const settingsHTML=`
+    <div class="consent-section">
+      <div class="consent-section-title">${t('cnt_formLang')}</div>
+      <div class="consent-lang-toggle">
+        <button class="consent-lang-btn ${S.consentLang==='tr'?'active':''}" onclick="S.consentLang='tr';renderConsent()">Türkçe</button>
+        <button class="consent-lang-btn ${S.consentLang==='en'?'active':''}" onclick="S.consentLang='en';renderConsent()">English</button>
+      </div>
+    </div>
+    <div class="consent-section">
+      <div class="consent-section-title">${t('cnt_therapistSec')}</div>
+      <div class="consent-row">
+        <div class="consent-field"><label class="consent-label">${t('cnt_name')}</label><input class="consent-input" value="${ti.name||''}" oninput="updateTherapistInfo('name',this.value)"></div>
+        <div class="consent-field"><label class="consent-label">${t('cnt_titleF')}</label><input class="consent-input" value="${ti.title||''}" placeholder="${S.lang==='tr'?'Klinik Psikolog':'Clinical Psychologist'}" oninput="updateTherapistInfo('title',this.value)"></div>
+      </div>
+      <div class="consent-row">
+        <div class="consent-field"><label class="consent-label">${t('cnt_license')}</label><input class="consent-input" value="${ti.license||''}" oninput="updateTherapistInfo('license',this.value)"></div>
+        <div class="consent-field"><label class="consent-label">${t('cnt_inst')}</label><input class="consent-input" value="${ti.institution||''}" oninput="updateTherapistInfo('institution',this.value)"></div>
+      </div>
+      <div class="consent-row">
+        <div class="consent-field"><label class="consent-label">${t('cnt_phone')}</label><input class="consent-input" value="${ti.phone||''}" oninput="updateTherapistInfo('phone',this.value)"></div>
+        <div class="consent-field"><label class="consent-label">${t('cnt_email')}</label><input class="consent-input" value="${ti.email||''}" oninput="updateTherapistInfo('email',this.value)"></div>
+      </div>
+    </div>
+    <div class="consent-section">
+      <div class="consent-section-title">${t('cnt_policies')}</div>
+      <div class="consent-field"><label class="consent-label">${t('cnt_fee')}</label><textarea class="consent-textarea" oninput="updateTherapistInfo('fee',this.value)">${ti.fee||''}</textarea></div>
+      <div class="consent-field"><label class="consent-label">${t('cnt_cancel')}</label><textarea class="consent-textarea" oninput="updateTherapistInfo('cancellation',this.value)">${ti.cancellation||''}</textarea></div>
+    </div>
+    <div class="consent-actions"><button class="btn-primary" onclick="S.consentView='clients';renderConsent()">${t('cnt_next')}</button></div>`;
+
+  const clientsHTML=`
+    <div class="consent-section">
+      <div class="consent-section-title">${t('cnt_clientSec')}</div>
+      ${S.clients.length===0
+        ?`<div style="font-size:13px;color:#9A9690">${t('cnt_none')}</div>`
+        :S.clients.map(c=>`
+          <div class="consent-client-row">
+            <div>
+              <div class="consent-client-name">${c.name}</div>
+              <div class="consent-client-meta">${c.consentSigned?t('cnt_signed')+': '+new Date(c.consentDate).toLocaleDateString():t('cnt_pending')}</div>
+            </div>
+            <div style="display:flex;gap:6px;align-items:center">
+              ${c.consentSigned?'<span class="consent-signed">✓</span>':'<span class="consent-unsigned">—</span>'}
+              <button class="btn-secondary" style="font-size:11px;padding:3px 9px" onclick="generateConsentPDF('${c.id}')">PDF</button>
+              ${!c.consentSigned
+                ?`<button class="btn-primary" style="font-size:11px;padding:3px 9px" onclick="markConsent('${c.id}',true)">${t('cnt_markSigned')}</button>`
+                :`<button class="btn-secondary" style="font-size:11px;padding:3px 9px" onclick="markConsent('${c.id}',false)">${t('cnt_revoke')}</button>`}
+            </div>
+          </div>`).join('')}
+    </div>
+    <div class="consent-actions"><button class="btn-secondary" onclick="S.consentView='settings';renderConsent()">${t('cnt_back')}</button></div>`;
+
+  o.innerHTML=`<div class="consent-modal">
+    <div class="consent-modal-header">
+      <div class="consent-modal-title">${t('cnt_title')}</div>
+      <button onclick="closeConsent()" style="background:transparent;border:none;font-size:20px;color:#6B6862;cursor:pointer">×</button>
+    </div>
+    <div class="consent-modal-body">
+      <div style="display:flex;border-bottom:1px solid #E8E5E0;margin-bottom:20px">
+        <button onclick="S.consentView='settings';renderConsent()" style="padding:8px 16px;font-size:12px;border:none;background:transparent;border-bottom:2px solid ${S.consentView==='settings'?'#1A1C18':'transparent'};color:${S.consentView==='settings'?'#1A1C18':'#6B6862'};cursor:pointer;font-weight:${S.consentView==='settings'?600:400}">${t('cnt_therapist')}</button>
+        <button onclick="S.consentView='clients';renderConsent()" style="padding:8px 16px;font-size:12px;border:none;background:transparent;border-bottom:2px solid ${S.consentView==='clients'?'#1A1C18':'transparent'};color:${S.consentView==='clients'?'#1A1C18':'#6B6862'};cursor:pointer;font-weight:${S.consentView==='clients'?600:400}">${t('cnt_forms')}</button>
+      </div>
+      ${S.consentView==='settings'?settingsHTML:clientsHTML}
+    </div>
+  </div>`;
+}
+
+// ── CALENDAR ──────────────────────────────────────────────
+function renderCalendar(){
+  const year=S.calYear,month=S.calMonth;
+  const mNames=S.lang==='tr'?MONTH_NAMES_TR:MONTH_NAMES_EN;
+  const today=new Date();
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const prevDays=new Date(year,month,0).getDate();
+
+  const sessMap={};S.sessions.forEach(s=>{if(!sessMap[s.date])sessMap[s.date]=[];sessMap[s.date].push(s);});
+  const schedMap={};S.clients.forEach(cl=>{getScheduledDates(cl,year,month).forEach(ds=>{if(!schedMap[ds])schedMap[ds]=[];schedMap[ds].push(cl);});});
+
+  const dlabels=S.lang==='tr'?['Pa','Pt','Sa','Ça','Pe','Cu','Ct']:['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let cells=dlabels.map(d=>'<div class="cal-day-label">'+d+'</div>').join('');
+  for(let i=0;i<firstDay;i++)cells+='<div class="cal-day other-month">'+(prevDays-firstDay+1+i)+'</div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isToday=today.getFullYear()===year&&today.getMonth()===month&&today.getDate()===d;
+    const hasSess=!!sessMap[ds];const hasSched=!!schedMap[ds];
+    let dot='';
+    if(hasSess){const col=CA[cidx(sessMap[ds][0].cid)%CA.length];dot='<span class="cal-dot" style="background:'+col+'"></span>';}
+    else if(hasSched)dot='<span class="cal-dot" style="background:rgba(196,168,96,0.4)"></span>';
+    cells+=`<div class="cal-day${isToday?' today':''}${hasSess||hasSched?' has-session':''}" onclick="calClickDate('${ds}')">${d}${dot}</div>`;
+  }
+  const rem=(7-(firstDay+daysInMonth)%7)%7;
+  for(let i=1;i<=rem;i++)cells+='<div class="cal-day other-month">'+i+'</div>';
+
+  const todayStr=today.toISOString().slice(0,10);
+  const daySess=sessMap[todayStr]||[];const daySched=schedMap[todayStr]||[];
+  let sList='';
+  if(daySess.length){
+    sList=daySess.map(s=>{const cl=S.clients.find(c=>c.id===s.cid);const col=CA[cidx(s.cid)%CA.length];return`<div class="cal-session-item" style="background:${col}20;border-left:3px solid ${col}" onclick="selectSession('${s.id}')"><div class="cal-session-time">${cl?.sessionTime||''}</div><div><div class="cal-session-name">${cl?.name||'?'}</div><div class="cal-session-mod">${modL(cl?.mod||'integrative').split('/')[0].trim()}</div></div></div>`;}).join('');
+  } else if(daySched.length){
+    sList=daySched.map(cl=>{const col=CA[cidx(cl.id)%CA.length];return`<div class="cal-session-item" style="background:${col}15;border-left:3px solid ${col};opacity:0.6;cursor:pointer" onclick="S.cid='${cl.id}';addSession('${todayStr}')"><div class="cal-session-time">${cl.sessionTime||''}</div><div><div class="cal-session-name">${cl.name}</div><div class="cal-session-mod">${S.lang==='tr'?'Planlandı · başlatmak için tıkla':'Scheduled · click to start'}</div></div></div>`;}).join('');
+  } else {
+    sList='<div class="cal-empty">'+(S.lang==='tr'?'Bugün seans yok':'No sessions today')+'</div>';
+  }
+
+  return`<div class="cal-wrap">
+    <div class="cal-header">
+      <button class="cal-nav" onclick="S.calMonth--;if(S.calMonth<0){S.calMonth=11;S.calYear--;}renderSidebar()">‹</button>
+      <div class="cal-month">${mNames[month]} ${year}</div>
+      <button class="cal-nav" onclick="S.calMonth++;if(S.calMonth>11){S.calMonth=0;S.calYear++;}renderSidebar()">›</button>
+    </div>
+    <div class="cal-grid">${cells}</div>
+    <div class="cal-sessions">
+      <div class="cal-date-label">${S.lang==='tr'?'Bugün':'Today'}</div>
+      ${sList}
+    </div>
+  </div>`;
+}
+
+// ── ELEPHANT SVG ─────────────────────────────────────────
+const EL=`<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="16" cy="17" rx="9" ry="7" stroke="#C4A860" stroke-width="1.3" fill="none"/>
+  <circle cx="10" cy="12" r="5.5" stroke="#C4A860" stroke-width="1.3" fill="none"/>
+  <path d="M6 15 Q3 19 4 23 Q4.5 25.5 6.5 24.5" stroke="#C4A860" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <circle cx="11.5" cy="10.5" r="1" fill="#C4A860"/>
+  <path d="M5.5 11 Q4 11 4.5 14" stroke="#C4A860" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <path d="M25 15 Q28 14 27 18" stroke="#C4A860" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.5"/>
+</svg>`;
+
+// ── RENDER ────────────────────────────────────────────────
+function render(){
+  renderSidebar();
+  const mc=document.getElementById('main-content');
+  if(!S.cid){mc.innerHTML=renderWelcome();return;}
+  const cl=S.clients.find(c=>c.id===S.cid);
+  if(!S.sid){mc.innerHTML=renderProfile(cl);return;}
+  mc.innerHTML=renderSession(cl,S.sessions.find(s=>s.id===S.sid));
+}
+
+function renderSidebar(){
+  const cSess=S.sessions.filter(s=>s.cid===S.cid).sort((a,b)=>a.n-b.n);
+  const clientsHTML=S.clients.length===0
+    ?`<div style="padding:16px;font-size:12px;color:rgba(255,255,255,0.25);line-height:1.6">${S.lang==='tr'?'Henüz danışan yok.<br>Aşağıdan ekleyin.':'No clients yet.<br>Add one below.'}</div>`
+    :S.clients.map((c,i)=>{
+      const a=c.id===S.cid;const col=CA[i%CA.length];
+      const ml=modL(c.mod||'integrative').split('/')[0].split(' / ')[0].trim();
+      return`<div>
+        <div class="client-row${a?' active':''}" onclick="S.cid='${c.id}';S.sid=null;S.outs={};render()">
+          <div class="client-row-inner">
+            <div class="client-avatar" style="background:${col}">${cinit(c.name)}</div>
+            <div style="min-width:0">
+              <div class="client-name">${c.name}</div>
+              <div class="client-sub">${c.age?c.age+'y · ':''}${ml}</div>
+            </div>
+          </div>
+          <div class="client-meta">
+            <span class="client-count">${S.sessions.filter(s=>s.cid===c.id).length}</span>
+            <button class="sb-icon-btn" onclick="event.stopPropagation();deleteClient('${c.id}')">×</button>
+          </div>
+        </div>
+        ${a?cSess.map(s=>{const hn=Object.keys(s.outs||{}).length>0;return`<div class="session-row${s.id===S.sid?' active':''}" onclick="selectSession('${s.id}')"><span>S${s.n} · ${s.date}</span>${hn?'<span class="session-row-dot"></span>':''}</div>`;}).join(''):''}
+      </div>`;
+    }).join('');
+
+  document.getElementById('sidebar-container').innerHTML=`<div class="sidebar">
+    <div class="sb-head">
+      <div class="sb-head-left">
+        ${EL}
+        <div class="sb-brand">
+          <div class="sb-logo-label">${t('appLabel')}</div>
+          <div class="sb-logo">Oda<span>.</span></div>
+        </div>
+      </div>
+      <div class="sb-lang">
+        <button class="sb-lang-btn${S.lang==='tr'?' active':''}" onclick="setLang('tr')">TR</button>
+        <button class="sb-lang-btn${S.lang==='en'?' active':''}" onclick="setLang('en')">EN</button>
+      </div>
+    </div>
+    <div class="sb-nav">
+      <button class="sb-nav-btn${S.sbTab==='calendar'?' active':''}" onclick="S.sbTab='calendar';renderSidebar()">${t('calendar')}</button>
+      <button class="sb-nav-btn${S.sbTab==='clients'?' active':''}" onclick="S.sbTab='clients';renderSidebar()">${t('clients')}</button>
+    </div>
+    <div class="sb-body">
+      ${S.sbTab==='calendar'?renderCalendar():'<div class="sb-section-label">'+t('clients')+' ('+S.clients.length+')</div>'+clientsHTML}
+    </div>
+    <div class="sb-foot">
+      ${S.sbTab==='clients'?`<button class="sb-btn" onclick="openNewClient()">${t('newClient')}</button>`:''}
+      <div class="sb-foot-row">
+        <button class="sb-settings-btn" onclick="openSettings()">⚙ ${t('settings')}</button>
+        <button class="sb-settings-btn" onclick="openConsent()">📋 ${t('consent')}</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderWelcome(){
+  return`<div style="display:flex;align-items:center;justify-content:center;height:100%;text-align:center">
+    <div>
+      <div style="margin-bottom:18px;opacity:0.35">${EL.replace('width="30" height="30"','width="48" height="48"')}</div>
+      <div style="font-size:22px;font-weight:600;color:#1A1C18;margin-bottom:7px">${t('welcome')}</div>
+      <div style="font-size:13px;color:#6B6862;max-width:280px;line-height:1.65;margin:0 auto 26px">${t('welcomeSub')}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;max-width:260px;margin:0 auto">
+        ${['step1','step2','step3'].map((k,i)=>`<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border:1px solid #E8E5E0;border-radius:4px;font-size:12px;color:#6B6862;text-align:left"><span style="width:20px;height:20px;border-radius:50%;background:#1A1C18;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">${i+1}</span><span>${t(k)}</span></div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderProfile(cl){
+  const cSess=S.sessions.filter(s=>s.cid===cl.id).sort((a,b)=>a.n-b.n);
+  const allSc={};MEASURES.forEach(m=>{allSc[m.id]=cSess.map(s=>s.oc&&s.oc[m.id]!==''&&s.oc[m.id]!=null?parseInt(s.oc[m.id]):null).filter(x=>x!==null);});
+  const col=CA[cidx(cl.id)%CA.length];
+  const ml=modL(cl.mod||'integrative');
+  const rec=cl.sessionDay&&cl.sessionTime?cl.sessionDay+' · '+cl.sessionTime:'—';
+  return`<div>
+    <div class="profile-header">
+      <div class="profile-header-left">
+        <div class="profile-avatar-lg" style="background:${col}">${cinit(cl.name)}</div>
+        <div>
+          <div class="profile-name">${cl.name}</div>
+          <div class="profile-meta">${[cl.age?cl.age+(S.lang==='tr'?' yaş':' y.o.'):'',cl.gender,cl.presenting].filter(Boolean).join(' · ')}</div>
+          <div class="profile-badges">
+            ${cl.consentSigned
+              ?`<span class="p-badge" style="background:#E8F5E9;color:#27AE60;border-color:#C8E6C9">${t('consentSigned')}</span>`
+              :`<span class="p-badge" style="background:#FFF3E0;color:#E67E22;border-color:#FFE0B2;cursor:pointer" onclick="openConsent()">${t('consentPending')}</span>`}
+            ${cl.icd10?'<span class="p-badge">'+cl.icd10+'</span>':''}
+            ${cl.dsm5?'<span class="p-badge">'+cl.dsm5+'</span>':''}
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="addSession()">${t('newSession')}</button>
+    </div>
+    <div class="client-info-grid">
+      <div><div class="ci-label">${t('modality')}</div><div class="ci-value">${ml}</div></div>
+      <div><div class="ci-label">${t('recurring')}</div><div class="ci-value${!cl.sessionDay?' placeholder':''}">${rec}</div></div>
+      <div><div class="ci-label">${t('sessCount')}</div><div class="ci-value">${cSess.length}</div></div>
+      <div><div class="ci-label">${t('since')}</div><div class="ci-value">${cl.createdAt?new Date(cl.createdAt).toLocaleDateString(S.lang==='tr'?'tr-TR':'en-GB',{month:'short',year:'numeric'}):'—'}</div></div>
+    </div>
+    <div class="profile-grid">
+      <div class="card">
+        <div class="card-label">${t('diagPlan')}</div>
+        <div class="diag-row"><span class="diag-lbl">ICD-10</span><input class="diag-input" value="${cl.icd10||''}" placeholder="F32.1" oninput="updateClient('${cl.id}','icd10',this.value)"></div>
+        <div class="diag-row"><span class="diag-lbl">DSM-5</span><input class="diag-input" value="${cl.dsm5||''}" placeholder="${S.lang==='tr'?'Tanı kodu':'Diagnosis'}" oninput="updateClient('${cl.id}','dsm5',this.value)"></div>
+        <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+          <button class="gen-plan-btn" onclick="generateTreatmentPlan()" ${S.gp?'disabled':''}>${S.gp?t('generating'):t('genPlan')}</button>
+          ${cl.tpd?`<span style="font-size:10px;color:#9A9690">${new Date(cl.tpd).toLocaleDateString()}</span>`:''}
+        </div>
+        ${cl.tp?'<div class="plan-box">'+cl.tp+'</div>':''}
+      </div>
+      <div class="card">
+        <div class="card-label">${t('outcomes')}</div>
+        ${MEASURES.map(m=>{const sc=allSc[m.id];const last=sc.length?sc[sc.length-1]:null;const c2=last!==null?getSevColor(m.id,last):'#9A9690';const sev=getSev(m.id,last);return`<div class="outcome-row"><span class="outcome-lbl">${m.l}</span><span class="outcome-val" style="color:${c2}">${last!==null?last:'—'}</span><span class="outcome-sev" style="color:${c2}">${sev||'—'}</span><div style="flex:1">${sparkline(sc,m.max)}</div></div>`;}).join('')}
+      </div>
+    </div>
+    <div class="sessions-header"><div style="font-size:14px;font-weight:600">${t('sessions')} (${cSess.length})</div></div>
+    ${cSess.length===0
+      ?`<div style="font-size:13px;color:#9A9690;padding:16px 0">${t('noSessions')}</div>`
+      :cSess.map(s=>{
+        const nc=Object.keys(s.outs||{}).length;
+        const ocBits=MEASURES.map(m=>s.oc&&s.oc[m.id]?`<span style="font-size:10px;color:${getSevColor(m.id,s.oc[m.id])};font-weight:600">${m.l}:${s.oc[m.id]}</span>`:'').filter(Boolean).join(' ');
+        return`<div class="session-card" onclick="selectSession('${s.id}')">
+          <div><div style="font-size:14px;font-weight:600">S${s.n}</div><div class="sc-meta">${s.date} · ${ml.split('/')[0].trim()}</div></div>
+          <div class="sc-right">${ocBits}${nc>0?`<span style="font-size:11px;color:#9A9690">${nc} ${S.lang==='tr'?'not':'note'}${nc!==1&&S.lang==='en'?'s':''}</span>`:''}<button class="del-btn" onclick="event.stopPropagation();deleteSession('${s.id}')">×</button></div>
+        </div>`;
+      }).join('')}
+  </div>`;
+}
+
+function renderSession(cl,se){
+  if(!se)return'';
+  const oc=se.oc||{};const sup=se.sup||{st:'draft'};
+  const cout=S.outs[S.nt];
+  const ni=NOTE_TYPES.find(n=>n.id===S.nt)||NOTE_TYPES[0];
+  const isPrivate=ni.c==='private';
+  const col=CA[cidx(cl.id)%CA.length];
+  const ml=modL(cl.mod||'integrative');
+  const placeholder=isPrivate
+    ?(S.lang==='tr'
+      ?'Danışanın tam cümleleri, sessizlikler, ses tonu değişimleri, gözlemler — olduğu gibi yaz. Bullet point gerekmez.\n\nörn: "beni kimse anlamıyor" dedi, uzun sessizlik, annesinden bahsederken sesi kırıldı, bana bakmadı...'
+      :'Client\'s exact words, silences, voice tone shifts, your observations — write as they happened. No structure needed.\n\ne.g. "nobody understands me" — long silence, voice broke when talking about mother, avoided eye contact...')
+    :(S.lang==='tr'?'Seans içeriği, ana temalar, gözlemler...':'Session content, main themes, observations...');
+
+  const tabLabels=[['text',t('inputText')],['voice',t('inputVoice')],['photo',t('inputPhoto')],['outcomes',t('inputOutcomes')]];
+
+  // Build copy button without t() calls inline to avoid quote escaping issues
+  const copyLabel=t('copy');
+  const copiedLabel=t('copied');
+
+  return`<div>
+    <div class="bc">
+      <span class="bc-link" onclick="S.cid='${cl.id}';S.sid=null;S.outs={};render()">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${col};margin-right:4px;vertical-align:middle"></span>${cl.name}
+      </span>
+      <span class="bc-sep">›</span>
+      <span class="bc-cur">S${se.n}</span>
+      ${cl.icd10?`<span class="bc-badge">${cl.icd10}</span>`:''}
+      <span style="font-size:11px;color:#9A9690">${ml.split('/')[0].trim()}</span>
+      <span class="bc-date"><input type="date" value="${se.date||''}" onchange="updateSession({date:this.value})"></span>
+    </div>
+
+    <div class="input-tabs">
+      ${tabLabels.map(([id,lbl])=>`<button class="input-tab${S.inputTab===id?' active':''}" onclick="S.inputTab='${id}';render()">${lbl}</button>`).join('')}
+    </div>
+
+    ${S.inputTab==='text'?`<textarea class="notes-textarea" id="notes-ta" placeholder="${placeholder}" oninput="updateSession({rn:this.value})">${se.rn||''}</textarea>`:''}
+
+    ${S.inputTab==='voice'?`<div class="input-panel">
+      ${S.vt
+        ?`<div id="vp-text" style="font-size:13px;line-height:1.75;margin-bottom:12px;color:#1A1C18;white-space:pre-wrap">${S.vt}</div>`
+        :`<div id="vp-text"></div><div class="voice-hint">${t('voiceHint')}</div>`}
+      <button id="vp-btn" class="rec-btn${S.rec?' recording':''}" onclick="${S.rec?'stopRec()':'startRec()'}">
+        ${S.rec?t('stopRec'):t('startRec')}
+      </button>
+      ${S.vt&&!S.rec?`<div style="font-size:11px;color:#9A9690;margin-top:8px">${S.lang==='tr'?'Kayıt tamamlandı. Not türünü seçip Oluştur\'a basın.':'Recording saved. Select a note type and click Generate.'}</div>`:''}
+    </div>`:''}
+
+    ${S.inputTab==='photo'?`<div class="input-panel">
+      ${S.pp?`<img src="${S.pp}" class="photo-preview" alt="session notes">`:''}
+      <div class="voice-hint" style="margin-bottom:10px">${S.pp?t('photoUploaded'):t('photoHint')}</div>
+      <input type="file" accept="image/*,image/heic,image/heif" id="photo-inp" style="display:none" onchange="handlePhoto(event)">
+      <label for="photo-inp" class="photo-upload-label">${S.pp?t('photoChange'):t('photoUpload')}</label>
+    </div>`:''}
+
+    ${S.inputTab==='outcomes'?`<div class="input-panel">
+      ${MEASURES.map(m=>{const v=oc[m.id]||'';const c2=v!==''?getSevColor(m.id,v):'#9A9690';return`<div class="measure-row"><span class="measure-name">${m.l}</span><span class="measure-range-hint">0–${m.max}</span><input class="measure-input" type="number" min="0" max="${m.max}" value="${v}" placeholder="—" oninput="updateOutcome('${m.id}',this.value)"><span class="sev-label" style="color:${c2}">${v!==''?getSev(m.id,v)||'—':'—'}</span></div>`;}).join('')}
+    </div>`:''}
+
+    <div class="note-type-section">
+      <div class="field-label">${t('noteType')} <span style="font-size:10px;color:#9A9690;font-weight:400;text-transform:none;letter-spacing:0">${t('noteTypeHint')}</span></div>
+      <div class="note-cat-row">
+        <span class="note-cat-label private">${t('forSupervision')}</span>
+        <div class="note-cat-divider"></div>
+      </div>
+      <div class="note-pills">
+        ${NOTE_TYPES.filter(n=>n.c==='private').map(n=>{const ho=!!S.outs[n.id];return`<button class="note-pill priv${S.nt===n.id?' active':''}" onclick="S.nt='${n.id}';render()" title="${S.lang==='tr'?n.dtr:n.den}">${S.lang==='tr'?n.tr:n.en}${ho?'<span class="pill-dot"></span>':''}</button>`;}).join('')}
+      </div>
+      <div class="note-cat-row">
+        <span class="note-cat-label official">${t('forRecord')}</span>
+        <div class="note-cat-divider"></div>
+      </div>
+      <div class="note-pills">
+        ${NOTE_TYPES.filter(n=>n.c==='official').map(n=>{const ho=!!S.outs[n.id];return`<button class="note-pill${S.nt===n.id?' active':''}" onclick="S.nt='${n.id}';render()" title="${S.lang==='tr'?n.dtr:n.den}">${S.lang==='tr'?n.tr:n.en}${ho?'<span class="pill-dot"></span>':''}</button>`;}).join('')}
+      </div>
+    </div>
+
+    <button class="gen-btn" onclick="generate()" ${S.gen?'disabled':''}>
+      ${S.gen
+        ?`<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite"></span> ${t('generating')}`
+        :t('generate')+' — '+(S.lang==='tr'?ni.tr:ni.en)}
+    </button>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    ${S.err?`<div class="error-msg">${S.err}</div>`:''}
+
+    ${cout?`<div class="output-section">
+      <div class="output-header">
+        <span class="output-label">${S.lang==='tr'?ni.tr:ni.en}</span>
+        ${isPrivate?`<span class="private-badge">${t('private')} · Özel</span>`:''}
+        <span class="gen-at">${new Date(cout.genAt).toLocaleString(S.lang==='tr'?'tr-TR':'en-GB',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})}</span>
+        <div class="output-actions">
+          <button class="out-btn" id="copy-btn" onclick="(()=>{const txt=S.outs[S.nt]?.text||'';navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('copy-btn');if(b){b.textContent='${copiedLabel}';setTimeout(()=>b.textContent='${copyLabel}',1800);}});})()">${copyLabel}</button>
+          <button class="out-btn" onclick="exportPDF()">${t('pdf')}</button>
+        </div>
+      </div>
+      <div class="output-box" contenteditable="true" style="outline:none" spellcheck="false" oninput="if(!S.outs[S.nt])S.outs[S.nt]={};S.outs[S.nt].text=this.innerText;updateSession({outs:S.outs})">${hlRisk(cout.text)}</div>
+      <div class="sup-bar">
+        <span class="sup-bar-label">${t('supStatus')}</span>
+        <span class="sup-status sup-${sup.st}">${sup.st==='draft'?t('draft'):sup.st==='submitted'?t('submitted')+(sup.sa?' · '+new Date(sup.sa).toLocaleDateString():''):t('reviewed')}</span>
+        ${sup.st==='draft'
+          ?`<button class="sup-action-btn" onclick="updateSupervision('submitted')">${t('submitSup')}</button>`
+          :sup.st==='submitted'
+          ?`<button class="sup-action-btn" onclick="updateSupervision('reviewed')">${t('markReviewed')}</button>`
+          :`<span style="font-size:11px;color:#27AE60;margin-left:auto;font-weight:500">${t('supComplete')}</span>`}
+      </div>
+    </div>`:''}
+
+    ${Object.keys(S.outs).filter(k=>k!==S.nt&&S.outs[k]).length>0?`<div class="other-notes">
+      <div class="other-notes-label">${t('otherNotes')}</div>
+      <div class="note-pills">${NOTE_TYPES.filter(n=>S.outs[n.id]&&n.id!==S.nt).map(n=>`<button class="note-pill${n.c==='private'?' priv':''}" onclick="S.nt='${n.id}';render()">${S.lang==='tr'?n.tr:n.en}<span class="pill-dot"></span></button>`).join('')}</div>
+    </div>`:''}
+  </div>`;
+}
+
+// ── INIT ─────────────────────────────────────────────────
+load();
+setLang(S.lang); // apply saved/url language to static modal elements
+// If app opened in English, visually lead with the English KVKK button
+if(S.lang==='en'){
+  const kvkkTR=document.querySelector('#kvkk-overlay .modal-accept');
+  const kvkkEN=kvkkTR&&kvkkTR.nextElementSibling;
+  if(kvkkTR&&kvkkEN){
+    // Swap visual order so English is on the left (primary)
+    kvkkTR.parentElement.insertBefore(kvkkEN,kvkkTR);
+    kvkkEN.style.background='#1A1C18';kvkkEN.style.color='#fff';kvkkEN.style.border='none';
+    kvkkTR.style.background='#F7F6F3';kvkkTR.style.color='#6B6862';kvkkTR.style.fontWeight='400';
+  }
+}
+if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
+else showApp();
+</script>
+</body>
+</html>
