@@ -7,24 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0F1109;--bg2:#161A0F;--bg3:#1C2114;--bg4:#222818;
-  --surface:#fff;--surface2:#F7F6F3;--surface3:#EFEDE8;
-  --gold:#C4A860;--gold-d:#9A7B3E;--gold-l:#D4B87A;
-  --gold-bg:rgba(196,168,96,0.1);--gold-border:rgba(196,168,96,0.22);
-  --text:#1A1C18;--ts:#6B6862;--tm:#9A9690;--tl:#C4B8A8;
-  --border:#E8E5E0;--border2:#F0EDE8;
-  --w-text:rgba(255,255,255,0.85);--w-ts:rgba(255,255,255,0.45);
-  --w-tm:rgba(255,255,255,0.25);--w-tl:rgba(255,255,255,0.12);
-  --blue:#2980B9;--blue-bg:#EBF4FB;--blue-border:#D0E8F5;
-  --green:#27AE60;--red:#DC3545;--amber:#E67E22;
+  /* ── exact match with landing page ── */
+  --bg:#0D0F0C;--bg2:#141712;--bg3:#1A1E17;--bg4:#1F2419;
+  --gold:#B89A5A;--gold-d:#8A7040;--gold-l:#D4B87A;
+  --gold-bg:rgba(184,154,90,0.1);--gold-border:rgba(184,154,90,0.28);
+  --text:#EDE9E0;--ts:#A8A49C;--tm:#6A6860;--tl:rgba(255,255,255,0.12);
+  --w-text:#EDE9E0;--w-ts:#A8A49C;--w-tm:#6A6860;--w-tl:rgba(255,255,255,0.08);
+  --border:rgba(255,255,255,0.065);--border2:rgba(255,255,255,0.04);
+  --blue:#4A9CC4;--blue-bg:rgba(74,156,196,0.1);--blue-border:rgba(74,156,196,0.25);
+  --green:#4CAF77;--red:#E07070;--amber:#E67E22;
   --serif:'Cormorant Garamond',Georgia,serif;
   --sans:'DM Sans',system-ui,sans-serif;
-  --r:10px;--r-sm:6px;
+  --r:8px;--r-sm:4px;
   --nav-h:58px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg)}
-body{font-family:var(--sans);font-size:14px;color:var(--text);overflow:hidden}
+body{font-family:var(--sans);font-size:14px;font-weight:300;color:var(--text);overflow:hidden}
 input,select,textarea,button{font-family:var(--sans);font-size:14px}
 button{cursor:pointer;border:none;background:none}
 a{color:inherit;text-decoration:none}
@@ -81,7 +80,7 @@ select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 
 /* ── BUTTONS ── */
 .btn{padding:12px 18px;font-size:14px;font-weight:500;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.btn-gold{background:var(--gold);color:var(--bg)}
+.btn-gold{background:var(--gold);color:var(--bg);border-radius:2px}
 .btn-gold:hover{background:var(--gold-l)}
 .btn-dark{background:rgba(255,255,255,0.08);color:var(--w-text);border:1px solid var(--w-tl)}
 .btn-dark:hover{border-color:var(--w-ts)}
@@ -98,7 +97,7 @@ select.f-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg x
 
 /* ── DASHBOARD ── */
 .dash-head{padding:14px 18px 8px;display:flex;align-items:flex-start;justify-content:space-between}
-.dash-logo{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--w-text)}
+.dash-logo{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--text);letter-spacing:.02em;line-height:1}
 .dash-logo span{color:var(--gold)}
 .dash-date{font-size:11px;color:var(--w-tm);margin-top:2px}
 .today-count{font-size:11px;color:var(--gold);background:var(--gold-bg);border:1px solid var(--gold-border);border-radius:20px;padding:4px 11px;margin-top:4px;display:inline-block}
@@ -257,6 +256,29 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
 .tp-btn:disabled{opacity:.4;cursor:not-allowed}
 .tp-box{margin-top:10px;padding:12px;background:var(--bg3);border:1px solid var(--w-tl);border-radius:var(--r-sm);font-size:12px;line-height:1.75;color:var(--w-ts);white-space:pre-wrap;max-height:200px;overflow-y:auto}
 
+
+/* ── SUPERVISION REDESIGN ── */
+.sup-session-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.sup-session-card:hover{border-color:var(--gold-border)}
+.sup-session-date{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gold);margin-bottom:5px}
+.sup-session-title{font-size:15px;font-weight:500;color:var(--text);margin-bottom:4px;font-family:var(--serif)}
+.sup-session-meta{font-size:11px;color:var(--tm)}
+.sup-status-row{display:flex;align-items:center;gap:6px;margin-top:8px}
+.sup-st{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500}
+.sup-st-prep{background:rgba(255,255,255,0.06);color:var(--ts);border:1px solid var(--border)}
+.sup-st-done{background:rgba(76,175,119,0.1);color:#4CAF77;border:1px solid rgba(76,175,119,0.2)}
+.sup-client-chip{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border)}
+/* Supervision detail screen */
+.sup-detail{padding:16px 18px}
+.sup-section-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--tm);margin-bottom:8px;display:block}
+.sup-case-item{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:8px;overflow:hidden}
+.sup-case-header{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.sup-case-body{padding:0 14px 14px;display:none}
+.sup-case-body.open{display:block}
+.sup-ta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--bg2);color:var(--text);font-family:var(--sans);font-size:13px;line-height:1.75;resize:vertical}
+.sup-ta:focus{outline:none;border-color:var(--gold)}
+.sup-ta::placeholder{color:var(--tm)}
+
 /* ── SUPERVISION ── */
 .sup-case-card{background:var(--bg3);border:1px solid var(--w-tl);border-radius:var(--r);padding:14px 15px;margin-bottom:8px;cursor:pointer;transition:all .15s}
 .sup-case-card:hover{border-color:var(--gold-border)}
@@ -312,8 +334,8 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
 
 /* LANG TOGGLE */
 .lang-toggle{display:flex;border:1px solid var(--w-tl);border-radius:4px;overflow:hidden}
-.lang-btn{padding:5px 10px;font-size:11px;font-weight:500;background:transparent;border:none;color:var(--w-tm);cursor:pointer;transition:all .15s}
-.lang-btn.active{background:var(--gold-bg);color:var(--gold)}
+.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;background:transparent;border:none;color:var(--tm);cursor:pointer;transition:all .15s;font-family:var(--sans)}
+.lang-btn.active{background:var(--gold);color:var(--bg)}
 
 
 /* ── DASHBOARD REDESIGN ── */
@@ -346,28 +368,42 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
 .dash-sup-row{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--w-tl);cursor:pointer;transition:background .12s}
 .dash-sup-row:hover{background:var(--bg3)}
 .dash-sup-row:last-child{border-bottom:none}
-/* ── FAB ── */
-.fab-area{position:fixed;bottom:calc(var(--nav-h) + 12px);right:16px;display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:200}
-.fab-item{display:flex;align-items:center;gap:8px;cursor:pointer}
-.fab-lbl{font-size:11px;font-weight:500;color:var(--w-text);background:rgba(0,0,0,0.7);padding:4px 10px;border-radius:20px;white-space:nowrap;backdrop-filter:blur(8px)}
-.fab-btn{width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .15s;box-shadow:0 2px 12px rgba(0,0,0,0.4)}
-.fab-btn-gold{background:var(--gold);color:var(--bg)}
-.fab-btn-gold:hover{background:var(--gold-l)}
-.fab-btn-dark{background:var(--bg3);color:var(--w-text);border:1px solid var(--w-tl)}
-.fab-btn-dark:hover{border-color:var(--gold-border)}
-/* Only show FAB on dashboard */
-.screen:not(#screen-dash) .fab-area{display:none}
-/* ── DESKTOP ADAPTATION OVERRIDE ── */
+/* ── FAB: Quick Capture ── */
+.fab-capture{position:fixed;right:16px;width:46px;height:46px;border-radius:50%;background:var(--bg3);border:1px solid var(--gold-border);color:var(--gold);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 16px rgba(0,0,0,0.5);transition:all .15s;z-index:200}
+.fab-capture:hover{background:var(--bg4);border-color:var(--gold)}
+/* Quick capture sheet */
+.qc-sheet{background:var(--bg2);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:20px 20px 28px;max-height:80vh}
+.qc-ta{width:100%;height:110px;resize:none;padding:12px 14px;border:1px solid var(--w-tl);border-radius:var(--r-sm);background:var(--bg3);color:var(--w-text);line-height:1.75;font-size:14px;font-family:var(--sans)}
+.qc-ta:focus{outline:none;border-color:var(--gold)}
+.qc-ta::placeholder{color:var(--w-tm)}
+/* ── MOBILE BASE (default) ── */
+body{overflow:auto;height:auto}
+.app{flex-direction:column;height:auto;min-height:100vh;overflow:visible}
+.app-body{flex-direction:column;overflow:visible;flex:1}
+.screen{overflow:visible;flex:none}
+.screen.active{display:flex;flex-direction:column}
+/* Bottom nav stays at bottom on mobile */
+.bottom-nav{position:sticky;bottom:0;z-index:100;flex-direction:row;width:100%;height:var(--nav-h);border-top:1px solid var(--w-tl);border-right:none;padding:0 0 env(safe-area-inset-bottom) 0;order:2}
+.bn-item{padding:6px 0}
+.bn-icon{font-size:20px}
+.bn-lbl{font-size:9px}
+/* FAB sits above bottom nav */
+.fab-capture{bottom:calc(var(--nav-h) + 14px)}
+
+/* ── DESKTOP (sidebar nav) ── */
 @media(min-width:700px){
-  .app{flex-direction:row}
-  .app-body{flex-direction:row}
-  .bottom-nav{flex-direction:column;width:64px;height:100vh;border-top:none;border-right:1px solid var(--w-tl);padding:16px 0;order:-1}
+  body{overflow:hidden;height:100%}
+  .app{flex-direction:row;height:100vh;overflow:hidden}
+  .app-body{flex-direction:row;overflow:hidden}
+  .screen{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:none}
+  .screen.active{display:flex;flex-direction:column}
+  .bottom-nav{position:static;flex-direction:column;width:64px;height:100vh;border-top:none;border-right:1px solid var(--w-tl);padding:16px 0;order:-1}
   .bn-item{padding:12px 0;gap:4px}
   .bn-icon{font-size:22px}
   .bn-lbl{font-size:8px}
   .screen{max-width:540px;border-right:1px solid var(--w-tl)}
   #screen-session{max-width:100%}
-  .fab-area{bottom:20px}
+  .fab-capture{bottom:24px}
 }
 
 /* PRINT */
@@ -381,17 +417,7 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
 #print-area .pc{white-space:pre-wrap}
 #print-area .pf{margin-top:40px;padding-top:12px;border-top:1px solid #ddd;font-size:11px;color:#999}
 
-/* DESKTOP ADAPTATION */
-@media(min-width:700px){
-  .app{flex-direction:row}
-  .app-body{flex-direction:row}
-  .bottom-nav{flex-direction:column;width:64px;height:100vh;border-top:none;border-right:1px solid var(--w-tl);padding:16px 0;order:-1}
-  .bn-item{padding:12px 0;gap:4px}
-  .bn-icon{font-size:22px}
-  .bn-lbl{font-size:8px}
-  .screen{max-width:540px;border-right:1px solid var(--w-tl)}
-  #screen-session{max-width:100%}
-}
+
 </style>
 </head>
 <body>
@@ -400,7 +426,15 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
 <div class="overlay" id="kvkk-overlay" style="display:none">
 <div class="sheet">
   <div class="sheet-handle"></div>
-  <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px">Oda</div>
+  <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+    <svg width="24" height="24" viewBox="0 0 34 34" fill="none">
+      <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+      <circle cx="12" cy="13.5" r="6.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+      <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="#B89A5A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="13.5" cy="11.5" r="1.2" fill="#B89A5A"/>
+    </svg>
+    <span style="font-family:var(--serif);font-size:20px;font-weight:500;color:var(--text);letter-spacing:.02em">Oda<span style="color:var(--gold)">.</span></span>
+  </div>
   <div class="sheet-title" id="kvkk-title">Veri Koruma / KVKK</div>
   <div class="sheet-sub" id="kvkk-sub">Kullanmadan önce lütfen okuyun.</div>
   <div class="kvkk-sec-title" id="kvkk-s1">Sorumluluklarınız</div>
@@ -520,9 +554,20 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
     <!-- SCREEN: DASHBOARD -->
     <div class="screen active" id="screen-dash">
       <div class="dash-head">
-        <div>
-          <div class="dash-logo">Oda<span>.</span></div>
-          <div class="dash-date" id="dash-date-lbl"></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <svg width="28" height="28" viewBox="0 0 34 34" fill="none" style="flex-shrink:0">
+            <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+            <circle cx="12" cy="13.5" r="6.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+            <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="#B89A5A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+            <circle cx="13.5" cy="11.5" r="1.2" fill="#B89A5A"/>
+            <path d="M6.5 13 Q5 13.5 5.5 16.5" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.55"/>
+            <path d="M31 17 Q34 15.5 32.5 20" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.45"/>
+            <path d="M19 28.5 Q20 31 22 30" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.4"/>
+          </svg>
+          <div>
+            <div class="dash-logo">Oda<span>.</span></div>
+            <div class="dash-date" id="dash-date-lbl"></div>
+          </div>
         </div>
         <div class="lang-toggle">
           <button class="lang-btn" id="dash-tr-btn" onclick="setLang('tr')">TR</button>
@@ -530,21 +575,8 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
         </div>
       </div>
       <div id="dash-quick-grid"></div>
-      <!-- FAB -->
-      <div class="fab-area" id="dash-fab">
-        <div class="fab-item" onclick="switchScreen('screen-cal')">
-          <span class="fab-lbl" id="fab-lbl-cal">Takvim</span>
-          <button class="fab-btn fab-btn-dark">▦</button>
-        </div>
-        <div class="fab-item" onclick="switchScreen('screen-sup')">
-          <span class="fab-lbl" id="fab-lbl-sup">Süpervizyon</span>
-          <button class="fab-btn fab-btn-dark">◈</button>
-        </div>
-        <div class="fab-item" onclick="openNewClient()">
-          <span class="fab-lbl" id="fab-lbl-client">+ Danışan</span>
-          <button class="fab-btn fab-btn-gold">+</button>
-        </div>
-      </div>
+      <!-- FAB: Quick Capture -->
+      <button class="fab-capture" id="fab-capture-btn" onclick="openQuickCapture()" title="Hızlı not">✏️</button>
     </div>
 
     <!-- SCREEN: CLIENTS -->
@@ -586,7 +618,7 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
           <div class="top-bar-title" id="sup-screen-title">Süpervizyon</div>
           <div class="top-bar-sub" id="sup-screen-sub">Aktif vakalar</div>
         </div>
-        <button class="btn btn-gold btn-sm" onclick="openSupCase()" id="sup-new-btn">+ Yeni</button>
+        <button class="btn btn-gold btn-sm" onclick="newSupSession()" id="sup-new-btn">+ Yeni</button>
       </div>
       <div id="sup-content"></div>
     </div>
@@ -596,7 +628,14 @@ mark.risk{background:rgba(220,53,69,.12);color:#E07070;border-radius:2px;padding
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="bn-item" onclick="switchScreen('screen-dash')" id="bn-dash">
-      <span class="bn-icon active" id="bni-dash">⌂</span>
+      <span class="bn-icon active" id="bni-dash" style="display:flex;align-items:center;justify-content:center">
+        <svg width="20" height="20" viewBox="0 0 34 34" fill="none" id="bn-dash-svg">
+          <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <circle cx="12" cy="13.5" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <circle cx="13.5" cy="11.5" r="1.1" fill="currentColor"/>
+        </svg>
+      </span>
       <span class="bn-lbl active" id="bnl-dash" data-tr="Ana sayfa" data-en="Home">Ana sayfa</span>
     </div>
     <div class="bn-item" onclick="switchScreen('screen-clients')" id="bn-clients">
@@ -874,7 +913,7 @@ function noteL(id){const n=NOTE_TYPES.find(x=>x.id===id);if(!n)return id;return 
 // ══════════════════════════════════════════════════════
 let S={
   kvkk:false,lang:'tr',
-  clients:[],sessions:[],supCases:[],
+  clients:[],sessions:[],supCases:[],supSessions:[],
   cid:null,sid:null,calSelected:null,
   activeScreen:'screen-dash',
   nt:'process',inputTab:'text',
@@ -898,11 +937,13 @@ function load(){
   try{const c=localStorage.getItem('oda_clients');if(c)S.clients=JSON.parse(c);}catch(e){}
   try{const s=localStorage.getItem('oda_sessions');if(s)S.sessions=JSON.parse(s);}catch(e){}
   try{const sc=localStorage.getItem('oda_sup_cases');if(sc)S.supCases=JSON.parse(sc);}catch(e){}
+  try{const ss=localStorage.getItem('oda_sup_sessions');if(ss)S.supSessions=JSON.parse(ss);}catch(e){}
   try{const th=localStorage.getItem('oda_therapist');if(th)S.therapistInfo=JSON.parse(th);}catch(e){}
 }
 function saveC(){try{localStorage.setItem('oda_clients',JSON.stringify(S.clients));}catch(e){}}
 function saveS(){try{localStorage.setItem('oda_sessions',JSON.stringify(S.sessions));}catch(e){}}
 function saveSup(){try{localStorage.setItem('oda_sup_cases',JSON.stringify(S.supCases));}catch(e){}}
+function saveSupSessions(){try{localStorage.setItem('oda_sup_sessions',JSON.stringify(S.supSessions));}catch(e){}}
 
 // ══════════════════════════════════════════════════════
 // NAVIGATION
@@ -964,9 +1005,7 @@ function setLang(l){
   for(const[id,key]of Object.entries(qMap)){const el=document.getElementById(id);if(el)el.textContent=t(key);}
   const si=document.getElementById('search-input');if(si)si.placeholder=t('searchPlaceholder');
   // Update FAB labels
-  const fl1=document.getElementById('fab-lbl-client');if(fl1)fl1.textContent='+ '+(l==='tr'?'Danışan':'Client');
-  const fl2=document.getElementById('fab-lbl-sup');if(fl2)fl2.textContent=l==='tr'?'Süpervizyon':'Supervision';
-  const fl3=document.getElementById('fab-lbl-cal');if(fl3)fl3.textContent=l==='tr'?'Takvim':'Calendar';
+
   if(document.getElementById('app').style.display!=='none')renderCurrentScreen();
 }
 function renderCurrentScreen(){
@@ -1388,6 +1427,16 @@ function goNewSession(){
   </div>`);
 }
 function renderSessionScreen(){
+  // Save any in-progress edits before re-rendering
+  const existingBox=document.getElementById('session-content')?.querySelector('.output-box');
+  if(existingBox&&S.nt&&S.outs[S.nt]){
+    const current=existingBox.innerText;
+    if(current&&current!==S.outs[S.nt].text){
+      S.outs[S.nt].text=current;
+      const se2=S.sessions.find(s=>s.id===S.sid);
+      if(se2)updateSession({outs:S.outs});
+    }
+  }
   const se=S.sessions.find(s=>s.id===S.sid);
   const cl=S.clients.find(c=>c.id===S.cid);
   const el=document.getElementById('session-content');if(!el)return;
@@ -1417,7 +1466,7 @@ function renderSessionScreen(){
     </div>
     <div class="sess-editor">
       <div class="input-tabs">
-        ${tabLabels.map(([id,lbl])=>`<button class="input-tab${S.inputTab===id?' active':''}" onclick="S.inputTab='${id}';renderSessionScreen()">${lbl}</button>`).join('')}
+        ${tabLabels.map(([id,lbl])=>`<button class="input-tab${S.inputTab===id?' active':''}" onclick="(function(){const ta=document.getElementById('notes-ta');if(ta)updateSession({rn:ta.value});S.inputTab='${id}';renderSessionScreen();})()">${lbl}</button>`).join('')}
       </div>
       ${S.inputTab==='text'?`<textarea class="notes-ta" id="notes-ta" placeholder="${placeholder}" oninput="updateSession({rn:this.value})">${se.rn||''}</textarea>`:''}
       ${S.inputTab==='voice'?`<div class="input-panel">
@@ -1692,7 +1741,7 @@ function renderCalScreen(){
   const daySess=sessMap[selectedDs]||[];const daySched=schedMap[selectedDs]||[];
   let sList='';
   if(daySess.length){sList=daySess.map(s=>{const cl=S.clients.find(c=>c.id===s.cid);const col=CA[cidx(s.cid)%CA.length];return`<div class="cal-sess-item" style="background:${col}20;border-left:3px solid ${col}" onclick="openSession('${s.id}')"><div class="cal-sess-time">${cl?.sessionTime||''}</div><div><div class="cal-sess-name">${cl?.name||'?'}</div><div class="cal-sess-mod">${modL(cl?.mod||'integrative').split('/')[0].trim()}</div></div></div>`;}).join('');}
-  else if(daySched.length){sList=daySched.map(cl=>{const col=CA[cidx(cl.id)%CA.length];return`<div class="cal-sess-item" style="background:${col}15;border-left:3px solid ${col};opacity:.7" onclick="showCalNewSessionPicker('${selectedDs}')"><div class="cal-sess-time">${cl.sessionTime||''}</div><div><div class="cal-sess-name">${cl.name}</div><div class="cal-sess-mod">${t('scheduled')}</div></div></div>`;}).join('');}
+  else if(daySched.length){sList=daySched.map(cl=>{const col=CA[cidx(cl.id)%CA.length];return`<div class="cal-sess-item" style="background:${col}15;border-left:3px solid ${col};opacity:.7" onclick="calClick('${selectedDs}')"><div class="cal-sess-time">${cl.sessionTime||''}</div><div><div class="cal-sess-name">${cl.name}</div><div class="cal-sess-mod">${t('scheduled')}</div></div></div>`;}).join('');}
   else sList='<div class="cal-empty">'+t('noSessionsToday')+'</div>';
   const isSelectedToday=selectedDs===ts;
   const selectedLabel=isSelectedToday?t('todayLabel'):formatDate(selectedDs);
@@ -1709,38 +1758,89 @@ function renderCalScreen(){
 }
 function calClick(ds){
   S.calSelected=ds;
+  renderCalScreen(); // re-render so selected day highlights
   const daySess=S.sessions.filter(s=>s.date===ds);
-  if(daySess.length===1){openSession(daySess[0].id);return;}
-  if(daySess.length>1){showCalDayPicker(ds,daySess);return;}
-  // empty day — show new session picker only, never silently create
-  if(S.clients.length===0)return;
-  showCalNewSessionPicker(ds);
-}
-function showCalDayPicker(ds,sessions){
-  openPicker(`<div class="modal" style="max-width:360px">
-    <div class="modal-title" style="margin-bottom:14px">${formatDate(ds)}</div>
-    ${sessions.map(s=>{const cl=S.clients.find(c=>c.id===s.cid);const col=CA[cidx(s.cid)%CA.length];
+  const isTR=S.lang==='tr';
+  const dateLabel=formatDate(ds);
+
+  // Build scheduled clients for this day (not already with a session)
+  const dow=new Date(ds+'T12:00:00').getDay();
+  const sched=S.clients.filter(cl=>{
+    const dn=DAY_MAP[cl.sessionDay];
+    return dn!==undefined&&dn===dow&&!daySess.find(s=>s.cid===cl.id);
+  });
+
+  // If sessions exist — show them with an option to add more
+  if(daySess.length>0){
+    const rows=daySess.map(s=>{
+      const cl=S.clients.find(c=>c.id===s.cid);
+      const col=CA[cidx(s.cid)%CA.length];
       return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--w-tl);border-radius:8px;margin-bottom:7px;cursor:pointer;background:var(--bg3)" onclick="closePicker();openSession('${s.id}')">
         <div style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></div>
-        <div><div style="font-size:13px;font-weight:500;color:var(--w-text)">${cl?.name||'?'}</div>
-        <div style="font-size:11px;color:var(--w-tm)">S${s.n} · ${modL(cl?.mod||'integrative').split('/')[0].trim()}</div></div>
-      </div>`;}).join('')}
-    <button class="btn btn-outline btn-full" style="margin-top:4px" onclick="closePicker()">${t('nc_cancel')}</button>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${cl?.name||'?'}</div>
+        <div style="font-size:11px;color:var(--tm)">S${s.n} · ${modL(cl?.mod||'integrative').split('/')[0].trim()}</div></div>
+        <span style="font-size:12px;color:var(--tm)">›</span>
+      </div>`;
+    }).join('');
+    openPicker(`<div class="modal" style="max-width:360px">
+      <div class="modal-title" style="margin-bottom:14px">${dateLabel}</div>
+      ${rows}
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-gold" style="flex:1;font-size:12px" onclick="closePicker();showCalAddSession('${ds}')">${isTR?'+ Seans Notu Ekle':'+ Add Session Note'}</button>
+        <button class="btn btn-outline" style="flex:1;font-size:12px" onclick="closePicker()">${isTR?'Kapat':'Close'}</button>
+      </div>
+    </div>`);
+    return;
+  }
+
+  // Empty day — show what's scheduled (if anything) and offer to add
+  const schedRows=sched.map(cl=>{
+    const col=CA[cidx(cl.id)%CA.length];
+    return`<div style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--w-tl);border-radius:8px;margin-bottom:6px;background:var(--bg3);opacity:.7">
+      <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${cinit(cl.name)}</div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text)">${cl.name}</div>
+      <div style="font-size:11px;color:var(--tm)">${cl.sessionTime||''} · ${isTR?'Planlandı':'Scheduled'}</div></div>
+    </div>`;
+  }).join('');
+
+  openPicker(`<div class="modal" style="max-width:360px">
+    <div class="modal-title" style="margin-bottom:6px">${dateLabel}</div>
+    <div style="font-size:12px;color:var(--tm);margin-bottom:14px">${isTR?'Bu gün için seans notu yok.':'No session notes for this day.'}</div>
+    ${schedRows}
+    <div style="display:flex;gap:8px;margin-top:${sched.length?'10':'0'}px">
+      <button class="btn btn-gold" style="flex:1;font-size:12px" onclick="closePicker();showCalAddSession('${ds}')">${isTR?'+ Seans Notu Ekle':'+ Add Session Note'}</button>
+      <button class="btn btn-outline" style="flex:1;font-size:12px" onclick="closePicker()">${isTR?'Kapat':'Close'}</button>
+    </div>
   </div>`);
 }
-function showCalNewSessionPicker(ds){
-  if(S.clients.length===1){S.cid=S.clients[0].id;addSession(ds);return;}
+
+function showCalAddSession(ds){
+  // Always ask which client — never auto-create
+  if(S.clients.length===0){openNewClient();return;}
+  const isTR=S.lang==='tr';
+  const rows=S.clients.map(c=>{
+    const col=CA[cidx(c.id)%CA.length];
+    const sc=S.sessions.filter(s=>s.cid===c.id).length;
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--w-tl);border-radius:8px;margin-bottom:7px;cursor:pointer;background:var(--bg3)" onclick="closePicker();S.cid='${c.id}';addSession('${ds}')">
+      <div style="width:32px;height:32px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0">${cinit(c.name)}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${c.name}</div>
+      <div style="font-size:11px;color:var(--tm)">${modL(c.mod||'integrative').split('/')[0].trim()}${sc?' · '+sc+(isTR?' seans':' sessions'):''}</div></div>
+      <span style="font-size:12px;color:var(--tm)">›</span>
+    </div>`;
+  }).join('');
   openPicker(`<div class="modal" style="max-width:360px">
-    <div class="modal-title" style="margin-bottom:4px">${S.lang==='tr'?'Yeni Seans':'New Session'}</div>
-    <div style="font-size:13px;color:var(--w-ts);margin-bottom:14px">${formatDate(ds)} · ${S.lang==='tr'?'Hangi danışan?':'Which client?'}</div>
-    ${S.clients.map(c=>{const col=CA[cidx(c.id)%CA.length];
-      return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--w-tl);border-radius:8px;margin-bottom:7px;cursor:pointer;background:var(--bg3)" onclick="closePicker();S.cid='${c.id}';addSession('${ds}')">
-        <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${cinit(c.name)}</div>
-        <div><div style="font-size:13px;font-weight:500;color:var(--w-text)">${c.name}</div>
-        <div style="font-size:11px;color:var(--w-tm)">${modL(c.mod||'integrative').split('/')[0].trim()}</div></div>
-      </div>`;}).join('')}
-    <button class="btn btn-outline btn-full" style="margin-top:4px" onclick="closePicker()">${t('nc_cancel')}</button>
+    <div class="modal-title" style="margin-bottom:4px">${isTR?'Seans Notu':'Session Note'}</div>
+    <div style="font-size:12px;color:var(--tm);margin-bottom:14px">${formatDate(ds)} · ${isTR?'Hangi danışan?':'Which client?'}</div>
+    ${rows}
+    <button class="btn btn-outline btn-full" style="margin-top:4px;font-size:12px" onclick="closePicker()">${isTR?'İptal':'Cancel'}</button>
   </div>`);
+}
+
+function showCalDayPicker(ds,sessions){
+  calClick(ds); // unified — calClick now handles all cases
+}
+function showCalNewSessionPicker(ds){
+  showCalAddSession(ds); // renamed, never auto-creates
 }
 
 // ══════════════════════════════════════════════════════
@@ -1748,73 +1848,230 @@ function showCalNewSessionPicker(ds){
 // ══════════════════════════════════════════════════════
 function renderSupScreen(){
   const el=document.getElementById('sup-content');if(!el)return;
-  if(S.supCases.length===0){
-    el.innerHTML=`<div style="padding:36px 24px;text-align:center">
+  const isTR=S.lang==='tr';
+  const all=S.supSessions.slice().sort((a,b)=>b.date.localeCompare(a.date));
+  if(all.length===0){
+    el.innerHTML=`<div style="padding:40px 24px;text-align:center">
       <div style="font-size:28px;margin-bottom:12px;opacity:.3">◈</div>
-      <div style="font-size:14px;font-weight:500;color:var(--w-text);margin-bottom:6px">${S.lang==='tr'?'Süpervizyon vakası yok':'No supervision cases'}</div>
-      <div style="font-size:13px;color:var(--w-tm);line-height:1.65;max-width:260px;margin:0 auto">${S.lang==='tr'?'Süpervizyon kayıtlarınız burada görünecek.':'Your supervision records will appear here.'}</div>
-      <button class="btn btn-outline btn-sm" style="margin-top:16px" onclick="openSupCase()">${S.lang==='tr'?'+ Yeni Süpervizyon':'+ New Supervision'}</button>
+      <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px">${isTR?'Süpervizyon kaydı yok':'No supervision records'}</div>
+      <div style="font-size:13px;color:var(--tm);line-height:1.65;max-width:260px;margin:0 auto 16px">${isTR?'Süpervizyon seansı oluşturarak vaka hazırlığı ve notlarınızı kaydedin.':'Create a supervision session to prepare cases and take notes.'}</div>
+      <button class="btn btn-gold btn-sm" onclick="newSupSession()">+ ${isTR?'Süpervizyon Seansı':'Supervision Session'}</button>
     </div>`;
     return;
   }
-  const chips={draft:'draft',submitted:'ready',reviewed:'done'};
-  const chipLabels={draft:t('draft'),submitted:S.lang==='tr'?'Hazır':'Ready',reviewed:t('reviewed')};
-  el.innerHTML=`<div style="padding:0 18px 16px">
-    ${S.supCases.slice().reverse().map(sc=>{
-      const cl=S.clients.find(c=>c.id===sc.cid);
-      const chipCls=chips[sc.status]||'draft';
-      return`<div class="sup-case-card" onclick="openSupCase('${sc.id}')">
-        <div class="sup-case-top">
-          <div class="sup-case-name">${cl?cl.name:'?'} · S${sc.sessN||'?'}</div>
-          <span class="sup-chip ${chipCls}">${chipLabels[sc.status]||t('draft')}</span>
+  el.innerHTML=`<div style="padding:0 18px 80px">
+    ${all.map(ss=>{
+      const clientNames=ss.cases.map(c=>{const cl=S.clients.find(x=>x.id===c.cid);return cl?cl.name:'?';}).filter(Boolean);
+      const isDone=ss.status==='done';
+      return`<div class="sup-session-card" onclick="openSupSession('${ss.id}')">
+        <div class="sup-session-date">${formatDate(ss.date)}${ss.supervisorName?' · '+ss.supervisorName:''}</div>
+        <div class="sup-session-title">${isTR?'Süpervizyon Seansı':'Supervision Session'}</div>
+        <div class="sup-status-row">
+          <span class="sup-st ${isDone?'sup-st-done':'sup-st-prep'}">${isDone?(isTR?'✓ Tamamlandı':'✓ Done'):(isTR?'Hazırlık':'Preparing')}</span>
+          ${clientNames.map(n=>`<span class="sup-client-chip">${n}</span>`).join('')}
         </div>
-        ${sc.question?`<div class="sup-q">"${sc.question.slice(0,120)}${sc.question.length>120?'...':''}"</div>`:''}
       </div>`;
     }).join('')}
   </div>`;
 }
-function openSupCase(id){
-  const existing=id?S.supCases.find(s=>s.id===id):null;
-  const cOpts=S.clients.map(c=>`<option value="${c.id}"${existing&&existing.cid===c.id?' selected':''}>${c.name}</option>`).join('');
-  openPicker(`<div class="modal" style="width:100%;max-width:480px">
-    <div class="modal-title">${t('supNewCase')}</div>
-    <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+
+function newSupSession(){
+  const isTR=S.lang==='tr';
+  if(S.clients.length===0){
+    openPicker(`<div class="modal" style="max-width:360px">
+      <div class="modal-title" style="margin-bottom:8px">${isTR?'Önce danışan ekleyin':'Add a client first'}</div>
+      <div style="font-size:13px;color:var(--tm);margin-bottom:16px">${isTR?'Süpervizyon için en az bir danışan gerekli.':'You need at least one client for supervision.'}</div>
+      <button class="btn btn-gold btn-full" onclick="closePicker();openNewClient()">+ ${isTR?'Danışan Ekle':'Add Client'}</button>
+    </div>`);
+    return;
+  }
+  // Build client checkboxes
+  const clientChecks=S.clients.map(c=>{
+    const col=CA[cidx(c.id)%CA.length];
+    return`<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;cursor:pointer;background:var(--bg3)">
+      <input type="checkbox" name="sup-cl" value="${c.id}" style="accent-color:var(--gold);width:16px;height:16px;flex-shrink:0">
+      <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${cinit(c.name)}</div>
+      <span style="font-size:13px;font-weight:500;color:var(--text)">${c.name}</span>
+    </label>`;
+  }).join('');
+  openPicker(`<div class="modal" style="max-width:420px">
+    <div class="modal-title" style="margin-bottom:4px">${isTR?'Yeni Süpervizyon Seansı':'New Supervision Session'}</div>
+    <div style="font-size:12px;color:var(--tm);margin-bottom:14px">${isTR?'Bu seansa hangi danışanları taşıyorsunuz?':'Which clients are you bringing to this session?'}</div>
+    <div class="f-group">
+      <label class="f-label">${isTR?'Danışanlar (1-3 seçin)':'Clients (select 1-3)'}</label>
+      ${clientChecks}
+    </div>
+    <div class="f-row" style="margin-bottom:12px">
       <div class="f-group">
-        <label class="f-label">${t('supCaseClient')}</label>
-        <select class="f-input" id="sup-cid">${cOpts}</select>
+        <label class="f-label">${isTR?'Tarih':'Date'}</label>
+        <input class="f-input" id="sup-new-date" type="date" value="${todayStr()}">
       </div>
       <div class="f-group">
-        <label class="f-label">${t('supCaseQuestion')}</label>
-        <textarea class="f-input" id="sup-q" rows="3" style="height:80px" placeholder="${S.lang==='tr'?'Süpervizyona taşımak istediğim soru...':'Question I want to bring to supervision...'}">${existing?.question||''}</textarea>
+        <label class="f-label">${isTR?'Süpervizör (isteğe bağlı)':'Supervisor (optional)'}</label>
+        <input class="f-input" id="sup-new-supervisor" placeholder="${isTR?'Süpervizörün adı':'Supervisor name'}">
       </div>
-      <div class="f-group">
-        <label class="f-label">${t('supCaseIssues')}</label>
-        <textarea class="f-input" id="sup-issues" rows="2" style="height:64px" placeholder="${S.lang==='tr'?'Öne çıkan temalar, dinamikler...':'Key themes, dynamics...'}">${existing?.issues||''}</textarea>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn btn-gold" style="flex:2" onclick="saveSupCase('${id||''}')">Kaydet</button>
-        ${existing?`<button class="btn btn-danger btn-sm" onclick="deleteSupCase('${id}')">Sil</button>`:''}
-        <button class="btn btn-outline" onclick="closePicker()">${t('nc_cancel')}</button>
-      </div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold" style="flex:2" onclick="createSupSession()">${isTR?'Oluştur':'Create'}</button>
+      <button class="btn btn-outline" style="flex:1" onclick="closePicker()">${isTR?'İptal':'Cancel'}</button>
     </div>
   </div>`);
 }
-function saveSupCase(id){
-  const cid=document.getElementById('sup-cid')?.value;
-  const question=(document.getElementById('sup-q')?.value||'').trim();
-  const issues=(document.getElementById('sup-issues')?.value||'').trim();
-  if(!cid)return;
-  if(id){S.supCases=S.supCases.map(s=>s.id===id?{...s,cid,question,issues}:s);}
-  else{S.supCases=[...S.supCases,{id:gid(),cid,question,issues,status:'draft',createdAt:new Date().toISOString()}];}
-  saveSup();
+
+function createSupSession(){
+  const checked=[...document.querySelectorAll('input[name="sup-cl"]:checked')].map(el=>el.value);
+  if(checked.length===0){alert(S.lang==='tr'?'En az bir danışan seçin.':'Select at least one client.');return;}
+  const date=document.getElementById('sup-new-date')?.value||todayStr();
+  const supervisor=(document.getElementById('sup-new-supervisor')?.value||'').trim();
+  const ss={
+    id:gid(),date,supervisorName:supervisor,status:'prep',
+    notes:'',
+    cases:checked.map(cid=>({cid,preNote:'',supNote:''})),
+    createdAt:new Date().toISOString()
+  };
+  S.supSessions=[...S.supSessions,ss];
+  saveSupSessions();
   closePicker();
+  openSupSession(ss.id);
+}
+
+function openSupSession(id){
+  const ss=S.supSessions.find(x=>x.id===id);if(!ss)return;
+  const isTR=S.lang==='tr';
+  const supEl=document.getElementById('sup-content');if(!supEl)return;
+  supEl.innerHTML=`<div class="sup-detail">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <button class="back-btn" onclick="renderSupScreen()" style="flex-shrink:0">
+        <svg viewBox="0 0 14 14" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M9 2L4 7l5 5"/></svg>
+        ${isTR?'Süpervizyon':'Supervision'}
+      </button>
+      <div style="margin-left:auto;display:flex;gap:6px">
+        ${ss.status==='prep'
+          ?`<button class="btn btn-gold btn-sm" onclick="markSupDone('${id}')">${isTR?'✓ Tamamlandı':'✓ Mark done'}</button>`
+          :`<span style="font-size:11px;color:#4CAF77;font-weight:500">✓ ${isTR?'Tamamlandı':'Done'}</span>`}
+        <button class="btn btn-outline btn-sm" style="color:var(--red);border-color:rgba(224,112,112,.3)" onclick="deleteSupSession('${id}')">${isTR?'Sil':'Delete'}</button>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:18px;font-weight:500;font-family:var(--serif);color:var(--text);margin-bottom:2px">${formatDate(ss.date)}</div>
+      ${ss.supervisorName?`<div style="font-size:12px;color:var(--tm)">${ss.supervisorName}</div>`:''}
+    </div>
+
+    <!-- Cases -->
+    <span class="sup-section-title">${isTR?'Vakalar':'Cases'}</span>
+    <div id="sup-cases-list">
+      ${ss.cases.map((c,ci)=>{
+        const cl=S.clients.find(x=>x.id===c.cid);
+        const col=CA[cidx(c.cid)%CA.length];
+        return`<div class="sup-case-item">
+          <div class="sup-case-header" onclick="toggleSupCase('${id}',${ci})">
+            <div style="width:30px;height:30px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${cinit(cl?.name||'?')}</div>
+            <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${cl?.name||'?'}</div>
+            <div style="font-size:11px;color:var(--tm)">${modL(cl?.mod||'integrative').split('/')[0].trim()}</div></div>
+            <span style="font-size:16px;color:var(--tm)" id="sup-arrow-${id}-${ci}">›</span>
+          </div>
+          <div class="sup-case-body" id="sup-body-${id}-${ci}">
+            <div style="margin-bottom:10px">
+              <label class="f-label" style="display:block;margin-bottom:5px">${isTR?'Ön not — ne getiriyorum':'Pre-note — what I\u2019m bringing'}</label>
+              <textarea class="sup-ta" rows="4" placeholder="${isTR?'Bu danışan için süpervizyona taşımak istediğim sorular, tıkandığım noktalar, karşıaktarım...':'Questions I want to bring, where I\u2019m stuck, countertransference...'}" oninput="updateSupCaseNote('${id}',${ci},'preNote',this.value)">${c.preNote||''}</textarea>
+            </div>
+            <div>
+              <label class="f-label" style="display:block;margin-bottom:5px">${isTR?'Süpervizyon notu — süpervizörün söyledikleri':'Supervision note — what supervisor said'}</label>
+              <textarea class="sup-ta" rows="4" placeholder="${isTR?'Süpervizörün yönlendirmeleri, içgörüler, önerilen müdahaleler...':'Supervisor\u2019s guidance, insights, suggested interventions...'}" oninput="updateSupCaseNote('${id}',${ci},'supNote',this.value)">${c.supNote||''}</textarea>
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <button class="btn btn-outline btn-sm" style="margin-top:8px;width:100%" onclick="addCaseToSession('${id}')">${isTR?'+ Vaka ekle':'+ Add case'}</button>
+
+    <!-- Session notes -->
+    <div style="margin-top:20px">
+      <span class="sup-section-title">${isTR?'Genel seans notu':'General session notes'}</span>
+      <textarea class="sup-ta" rows="5" placeholder="${isTR?'Süpervizyon seansı hakkında genel notlar, çıkarımlar, gelecek seans için hatırlatmalar...':'General notes about the supervision session, takeaways, reminders for next time...'}" oninput="updateSupSessionNotes('${id}',this.value)">${ss.notes||''}</textarea>
+    </div>
+    <div style="height:60px"></div>
+  </div>`;
+}
+
+function toggleSupCase(ssId,ci){
+  const body=document.getElementById(`sup-body-${ssId}-${ci}`);
+  const arrow=document.getElementById(`sup-arrow-${ssId}-${ci}`);
+  if(!body)return;
+  const isOpen=body.classList.contains('open');
+  body.classList.toggle('open',!isOpen);
+  if(arrow)arrow.textContent=isOpen?'›':'‹';
+}
+
+function updateSupCaseNote(ssId,ci,field,val){
+  S.supSessions=S.supSessions.map(ss=>{
+    if(ss.id!==ssId)return ss;
+    const cases=[...ss.cases];
+    cases[ci]={...cases[ci],[field]:val};
+    return{...ss,cases};
+  });
+  saveSupSessions();
+}
+
+function updateSupSessionNotes(ssId,val){
+  S.supSessions=S.supSessions.map(ss=>ss.id===ssId?{...ss,notes:val}:ss);
+  saveSupSessions();
+}
+
+function markSupDone(ssId){
+  S.supSessions=S.supSessions.map(ss=>ss.id===ssId?{...ss,status:'done'}:ss);
+  saveSupSessions();
+  openSupSession(ssId);
+}
+
+function deleteSupSession(ssId){
+  const isTR=S.lang==='tr';
+  if(!confirm(isTR?'Bu süpervizyon seansını silmek istiyor musunuz?':'Delete this supervision session?'))return;
+  S.supSessions=S.supSessions.filter(ss=>ss.id!==ssId);
+  saveSupSessions();
   renderSupScreen();
 }
-function deleteSupCase(id){
-  if(!confirm(S.lang==='tr'?'Bu vakayı silmek istiyor musunuz?':'Delete this case?'))return;
-  S.supCases=S.supCases.filter(s=>s.id!==id);saveSup();
-  closePicker();renderSupScreen();
+
+function addCaseToSession(ssId){
+  const ss=S.supSessions.find(x=>x.id===ssId);if(!ss)return;
+  const isTR=S.lang==='tr';
+  const existingCids=ss.cases.map(c=>c.cid);
+  const available=S.clients.filter(c=>!existingCids.includes(c.id));
+  if(available.length===0){
+    openPicker(`<div class="modal" style="max-width:320px">
+      <div class="modal-title" style="margin-bottom:8px">${isTR?'Tüm danışanlar eklendi':'All clients added'}</div>
+      <button class="btn btn-outline btn-full" onclick="closePicker()">${isTR?'Tamam':'OK'}</button>
+    </div>`);
+    return;
+  }
+  const rows=available.map(c=>{
+    const col=CA[cidx(c.id)%CA.length];
+    return`<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:6px;cursor:pointer;background:var(--bg3)" onclick="closePicker();addCaseConfirm('${ssId}','${c.id}')">
+      <div style="width:28px;height:28px;border-radius:50%;background:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${cinit(c.name)}</div>
+      <span style="font-size:13px;font-weight:500;color:var(--text)">${c.name}</span>
+    </div>`;
+  }).join('');
+  openPicker(`<div class="modal" style="max-width:360px">
+    <div class="modal-title" style="margin-bottom:14px">${isTR?'Vaka ekle':'Add case'}</div>
+    ${rows}
+    <button class="btn btn-outline btn-full" style="margin-top:4px" onclick="closePicker()">${isTR?'İptal':'Cancel'}</button>
+  </div>`);
 }
+
+function addCaseConfirm(ssId,cid){
+  S.supSessions=S.supSessions.map(ss=>{
+    if(ss.id!==ssId)return ss;
+    return{...ss,cases:[...ss.cases,{cid,preNote:'',supNote:''}]};
+  });
+  saveSupSessions();
+  openSupSession(ssId);
+}
+
+// Legacy stubs so nothing breaks
+function openSupCase(id){}
+function saveSupCase(id){}
+function deleteSupCase(id){deleteSupSession(id);}
 
 // ══════════════════════════════════════════════════════
 // CONSENT
@@ -1894,6 +2151,60 @@ function renderConsent(){
 // ══════════════════════════════════════════════════════
 // BOOT
 // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
+// QUICK CAPTURE
+// ══════════════════════════════════════════════════════
+function openQuickCapture(){
+  const isTR=S.lang==='tr';
+  const clientOpts=S.clients.length>0
+    ?'<select class="f-input" id="qc-client" style="margin-top:8px"><option value="">'+
+      (isTR?'— Danışan seç (isteğe bağlı)':'— Assign to client (optional)')+
+      '</option>'+S.clients.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')+'</select>'
+    :'';
+  const overlayEl=document.getElementById('picker-overlay');
+  overlayEl.style.display='flex';
+  overlayEl.onclick=ev=>{if(ev.target===overlayEl)closePicker();};
+  document.getElementById('picker-content').innerHTML=`
+    <div class="qc-sheet">
+      <div class="sheet-handle"></div>
+      <div style="font-size:15px;font-weight:600;color:var(--w-text);margin-bottom:12px">
+        ${isTR?'Hızlı Not':'Quick Capture'}
+      </div>
+      <textarea class="qc-ta" id="qc-text" placeholder="${isTR?'Seans sonrası düşünceler, gözlemler, hatırlatmalar...':'Post-session thoughts, observations, reminders...'}"></textarea>
+      ${clientOpts}
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn btn-gold" style="flex:2" onclick="saveQuickCapture()">${isTR?'Kaydet':'Save'}</button>
+        <button class="btn btn-outline" style="flex:1" onclick="closePicker()">${isTR?'İptal':'Cancel'}</button>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById('qc-text')?.focus(),80);
+}
+function saveQuickCapture(){
+  const text=(document.getElementById('qc-text')?.value||'').trim();
+  if(!text){closePicker();return;}
+  const cid=document.getElementById('qc-client')?.value||null;
+  const isTR=S.lang==='tr';
+  if(cid){
+    // Assign to client — create a session draft with the raw note
+    S.cid=cid;
+    const cs=S.sessions.filter(s=>s.cid===cid);
+    const se={id:gid(),cid,n:cs.length+1,date:todayStr(),rn:text,outs:{},oc:{phq9:'',gad7:'',bdi:'',bai:''},sup:{st:'draft',sa:null},createdAt:new Date().toISOString()};
+    S.sessions=[...S.sessions,se];S.sid=se.id;
+    saveS();closePicker();
+    S.nt='process';S.outs={};S.inputTab='text';S.vt='';S.pb64=null;S.pmime=null;S.pp=null;S.err='';
+    switchScreen('screen-session');renderSessionScreen();
+  } else {
+    // Save as standalone quick note in localStorage
+    try{
+      const existing=JSON.parse(localStorage.getItem('oda_quick_notes')||'[]');
+      existing.unshift({id:gid(),text,createdAt:new Date().toISOString()});
+      localStorage.setItem('oda_quick_notes',JSON.stringify(existing.slice(0,20)));
+    }catch(e){}
+    closePicker();
+    renderDashboard();
+  }
+}
+
 load();
 // Translate KVKK modal to loaded language immediately
 (function(){
