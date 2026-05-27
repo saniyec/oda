@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Oda — Klinik Alan</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="/api/config"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   /* ── exact match with landing page ── */
@@ -417,6 +419,23 @@ body{overflow:auto;height:auto}
 #print-area .pc{white-space:pre-wrap}
 #print-area .pf{margin-top:40px;padding-top:12px;border-top:1px solid #ddd;font-size:11px;color:#999}
 
+/* AUTH SCREEN */
+#auth-screen{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-box{width:100%;max-width:360px}
+.auth-logo{font-family:var(--serif);font-size:36px;font-weight:500;color:var(--text);margin-bottom:6px}
+.auth-logo span{color:var(--gold)}
+.auth-sub{font-size:13px;color:var(--ts);margin-bottom:32px;line-height:1.6}
+.auth-input{width:100%;padding:13px 15px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:14px;margin-bottom:10px}
+.auth-input:focus{outline:none;border-color:var(--gold-border)}
+.auth-btn{width:100%;padding:13px;background:var(--gold);border:none;border-radius:var(--r-sm);color:var(--bg);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s;margin-bottom:8px}
+.auth-btn:hover{background:var(--gold-l)}
+.auth-btn:disabled{opacity:.4;cursor:not-allowed}
+.auth-note{font-size:12px;color:var(--tm);text-align:center;line-height:1.6}
+.auth-success{font-size:13px;color:var(--green);text-align:center;padding:12px;background:rgba(76,175,119,.1);border:1px solid rgba(76,175,119,.2);border-radius:var(--r-sm);margin-bottom:12px}
+.auth-err{font-size:12px;color:var(--red);padding:10px 12px;background:rgba(224,112,112,.1);border:1px solid rgba(224,112,112,.2);border-radius:var(--r-sm);margin-bottom:10px}
+.sync-indicator{position:fixed;bottom:calc(var(--nav-h) + 8px);left:50%;transform:translateX(-50%);font-size:11px;padding:5px 12px;border-radius:20px;background:var(--bg3);border:1px solid var(--border);color:var(--tm);z-index:300;pointer-events:none;transition:opacity .3s}
+@media(min-width:700px){.sync-indicator{bottom:16px}}
+
 
 </style>
 </head>
@@ -547,6 +566,21 @@ body{overflow:auto;height:auto}
 </div>
 
 <div id="print-area"></div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo">Oda<span>.</span></div>
+    <div class="auth-sub" id="auth-sub">Klinik alanınıza giriş yapın.<br>Şifresiz — e-postanıza bağlantı göndereceğiz.</div>
+    <div id="auth-err" class="auth-err" style="display:none"></div>
+    <div id="auth-success" class="auth-success" style="display:none"></div>
+    <input class="auth-input" id="auth-email" type="email" placeholder="e-posta@adresiniz.com" onkeydown="if(event.key==='Enter')sendMagicLink()">
+    <button class="auth-btn" id="auth-btn" onclick="sendMagicLink()">Giriş bağlantısı gönder</button>
+    <div class="auth-note" id="auth-note">Hesabınız yoksa otomatik oluşturulur.</div>
+  </div>
+</div>
+
+<div class="sync-indicator" id="sync-indicator" style="opacity:0"></div>
 
 <div class="app" id="app" style="display:none">
   <div class="app-body">
@@ -692,72 +726,59 @@ const MONTH_NAMES_EN=['January','February','March','April','May','June','July','
 // ══════════════════════════════════════════════════════
 // MODALITY PROMPTS
 // ══════════════════════════════════════════════════════
+// ── MODALITY FRAME (used for DAP / Risk / Summary — structural notes) ──────────
 const MOD_CTX={
 psychodynamic:`THERAPEUTIC MODALITY: Psychoanalytic / Psychodynamic
-
-WRITING VOICE: Write in flowing, unhurried narrative prose. No bullet points, numbered lists, or section headers within the body — only paragraph breaks. Language should be tentative and observational: "appeared to," "seemed to suggest," "may indicate," "the therapist observed," "one possible reading." This is a clinical record, not a confident diagnosis.
-
-CLINICAL ATTENTION: The following carry equal weight to explicit content:
-— Silences, pauses, hesitations, and the moments the client chose not to speak
-— Shifts in affect — sudden flatness, unexpected animation, a crack in the voice
-— What was avoided, deflected, or changed subject: the negative space of the session
-— The client's exact words, preserved in quotation marks — these are clinically primary
-— How the client occupied the room: posture, eye contact, proximity to feeling
-— The quality of the therapeutic relationship in this specific session
-
-THEORETICAL FRAME: When the material calls for it, notice: transference dynamics; projective identification; defense mechanisms in operation (splitting, intellectualisation, rationalisation, denial, reaction formation) — named with precision; object relations patterns; resistance — its texture, timing, and what it might be protecting.
-
-INTERPRETIVE RESTRAINT: All clinical hypotheses must be framed as tentative. The note should preserve ambiguity. A supervisor reading this should feel they were in the room and want to ask questions.`,
+Write with psychodynamic attunement: transference, defences, object relations, the negative space of the session. Language is tentative and observational. All hypotheses framed as provisional.`,
 cbt:`THERAPEUTIC MODALITY: CBT — Cognitive Behavioural Therapy
-
-WRITING VOICE: Clear, structured, specific. Write in professional third-person. Document automatic thoughts, cognitive distortions, and the thought-feeling-behaviour chain. Be specific about which interventions were used. Note homework assigned or reviewed.
-
-CLINICAL ATTENTION: Automatic thoughts (client's actual words in quotes), cognitive distortions named accurately, the triggering situation, core beliefs activated, safety behaviours and avoidance, specific CBT interventions used, homework reviewed from last session, homework assigned this session.`,
+Write with CBT precision: automatic thoughts in the client's own words, cognitive distortions named accurately, the thought-feeling-behaviour chain, specific interventions used, homework reviewed and assigned.`,
 schema:`THERAPEUTIC MODALITY: Schema Therapy
-
-WRITING VOICE: Narrative prose with clear schema and mode references woven naturally. Name Early Maladaptive Schemas only when clearly evidenced. Note mode shifts that occurred. Document limited reparenting moments.
-
-KEY CONCEPTS: EMS activated (named specifically), mode shifts across the session, limited reparenting responses, chairwork or imagery rescripting if used, the client's current relationship with their Healthy Adult mode.`,
+Write with schema awareness: Early Maladaptive Schemas activated (named only when clearly evidenced), mode shifts that occurred, limited reparenting moments, movement toward the Healthy Adult mode.`,
 dbt:`THERAPEUTIC MODALITY: DBT — Dialectical Behaviour Therapy
-
-WRITING VOICE: Clear, structured, skills-referenced. Name DBT skills precisely by module. Document chain analysis if conducted. Note diary card review if mentioned.
-
-KEY ELEMENTS: Diary card review, chain analysis steps if used, specific skills practiced (name by module: TIPP, DEAR MAN, STOP, etc.), dialectical tensions present, validation strategies used, treatment targets hierarchy addressed, homework assigned.`,
+Write with DBT specificity: diary card review, chain analysis if conducted, skills practiced named by module, dialectical tensions, validation strategies, treatment targets addressed.`,
 act:`THERAPEUTIC MODALITY: ACT — Acceptance and Commitment Therapy
-
-WRITING VOICE: Values-oriented narrative prose. Avoid pathologising language. Frame psychological flexibility as the therapeutic goal.
-
-KEY ELEMENTS: Present-moment awareness, acceptance vs. experiential avoidance, cognitive defusion techniques, self-as-context, values clarification, committed action planned, metaphors and exercises used.`,
+Write with ACT orientation: acceptance vs. avoidance, defusion techniques, values work, committed action, psychological flexibility as the therapeutic goal. Avoid pathologising language.`,
 integrative:`THERAPEUTIC MODALITY: Integrative
-
-WRITING VOICE: Narrative prose that is theoretically fluid but intellectually honest. Name the lens you are drawing on when you draw on it.
-
-KEY ELEMENTS: Which theoretical frame(s) were primary in this session and why, client's presentation and affect, key clinical moments, formulation, interventions named with their theoretical lineage, integration points.`
+Name the theoretical lens being drawn on when you draw on it. Be intellectually honest about which frame is primary in this session and why.`
 };
 
+// ── MODALITY-AWARE PROCESS NOTE VOICES ────────────────────────────────────────
+// These shape what the clinician attends to — not the structure, which stays prose.
+const PROCESS_MOD={
+psychodynamic:`As you write, attend to: the texture of silences and what they may be protecting; affect shifts — sudden flatness, unexpected animation, a crack in the voice; the client's exact words preserved in quotation marks; moments where transference became live in the room; defence mechanisms in operation (name them precisely); what was deflected or changed subject — the negative space. Frame all clinical hypotheses tentatively. A supervisor reading this should feel they were present and want to ask questions.`,
+cbt:`As you write, attend to: the specific automatic thoughts the client reported (in their own words); the triggering situation and the thought-feeling-behaviour chain; which core beliefs were activated; safety behaviours or avoidance patterns that appeared; how the client engaged with any techniques introduced; what was reviewed from last session and what emerged for next.`,
+schema:`As you write, attend to: which Early Maladaptive Schemas were activated and how they showed up in the room; mode shifts across the session — which modes were present, what triggered transitions; moments of limited reparenting and how the client received them; where the Healthy Adult mode was accessible or blocked.`,
+dbt:`As you write, attend to: how the client presented relative to their diary card; any chain analysis moments — what the links were; which skills were drawn on and whether they helped; dialectical tensions that were alive in the session; the quality of the therapeutic relationship and any ruptures or repairs; what targets from the hierarchy were addressed.`,
+act:`As you write, attend to: where the client was fused with difficult thoughts vs. able to defuse; what experiential avoidance showed up and how; values that were named or implicit; any committed action discussed; how present-moment awareness featured; the quality of the therapeutic relationship and the self-as-context work.`,
+integrative:`As you write, attend to: which theoretical lens was most active in this session and why; key clinical moments and what frame best illuminates them; how different modalities intersected or created tension; what you chose to follow and what you set aside.`
+};
+
+// ── MODALITY-AWARE COUNTERTRANSFERENCE VOICES ─────────────────────────────────
+const CT_MOD={
+psychodynamic:`Write with psychoanalytic honesty. Attend to: projective identification — what the client may have put into you; enactments you noticed or nearly fell into; what the therapeutic relationship felt like from inside; which of the client's internal objects you may have been cast as; what your body knew before your mind did.`,
+cbt:`Write with clinical self-awareness. Attend to: where you felt pulled to reassure rather than challenge; moments where the collaborative empiricism felt strained; your reactions to the client's engagement with techniques — enthusiasm, resistance, helplessness; what the session brought up in you about your own beliefs or behaviours.`,
+schema:`Write with schema-informed self-awareness. Attend to: which of your own schemas may have been activated; moments of schema chemistry — where the client's mode pulled a complementary response from you; whether you slipped into Punitive Parent, Demanding Parent, or Detached Protector rather than Limited Reparenting; what the client's vulnerability brought up in you.`,
+dbt:`Write with DBT-informed self-awareness. Attend to: where you felt the dialectical pull — between validation and change, acceptance and push; moments where you may have invalidated without noticing; your own emotional reactions to the client's dysregulation or shutdown; what the session brought up about your capacity to stay regulated.`,
+act:`Write with ACT-informed self-awareness. Attend to: where you got hooked by your own difficult thoughts or feelings during the session; moments where you moved away from contact rather than toward it; your own relationship to the values at stake in the client's work; what defusion or acceptance looked like (or failed) in you as the therapist.`,
+integrative:`Write with honest self-inquiry. Attend to: what the session brought up in you across frameworks — emotional, somatic, relational; which responses felt clean and which felt reactive; what your intuitions were telling you that theory hadn't yet caught up with.`
+};
+
+// ── NOTE TYPE PROMPTS (structure-level instructions) ──────────────────────────
 const NOTE_PROMPTS={
 process:`DOCUMENT TYPE: Private Process Note — PRIVATE / ÖZEL — Supervision Use Only
 
-Write a detailed, sequential, first-person-observing clinical narrative of the session as it actually unfolded. Structure chronologically:
+Write a detailed, sequential clinical narrative of the session as it actually unfolded — chronologically, in flowing prose paragraphs. No bullet points, no headers within the body.
 
-OPENING: How the session began, how the client arrived emotionally and relationally.
+Cover: how the session opened and how the client arrived emotionally; what happened in order, using the client's exact words in quotation marks where present; non-verbal material, silences, affect shifts; how the session ended and what was left unfinished; one or two genuine clinical questions this session raised for supervision.
 
-SESSION MOVEMENT: What happened in order. Client's exact words in quotation marks. Silences, affect shifts, non-verbal material. Moments where the therapeutic relationship became the subject.
-
-CLOSE: How the session ended. What was left unfinished.
-
-QUESTIONS FOR SUPERVISION: One or two genuine clinical questions this session raised.
-
-Write in flowing paragraphs. No bullets. A supervisor should feel they were in the room.`,
+Write only what the therapist's notes contain. If a section has no material, move on — do not invent.`,
 ct:`DOCUMENT TYPE: Private Countertransference Note — PRIVATE / ÖZEL — Therapist Only
 
-Write entirely in first person from the therapist's perspective.
+Write entirely in first person from the therapist's perspective. Flowing prose. No bullet points.
 
-PART ONE — WHAT I NOTICED IN MYSELF: Emotional reactions (named specifically), bodily sensations, thoughts and fantasies that arose, moments where you felt pulled to act, surprises about your own reactions.
+Cover: the emotional reactions that arose in you and when; bodily sensations; thoughts or fantasies that came uninvited; moments where you felt pulled to act or say something — and whether you did; surprises about your own responses. Then: what these reactions might reveal clinically — what the client may have communicated through you rather than to you; what relational pattern may have been enacted; what you want to bring to supervision.
 
-PART TWO — WHAT THIS MIGHT MEAN CLINICALLY: What might your reactions reveal about the client's unconscious communications? Evidence of projective identification? What relational pattern might be being enacted? What would you do differently?
-
-End with what you want to bring to supervision.`,
+Write only what the therapist's notes contain. If there is little material, write a short honest note rather than elaborating.`,
 clinical:`DOCUMENT TYPE: Clinical Note — DAP Format — Official Record
 
 DATA: How the client presented (affect, appearance, behaviour), what they reported, main themes of the session. Direct quotes where clinically significant.
@@ -766,7 +787,7 @@ ASSESSMENT: Clinical interpretation — how this session relates to presenting c
 
 PLAN: Primary intervention(s) used, focus for next session, homework assigned, any referrals or clinical actions, next appointment.
 
-Write in professional third-person. Be concise and medico-legally defensible.`,
+Write in professional third-person. Be concise and medico-legally defensible. Write only what is documented.`,
 risk:`DOCUMENT TYPE: Risk Assessment — Official Clinical Record — Medico-legal document
 
 SUICIDAL IDEATION: Passive ideation (present/absent, frequency, intensity), active ideation (present/absent), plan (specific/vague/absent), intent, means access, timeline, recent change.
@@ -775,25 +796,40 @@ SELF-HARM: History, current urges, function if known.
 
 HOMICIDAL IDEATION: Present/absent. If present: target, plan, intent, means.
 
-RISK FACTORS PRESENT: List active risk factors.
+RISK FACTORS PRESENT: List only those mentioned in the notes.
 
 PROTECTIVE FACTORS: Reasons for living named specifically.
 
-CURRENT RISK STATUS: Low / Moderate / High / Imminent — with brief rationale.
+CURRENT RISK STATUS: Low / Moderate / High / Imminent — with brief rationale drawn from the notes.
 
 SAFETY PLAN: Reviewed yes/no. Key elements if yes.
 
 CLINICAL ACTION TAKEN: Any changes to treatment, contacts made, duty of care obligations.
 
-If information was not obtained: write "Not assessed this session — [reason]."`,
+For any domain not mentioned in the therapist's notes, write "Not assessed this session."`,
 sum:`DOCUMENT TYPE: Session Summary — Official Clinical Record
 
 Write in clear narrative prose — 2 to 3 paragraphs. No bullet points.
 
 Paragraph 1: How the client presented, what they brought, main themes, emotional arc of the session.
 Paragraph 2: Clinical observations, patterns, quality of therapeutic alliance, any significant moments.
-Paragraph 3: Interventions used, focus for next session, homework or tasks, any clinical actions, next appointment.`
+Paragraph 3: Interventions used, focus for next session, homework or tasks, any clinical actions, next appointment.
+
+Write only what the therapist's notes contain.`
 };
+
+// ── BUILD THE FULL NOTE PROMPT (modality-aware for process/CT) ─────────────────
+function getNotePrompt(noteType, mod){
+  if(noteType==='process'){
+    const modVoice=PROCESS_MOD[mod]||PROCESS_MOD.integrative;
+    return NOTE_PROMPTS.process+'\n\nMODALITY LENS — '+modVoice;
+  }
+  if(noteType==='ct'){
+    const modVoice=CT_MOD[mod]||CT_MOD.integrative;
+    return NOTE_PROMPTS.ct+'\n\nMODALITY LENS — '+modVoice;
+  }
+  return NOTE_PROMPTS[noteType]||NOTE_PROMPTS.sum;
+}
 
 // ══════════════════════════════════════════════════════
 // TRANSLATIONS
@@ -909,6 +945,171 @@ function modL(id){const m=MODALITIES.find(x=>x.id===id)||MODALITIES[5];return S.
 function noteL(id){const n=NOTE_TYPES.find(x=>x.id===id);if(!n)return id;return S.lang==='tr'?n.tr:n.en;}
 
 // ══════════════════════════════════════════════════════
+// SUPABASE
+// ══════════════════════════════════════════════════════
+const SUPA_URL=document.currentScript?.dataset?.supaUrl||window.__SUPA_URL__||'';
+const SUPA_ANON=document.currentScript?.dataset?.supaAnon||window.__SUPA_ANON__||'';
+let supa=null;
+let currentUser=null;
+
+function initSupabase(){
+  // These are injected at runtime via window globals set by the server,
+  // or fall back to the public anon key (safe to expose in browser)
+  const url=window.SUPABASE_URL||'';
+  const anon=window.SUPABASE_ANON_KEY||'';
+  if(!url||!anon){console.warn('Supabase config missing');return false;}
+  supa=window.supabase.createClient(url,anon);
+  return true;
+}
+
+// ── AUTH ─────────────────────────────────────────────
+async function sendMagicLink(){
+  const email=(document.getElementById('auth-email')?.value||'').trim();
+  const btn=document.getElementById('auth-btn');
+  const errEl=document.getElementById('auth-err');
+  const successEl=document.getElementById('auth-success');
+  errEl.style.display='none';
+  if(!email||!email.includes('@')){
+    errEl.textContent=S.lang==='tr'?'Geçerli bir e-posta adresi girin.':'Enter a valid email address.';
+    errEl.style.display='block';return;
+  }
+  btn.disabled=true;
+  btn.textContent=S.lang==='tr'?'Gönderiliyor...':'Sending...';
+  const{error}=await supa.auth.signInWithOtp({
+    email,
+    options:{emailRedirectTo:window.location.origin+window.location.pathname}
+  });
+  if(error){
+    errEl.textContent=error.message;errEl.style.display='block';
+    btn.disabled=false;btn.textContent=S.lang==='tr'?'Giriş bağlantısı gönder':'Send login link';
+  } else {
+    successEl.textContent=S.lang==='tr'
+      ?'Bağlantı gönderildi. E-postanızı kontrol edin.'
+      :'Link sent. Check your email.';
+    successEl.style.display='block';
+    btn.textContent=S.lang==='tr'?'Tekrar gönder':'Resend';
+    btn.disabled=false;
+  }
+}
+
+async function signOut(){
+  if(supa)await supa.auth.signOut();
+  currentUser=null;
+  S.clients=[];S.sessions=[];S.supCases=[];S.supSessions=[];
+  showAuthScreen();
+}
+
+function showAuthScreen(){
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  // Apply current language to auth screen
+  const isTR=S.lang==='tr';
+  const sub=document.getElementById('auth-sub');
+  const btn=document.getElementById('auth-btn');
+  const note=document.getElementById('auth-note');
+  const inp=document.getElementById('auth-email');
+  if(sub)sub.innerHTML=isTR?'Klinik alanınıza giriş yapın.<br>Şifresiz — e-postanıza bağlantı göndereceğiz.':'Sign in to your clinical workspace.<br>No password — we\'ll send you a link.';
+  if(btn)btn.textContent=isTR?'Giriş bağlantısı gönder':'Send login link';
+  if(note)note.textContent=isTR?'Hesabınız yoksa otomatik oluşturulur.':'No account? One will be created automatically.';
+  if(inp)inp.placeholder=isTR?'e-posta@adresiniz.com':'your@email.com';
+}
+
+// ── SYNC ─────────────────────────────────────────────
+let syncTimeout=null;
+function showSync(msg){
+  const el=document.getElementById('sync-indicator');
+  if(!el)return;
+  el.textContent=msg;el.style.opacity='1';
+  clearTimeout(syncTimeout);
+  syncTimeout=setTimeout(()=>el.style.opacity='0',2000);
+}
+
+async function syncClient(client){
+  if(!supa||!currentUser)return;
+  const{error}=await supa.from('clients').upsert({
+    id:client.id,user_id:currentUser.id,
+    data:client,updated_at:new Date().toISOString()
+  });
+  if(error)console.error('syncClient:',error);
+  else showSync(S.lang==='tr'?'Kaydedildi':'Saved');
+}
+
+async function syncSession(session){
+  if(!supa||!currentUser)return;
+  const{error}=await supa.from('sessions').upsert({
+    id:session.id,user_id:currentUser.id,
+    client_id:session.cid,data:session,
+    updated_at:new Date().toISOString()
+  });
+  if(error)console.error('syncSession:',error);
+  else showSync(S.lang==='tr'?'Kaydedildi':'Saved');
+}
+
+async function syncSupSession(ss){
+  if(!supa||!currentUser)return;
+  const{error}=await supa.from('sup_sessions').upsert({
+    id:ss.id,user_id:currentUser.id,
+    data:ss,updated_at:new Date().toISOString()
+  });
+  if(error)console.error('syncSupSession:',error);
+}
+
+async function deleteClientRemote(id){
+  if(!supa||!currentUser)return;
+  await supa.from('clients').delete().eq('id',id).eq('user_id',currentUser.id);
+}
+async function deleteSessionRemote(id){
+  if(!supa||!currentUser)return;
+  await supa.from('sessions').delete().eq('id',id).eq('user_id',currentUser.id);
+}
+async function deleteSupSessionRemote(id){
+  if(!supa||!currentUser)return;
+  await supa.from('sup_sessions').delete().eq('id',id).eq('user_id',currentUser.id);
+}
+
+async function loadFromSupabase(){
+  if(!supa||!currentUser)return;
+  showSync(S.lang==='tr'?'Yükleniyor...':'Loading...');
+  const[{data:clients},{data:sessions},{data:supSessions}]=await Promise.all([
+    supa.from('clients').select('data').eq('user_id',currentUser.id).order('created_at'),
+    supa.from('sessions').select('data').eq('user_id',currentUser.id).order('created_at'),
+    supa.from('sup_sessions').select('data').eq('user_id',currentUser.id).order('created_at'),
+  ]);
+  S.clients=(clients||[]).map(r=>r.data);
+  S.sessions=(sessions||[]).map(r=>r.data);
+  S.supSessions=(supSessions||[]).map(r=>r.data);
+  // Also sync therapist profile
+  const{data:profile}=await supa.from('profiles').select('*').eq('id',currentUser.id).single();
+  if(profile?.therapist_info)S.therapistInfo=profile.therapist_info;
+  if(profile?.lang)S.lang=profile.lang;
+}
+
+async function migrateLocalStorage(){
+  // One-time migration: push localStorage data to Supabase then clear it
+  const hasLocal=localStorage.getItem('oda_clients');
+  if(!hasLocal)return;
+  try{
+    const lClients=JSON.parse(localStorage.getItem('oda_clients')||'[]');
+    const lSessions=JSON.parse(localStorage.getItem('oda_sessions')||'[]');
+    const lSupSessions=JSON.parse(localStorage.getItem('oda_sup_sessions')||'[]');
+    if(lClients.length===0&&lSessions.length===0)return;
+    showSync(S.lang==='tr'?'Veriler aktarılıyor...':'Migrating data...');
+    // Only migrate if Supabase is empty (don't overwrite cloud data)
+    const{data:existing}=await supa.from('clients').select('id').eq('user_id',currentUser.id).limit(1);
+    if(existing&&existing.length>0)return; // cloud already has data
+    for(const c of lClients)await syncClient(c);
+    for(const s of lSessions)await syncSession(s);
+    for(const ss of lSupSessions)await syncSupSession(ss);
+    // Clear localStorage clinical data (keep lang/kvkk prefs)
+    localStorage.removeItem('oda_clients');
+    localStorage.removeItem('oda_sessions');
+    localStorage.removeItem('oda_sup_cases');
+    localStorage.removeItem('oda_sup_sessions');
+    showSync(S.lang==='tr'?'Veriler aktarıldı ✓':'Migration complete ✓');
+  }catch(e){console.error('Migration error:',e);}
+}
+
+// ══════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════
 let S={
@@ -927,23 +1128,28 @@ let S={
 let recog=null;
 
 // ══════════════════════════════════════════════════════
-// STORAGE
+// STORAGE — localStorage for prefs, Supabase for data
 // ══════════════════════════════════════════════════════
 function load(){
   const urlLang=new URLSearchParams(window.location.search).get('lang');
   try{S.kvkk=localStorage.getItem('oda_kvkk')==='1';}catch(e){}
   try{S.lang=urlLang||localStorage.getItem('oda_lang')||'tr';}catch(e){S.lang=urlLang||'tr';}
   if(urlLang)try{localStorage.setItem('oda_lang',urlLang);}catch(e){}
-  try{const c=localStorage.getItem('oda_clients');if(c)S.clients=JSON.parse(c);}catch(e){}
-  try{const s=localStorage.getItem('oda_sessions');if(s)S.sessions=JSON.parse(s);}catch(e){}
-  try{const sc=localStorage.getItem('oda_sup_cases');if(sc)S.supCases=JSON.parse(sc);}catch(e){}
-  try{const ss=localStorage.getItem('oda_sup_sessions');if(ss)S.supSessions=JSON.parse(ss);}catch(e){}
   try{const th=localStorage.getItem('oda_therapist');if(th)S.therapistInfo=JSON.parse(th);}catch(e){}
 }
-function saveC(){try{localStorage.setItem('oda_clients',JSON.stringify(S.clients));}catch(e){}}
-function saveS(){try{localStorage.setItem('oda_sessions',JSON.stringify(S.sessions));}catch(e){}}
-function saveSup(){try{localStorage.setItem('oda_sup_cases',JSON.stringify(S.supCases));}catch(e){}}
-function saveSupSessions(){try{localStorage.setItem('oda_sup_sessions',JSON.stringify(S.supSessions));}catch(e){}}
+
+// These now write to Supabase; localStorage is no longer the source of truth
+function saveC(client){
+  // client = the specific client object that changed
+  if(client)syncClient(client);
+}
+function saveS(session){
+  if(session)syncSession(session);
+}
+function saveSupSessions(ss){
+  if(ss)syncSupSession(ss);
+}
+function saveSup(){} // supCases legacy — no-op
 
 // ══════════════════════════════════════════════════════
 // NAVIGATION
@@ -1547,19 +1753,27 @@ function addClient(){
   };
   S.clients=[...S.clients,c];S.cid=c.id;
   document.getElementById('nc-overlay').style.display='none';
-  saveC();renderDashboard();
+  saveC(c);renderDashboard();
   openProfile(c.id);
 }
 function deleteClient(id){
   if(!confirm(t('deleteClient')))return;
+  const sessToDelete=S.sessions.filter(s=>s.cid===id);
   S.sessions=S.sessions.filter(s=>s.cid!==id);
   S.clients=S.clients.filter(c=>c.id!==id);
   if(S.cid===id){S.cid=null;S.sid=null;}
-  saveC();saveS();
+  deleteClientRemote(id);
+  sessToDelete.forEach(s=>deleteSessionRemote(s.id));
   switchScreen('screen-clients');
 }
-function updateClient(id,k,v){S.clients=S.clients.map(c=>c.id===id?{...c,[k]:v}:c);saveC();}
-function updateClientD(id,up){S.clients=S.clients.map(c=>c.id===id?{...c,...up}:c);saveC();}
+function updateClient(id,k,v){
+  S.clients=S.clients.map(c=>c.id===id?{...c,[k]:v}:c);
+  const updated=S.clients.find(c=>c.id===id);if(updated)saveC(updated);
+}
+function updateClientD(id,up){
+  S.clients=S.clients.map(c=>c.id===id?{...c,...up}:c);
+  const updated=S.clients.find(c=>c.id===id);if(updated)saveC(updated);
+}
 
 // ══════════════════════════════════════════════════════
 // SESSION CRUD
@@ -1569,7 +1783,7 @@ function addSession(dateStr,goToSession){
   const cs=S.sessions.filter(s=>s.cid===S.cid);
   const se={id:gid(),cid:S.cid,n:cs.length+1,date:dateStr||todayStr(),rn:'',outs:{},oc:{phq9:'',gad7:'',bdi:'',bai:''},sup:{st:'draft',sa:null},createdAt:new Date().toISOString()};
   S.sessions=[...S.sessions,se];S.sid=se.id;S.nt='process';S.outs={};S.rn='';S.inputTab='text';S.vt='';S.pb64=null;S.pmime=null;S.pp=null;S.err='';
-  saveS();
+  saveS(se);
   switchScreen('screen-session');
   renderSessionScreen();
 }
@@ -1578,11 +1792,16 @@ function deleteSession(id){
   S.sessions=S.sessions.filter(s=>s.id!==id);
   if(S.sid===id){S.sid=null;S.outs={};}
   S.sessions.filter(s=>s.cid===S.cid).sort((a,b)=>new Date(a.createdAt)-new Date(b.createdAt)).forEach((s,i)=>{s.n=i+1;});
-  saveS();
+  // Renumber and sync affected sessions
+  S.sessions.filter(s=>s.cid===S.cid).forEach(s=>saveS(s));
+  deleteSessionRemote(id);
   if(S.activeScreen==='screen-session')switchScreen('screen-profile');
   else renderProfileScreen();
 }
-function updateSession(up){S.sessions=S.sessions.map(s=>s.id===S.sid?{...s,...up}:s);saveS();}
+function updateSession(up){
+  S.sessions=S.sessions.map(s=>s.id===S.sid?{...s,...up}:s);
+  const updated=S.sessions.find(s=>s.id===S.sid);if(updated)saveS(updated);
+}
 function updateOutcome(id,v){const se=S.sessions.find(s=>s.id===S.sid);if(!se)return;updateSession({oc:{...se.oc,[id]:v}});}
 function updateSupervision(st){
   const se=S.sessions.find(s=>s.id===S.sid);if(!se)return;
@@ -1626,6 +1845,19 @@ async function generate(){
   } else if(S.inputTab==='photo'){
     if(!S.pb64){S.err=t('noPhoto');renderSessionScreen();return;}
   }
+
+  // Word count gate — prevent fabrication from thin input
+  if(S.inputTab!=='photo'){
+    const wordCount=rawNotes.split(/\s+/).filter(Boolean).length;
+    if(wordCount<10){
+      S.err=S.lang==='tr'
+        ?'Lütfen seans hakkında daha fazla bilgi girin — en az birkaç cümle gerekli.'
+        :'Please enter more detail about the session — at least a few sentences — before generating.';
+      renderSessionScreen();
+      return;
+    }
+  }
+
   S.err='';S.gen=true;renderSessionScreen();
   const cl=S.clients.find(c=>c.id===S.cid);
   const mod=cl?.mod||'integrative';
@@ -1637,7 +1869,11 @@ async function generate(){
   ].filter(Boolean).join('\n');
   const outputLang=S.lang==='tr'?'Turkish':'English';
   const ni=NOTE_TYPES.find(n=>n.id===S.nt);
-  const sys=`You are a senior clinical psychologist with expertise in documentation. You write clinical notes that read as if written by a skilled, thoughtful human clinician.
+  const notePrompt=getNotePrompt(S.nt,mod);
+
+  const sys=`CRITICAL CONSTRAINT: You may only document what is explicitly present in the therapist's notes. If the notes are too brief or lack detail for a section, write only what is there — do not infer, extrapolate, or invent clinical content. A fabricated clinical note is a patient safety risk.
+
+You are a working clinician completing your own session notes. Write as that clinician — not as an AI assistant summarising a document. No preamble, no meta-commentary, no "Here is the note." Begin the note directly.
 
 ${MOD_CTX[mod]||MOD_CTX.integrative}
 
@@ -1645,15 +1881,14 @@ CLIENT CONTEXT:
 ${clientCtx||'No client context provided.'}
 
 YOUR TASK:
-${NOTE_PROMPTS[S.nt]}
+${notePrompt}
 
 LANGUAGE: Write entirely in ${outputLang} using precise clinical terminology.
 
-NON-NEGOTIABLE:
-— Always refer to "the client" (or "danışan" in Turkish) — never use a name
-— Do not invent clinical details not present in the source notes
-— Do not begin with "This note," "Here is," or any AI preamble
-— Output only the clinical note itself`;
+HARD RULES:
+— Refer to "the client" (or "danışan" in Turkish) — never a name
+— Begin the note immediately — no preamble, no title, no "Note:"
+— Output only the note itself`;
   try{
     let messages;
     if(S.inputTab==='photo'&&S.pb64){
@@ -1930,7 +2165,7 @@ function createSupSession(){
     createdAt:new Date().toISOString()
   };
   S.supSessions=[...S.supSessions,ss];
-  saveSupSessions();
+  saveSupSessions(ss);
   closePicker();
   openSupSession(ss.id);
 }
@@ -2011,17 +2246,17 @@ function updateSupCaseNote(ssId,ci,field,val){
     cases[ci]={...cases[ci],[field]:val};
     return{...ss,cases};
   });
-  saveSupSessions();
+  const updated=S.supSessions.find(ss=>ss.id===ssId);if(updated)saveSupSessions(updated);
 }
 
 function updateSupSessionNotes(ssId,val){
   S.supSessions=S.supSessions.map(ss=>ss.id===ssId?{...ss,notes:val}:ss);
-  saveSupSessions();
+  const updated=S.supSessions.find(ss=>ss.id===ssId);if(updated)saveSupSessions(updated);
 }
 
 function markSupDone(ssId){
   S.supSessions=S.supSessions.map(ss=>ss.id===ssId?{...ss,status:'done'}:ss);
-  saveSupSessions();
+  const updated=S.supSessions.find(ss=>ss.id===ssId);if(updated)saveSupSessions(updated);
   openSupSession(ssId);
 }
 
@@ -2029,7 +2264,7 @@ function deleteSupSession(ssId){
   const isTR=S.lang==='tr';
   if(!confirm(isTR?'Bu süpervizyon seansını silmek istiyor musunuz?':'Delete this supervision session?'))return;
   S.supSessions=S.supSessions.filter(ss=>ss.id!==ssId);
-  saveSupSessions();
+  deleteSupSessionRemote(ssId);
   renderSupScreen();
 }
 
@@ -2064,7 +2299,7 @@ function addCaseConfirm(ssId,cid){
     if(ss.id!==ssId)return ss;
     return{...ss,cases:[...ss.cases,{cid,preNote:'',supNote:''}]};
   });
-  saveSupSessions();
+  const updated=S.supSessions.find(ss=>ss.id===ssId);if(updated)saveSupSessions(updated);
   openSupSession(ssId);
 }
 
@@ -2081,7 +2316,8 @@ function closeConsent(){document.getElementById('consent-overlay').style.display
 function updateTherapistInfo(k,v){S.therapistInfo[k]=v;try{localStorage.setItem('oda_therapist',JSON.stringify(S.therapistInfo));}catch(e){}}
 function markConsent(cid,signed){
   S.clients=S.clients.map(c=>c.id===cid?{...c,consentSigned:signed,consentDate:signed?new Date().toISOString():null}:c);
-  saveC();renderConsent();
+  const updated=S.clients.find(c=>c.id===cid);if(updated)saveC(updated);
+  renderConsent();
 }
 function generateConsentPDF(cid){
   const cl=S.clients.find(c=>c.id===cid);const ti=S.therapistInfo;const isTR=S.consentLang==='tr';
@@ -2190,7 +2426,7 @@ function saveQuickCapture(){
     const cs=S.sessions.filter(s=>s.cid===cid);
     const se={id:gid(),cid,n:cs.length+1,date:todayStr(),rn:text,outs:{},oc:{phq9:'',gad7:'',bdi:'',bai:''},sup:{st:'draft',sa:null},createdAt:new Date().toISOString()};
     S.sessions=[...S.sessions,se];S.sid=se.id;
-    saveS();closePicker();
+    saveS(se);closePicker();
     S.nt='process';S.outs={};S.inputTab='text';S.vt='';S.pb64=null;S.pmime=null;S.pp=null;S.err='';
     switchScreen('screen-session');renderSessionScreen();
   } else {
@@ -2221,14 +2457,77 @@ load();
     if(s1)s1.textContent='Your Responsibilities';
     if(s2)s2.textContent='Data Processing';
   }
-  // Highlight the correct button
   if(trBtn)trBtn.style.background=isTR?'var(--gold)':'transparent';
   if(trBtn)trBtn.style.color=isTR?'var(--bg)':'var(--w-text)';
   if(enBtn)enBtn.style.background=!isTR?'var(--gold)':'transparent';
   if(enBtn)enBtn.style.color=!isTR?'var(--bg)':'var(--w-text)';
 })();
-if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
-else showApp();
+
+// ── BOOT WITH SUPABASE ────────────────────────────────
+async function boot(){
+  const ok=initSupabase();
+  if(!ok){
+    // Supabase not configured — fall back to localStorage mode
+    console.warn('Running in localStorage mode — Supabase not configured');
+    try{const c=localStorage.getItem('oda_clients');if(c)S.clients=JSON.parse(c);}catch(e){}
+    try{const s=localStorage.getItem('oda_sessions');if(s)S.sessions=JSON.parse(s);}catch(e){}
+    try{const ss=localStorage.getItem('oda_sup_sessions');if(ss)S.supSessions=JSON.parse(ss);}catch(e){}
+    if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
+    else showApp();
+    return;
+  }
+
+  // Check for existing session (magic link redirect or persisted session)
+  const{data:{session}}=await supa.auth.getSession();
+
+  if(session){
+    currentUser=session.user;
+    await loadFromSupabase();
+    await migrateLocalStorage();
+    if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
+    else showApp();
+  } else {
+    showAuthScreen();
+  }
+
+  // Listen for auth state changes (magic link click)
+  supa.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN'&&session){
+      currentUser=session.user;
+      document.getElementById('auth-screen').style.display='none';
+      await loadFromSupabase();
+      await migrateLocalStorage();
+      if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
+      else showApp();
+    }
+    if(event==='SIGNED_OUT'){
+      currentUser=null;
+      showAuthScreen();
+    }
+  });
+}
+
+// Add sign out to settings
+const _openSettings=openSettings;
+openSettings=function(){
+  _openSettings();
+  // Append sign out button if logged in
+  setTimeout(()=>{
+    const modal=document.querySelector('#settings-overlay .modal');
+    if(!modal||!currentUser||modal.querySelector('#signout-btn'))return;
+    const btn=document.createElement('button');
+    btn.id='signout-btn';
+    btn.className='btn btn-outline btn-full';
+    btn.style.marginTop='8px';
+    btn.style.color='var(--red)';
+    btn.style.borderColor='rgba(224,112,112,.3)';
+    btn.textContent=S.lang==='tr'?'Çıkış yap ('+currentUser.email+')':'Sign out ('+currentUser.email+')';
+    btn.onclick=()=>{closeSettings();signOut();};
+    modal.appendChild(btn);
+  },50);
+};
+
+boot();
 </script>
 </body>
 </html>
