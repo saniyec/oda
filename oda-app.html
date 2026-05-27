@@ -1946,7 +1946,6 @@ HARD RULES:
   rawNotes=transData.content.map(b=>b.text||'').join('');
   S.transcribed=rawNotes;
   messages=[{role:'user',content:`THERAPIST'S SESSION NOTES (transcribed from handwriting):\n\n${rawNotes}`}];
-}
     } else {
       messages=[{role:'user',content:`THERAPIST'S SESSION NOTES:\n\n${rawNotes}`}];
     }
