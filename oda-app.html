@@ -806,7 +806,19 @@ SAFETY PLAN: Reviewed yes/no. Key elements if yes.
 
 CLINICAL ACTION TAKEN: Any changes to treatment, contacts made, duty of care obligations.
 
-For any domain not mentioned in the therapist's notes, write "Not assessed this session."`,
+For any domain not mentioned in the therapist's notes, write "Not assessed this session."
+
+FORMAT: Use this exact structure with these exact headers, each on its own line:
+SUICIDAL IDEATION:
+SELF-HARM:
+HOMICIDAL IDEATION:
+RISK FACTORS:
+PROTECTIVE FACTORS:
+CURRENT RISK STATUS:
+SAFETY PLAN:
+CLINICAL ACTION TAKEN:
+
+Keep each section to 1-3 sentences. Do not merge sections. Do not add narrative between sections.`
 sum:`DOCUMENT TYPE: Session Summary — Official Clinical Record
 
 Write in clear narrative prose — 2 to 3 paragraphs. No bullet points.
@@ -1119,6 +1131,7 @@ let S={
   activeScreen:'screen-dash',
   nt:'process',inputTab:'text',
   vt:'',pb64:null,pmime:null,pp:null,rec:false,
+  transcribed:null,
   outs:{},rn:'',
   gen:false,gp:false,err:'',
   consentView:'settings',consentLang:'tr',
@@ -1686,6 +1699,10 @@ function renderSessionScreen(){
       ${S.inputTab==='photo'?`<div class="input-panel">
         ${S.pp?`<img src="${S.pp}" class="photo-preview" alt="notes">`:''}
         <div class="voice-hint">${S.pp?t('photoUploaded'):t('photoHint')}</div>
+        <div style="display:flex;gap:6px;margin-bottom:10px">
+  <button onclick="S.voiceLang='tr-TR';document.getElementById('vlang-tr').style.fontWeight='700';document.getElementById('vlang-en').style.fontWeight='400'" id="vlang-tr" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='tr-TR'?'700':'400'}">🇹🇷 TR</button>
+  <button onclick="S.voiceLang='en-US';document.getElementById('vlang-en').style.fontWeight='700';document.getElementById('vlang-tr').style.fontWeight='400'" id="vlang-en" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='en-US'?'700':'400'}">🇬🇧 EN</button>
+</div>
         <input type="file" accept="image/*,image/heic,image/heif" id="photo-inp" style="display:none" onchange="handlePhoto(event)">
         <label for="photo-inp" class="photo-upload-label">${S.pp?t('photoChange'):t('photoUpload')}</label>
       </div>`:''}
@@ -1817,7 +1834,7 @@ function startRec(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){S.err=S.lang==='tr'?'Ses tanıma desteklenmiyor.':'Speech recognition not supported.';renderSessionScreen();return;}
   recog=new SR();recog.continuous=true;recog.interimResults=true;
-  recog.lang=S.lang==='tr'?'tr-TR':'en-US';
+  recog.lang=S.voiceLang||(S.lang==='tr'?'tr-TR':'en-US');
   recog.onresult=e=>{let tx='';for(let i=0;i<e.results.length;i++)tx+=e.results[i][0].transcript;S.vt=tx;const vp=document.getElementById('vp-text');if(vp)vp.textContent=tx;};
   recog.start();S.rec=true;
   const vb=document.getElementById('vp-btn');
@@ -1894,12 +1911,16 @@ You are a working clinician completing your own session notes. Write as that cli
 ${MOD_CTX[mod]||MOD_CTX.integrative}
 
 CLIENT CONTEXT:
-${clientCtx||'No client context provided.'}
+${clientCtxFull||'No client context provided.'}
 
 YOUR TASK:
 ${notePrompt}
 
 LANGUAGE: Write entirely in ${outputLang} using precise clinical terminology.
+${outputLang==='Turkish'?`TURKISH CLINICAL STANDARDS:
+— Use "danışan" throughout, never "hasta" (unless inpatient context)
+— Use established Turkish equivalents: "bilişsel çarpıtma" not "kognitif distorsiyon", "savunma mekanizması" not "defans", "aktarım" not "transference", "karşıaktarım" not "countertransference"
+— Follow TPD (Türk Psikologlar Derneği) documentation ethics for private vs. official note separation`:''}
 
 HARD RULES:
 — Refer to "the client" (or "danışan" in Turkish) — never a name
@@ -1908,7 +1929,22 @@ HARD RULES:
   try{
     let messages;
     if(S.inputTab==='photo'&&S.pb64){
-      messages=[{role:'user',content:[{type:'image',source:{type:'base64',media_type:S.pmime||'image/jpeg',data:S.pb64}},{type:'text',text:'These are handwritten session notes. Read all text carefully, then generate the clinical documentation specified. Output only the clinical note.'}]}];
+  // Step 1: transcribe handwriting
+  const transRes=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    system:'You are an expert at reading handwritten clinical notes. Transcribe all text exactly as written, preserving abbreviations and shorthand. Output only the transcribed text.',
+    messages:[{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:S.pmime||'image/jpeg',data:S.pb64}},
+      {type:'text',text:'Transcribe all handwritten text in this image exactly as written.'}
+    ]}],
+    max_tokens:800
+  })});
+  if(!transRes.ok)throw new Error('Transcription failed');
+  const transData=await transRes.json();
+  if(transData.error)throw new Error(transData.error.message);
+  rawNotes=transData.content.map(b=>b.text||'').join('');
+  S.transcribed=rawNotes;
+  messages=[{role:'user',content:`THERAPIST'S SESSION NOTES (transcribed from handwriting):\n\n${rawNotes}`}];
+}
     } else {
       messages=[{role:'user',content:`THERAPIST'S SESSION NOTES:\n\n${rawNotes}`}];
     }
