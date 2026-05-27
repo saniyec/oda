@@ -1868,7 +1868,22 @@ async function generate(){
     cl&&(cl.icd10||cl.dsm5)?'Current diagnosis: '+[cl.icd10,cl.dsm5].filter(Boolean).join(' / '):'',
     se?.n?`Session number: ${se.n}`:''
   ].filter(Boolean).join('\n');
+  const prevThemes=S.sessions
+  .filter(s=>s.cid===S.cid&&s.id!==S.sid)
+  .sort((a,b)=>a.n-b.n)
+  .slice(-5)
+  .map(s=>{
+    const note=s.outs?.sum?.text||s.outs?.clinical?.text||s.outs?.process?.text||'';
+    if(!note)return null;
+    return `Session ${s.n} (${s.date}): ${note.slice(0,150)}`;
+  })
+  .filter(Boolean);
+
+const sessionContext=prevThemes.length>0
+  ?`\n\nPREVIOUS SESSION THEMES — for orientation only. Do not reference, connect, or draw conclusions from any previous session unless the therapist's notes for THIS session explicitly mention it. If a connection exists, note it with the session number in parentheses — e.g. "(cf. Session 4)" — never as your own interpretation.\n${prevThemes.join('\n')}`
+  :'';
   const outputLang=S.lang==='tr'?'Turkish':'English';
+  const clientCtxFull=clientCtx+sessionContext;
   const ni=NOTE_TYPES.find(n=>n.id===S.nt);
   const notePrompt=getNotePrompt(S.nt,mod);
 
