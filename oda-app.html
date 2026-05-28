@@ -991,7 +991,7 @@ async function sendMagicLink(){
   btn.textContent=S.lang==='tr'?'Gönderiliyor...':'Sending...';
   const{error}=await supa.auth.signInWithOtp({
     email,
-    options:{emailRedirectTo:window.location.origin+window.location.pathname}
+    options:{emailRedirectTo: window.location.origin + '/oda-app.html'}
   });
   if(error){
     errEl.textContent=error.message;errEl.style.display='block';
