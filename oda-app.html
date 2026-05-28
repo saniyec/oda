@@ -1270,7 +1270,7 @@ function openSettings(){
     <div style="font-size:11px;color:var(--w-ts);line-height:1.6">${S.lang==='tr'?'Verileriniz gizli tutulur ve yalnızca sizin kontrolünüzdedir.':'Your data is kept private and is under your control only.'}</div>
   </div>
   <button onclick="closeSettings()" class="btn btn-outline btn-full" style="margin-top:12px">${t('stg_close')}</button>
-  <button onclick="closeSettings();signOut()" class="btn btn-outline btn-full" style="margin-top:8px;color:var(--red);border-color:rgba(224,112,112,.3)">${S.lang==='tr'?'Çıkış yap':'Sign out'}</button>
+  <button onclick="closeSettings();signOut()" ...>${S.lang==='tr'?'Çıkış yap':'Sign out'}${currentUser?' ('+currentUser.email+')':''}</button>
 </div>`;
   document.getElementById('settings-overlay').style.display='flex';
 }
@@ -2561,25 +2561,6 @@ async function boot(){
 }
 
 // Add sign out to settings
-const _openSettings=openSettings;
-openSettings=function(){
-  _openSettings();
-  // Append sign out button if logged in
-  setTimeout(()=>{
-    const modal=document.querySelector('#settings-overlay .modal');
-    if(!modal||!currentUser||modal.querySelector('#signout-btn'))return;
-    const btn=document.createElement('button');
-    btn.id='signout-btn';
-    btn.className='btn btn-outline btn-full';
-    btn.style.marginTop='8px';
-    btn.style.color='var(--red)';
-    btn.style.borderColor='rgba(224,112,112,.3)';
-    btn.textContent=S.lang==='tr'?'Çıkış yap ('+currentUser.email+')':'Sign out ('+currentUser.email+')';
-    btn.onclick=()=>{closeSettings();signOut();};
-    modal.appendChild(btn);
-  },50);
-};
-
 boot();
 </script>
 </body>
