@@ -1970,7 +1970,7 @@ HARD RULES:
     let messages;
     if(S.inputTab==='photo'&&S.pb64){
   // Step 1: transcribe handwriting
-  const transRes=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+  const transRes=await fetch('/api/generate',{method:'POST',headers:authHeaders,body:JSON.stringify({
     system:'You are an expert at reading handwritten clinical notes. Transcribe all text exactly as written, preserving abbreviations and shorthand. Output only the transcribed text.',
     messages:[{role:'user',content:[
       {type:'image',source:{type:'base64',media_type:S.pmime||'image/jpeg',data:S.pb64}},
