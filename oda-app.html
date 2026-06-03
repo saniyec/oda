@@ -34,8 +34,8 @@ textarea{resize:vertical}
 /* ── APP SHELL ── */
 .app{display:flex;flex-direction:column;height:100vh;overflow:hidden;background:var(--bg)}
 .app-body{flex:1;overflow:hidden;display:flex;flex-direction:column}
-.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.screen.active{display:flex;flex-direction:column}
+.screen{display:none;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;opacity:0;transition:opacity .18s ease}
+.screen.active{display:flex;flex-direction:column;opacity:1}
 
 /* ── BOTTOM NAV ── */
 .bottom-nav{height:var(--nav-h);background:var(--bg2);border-top:1px solid var(--w-tl);display:flex;align-items:stretch;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
@@ -1535,7 +1535,6 @@ function renderClientsList(){
       </div>`;
     }
     return;
-    return;
   }
   el.innerHTML=filtered.map((c,i)=>{
     const col=CA[cidx(c.id)%CA.length];
@@ -1720,10 +1719,14 @@ function renderSessionScreen(){
       <div class="input-tabs">
         ${tabLabels.map(([id,lbl])=>`<button class="input-tab${S.inputTab===id?' active':''}" onclick="(function(){const ta=document.getElementById('notes-ta');if(ta)updateSession({rn:ta.value});S.inputTab='${id}';renderSessionScreen();})()">${lbl}</button>`).join('')}
       </div>
-      ${S.inputTab==='text'?`<textarea class="notes-ta" id="notes-ta" placeholder="${placeholder}" oninput="updateSession({rn:this.value})">${se.rn||''}</textarea>`:''}
+      ${S.inputTab==='text'?`<textarea class="notes-ta" id="notes-ta" placeholder="${placeholder}" oninput="updateSession({rn:this.value});(function(){const w=this.value.trim().split(/\s+/).filter(Boolean).length;const el=document.getElementById('wc-ind');if(el){el.textContent=w+' words'+(w<20?' — '+(20-w)+' more for best results':'');el.style.color=w>=20?'var(--green)':'var(--w-tm)';}}).call(this)">${se.rn||''}</textarea>`:''}<div id="wc-ind" style="font-size:10px;color:var(--w-tm);text-align:right;margin-top:3px"></div>
       ${S.inputTab==='voice'?`<div class="input-panel">
         ${S.vt?`<div id="vp-text" style="font-size:13px;line-height:1.75;margin-bottom:12px;color:var(--w-text);white-space:pre-wrap">${S.vt}</div>`:`<div id="vp-text"></div><div class="voice-hint">${t('voiceHint')}</div>`}
-        <button id="vp-btn" class="rec-btn${S.rec?' recording':''}" onclick="${S.rec?'stopRec()':'startRec()'}">
+          <div style="display:flex;gap:6px;margin-bottom:10px">
+         <button onclick="S.voiceLang='tr-TR';document.getElementById('vlang-tr').style.fontWeight='700';document.getElementById('vlang-en').style.fontWeight='400'" id="vlang-tr" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='tr-TR'?'700':'400'}">🇹🇷 TR</button>
+         <button onclick="S.voiceLang='en-US';document.getElementById('vlang-en').style.fontWeight='700';document.getElementById('vlang-tr').style.fontWeight='400'" id="vlang-en" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='en-US'?'700':'400'}">🇬🇧 EN</button>
+         </div>
+           <button id="vp-btn" class="rec-btn${S.rec?' recording':''}" onclick="${S.rec?'stopRec()':'startRec()'}">
           ${S.rec?t('stopRec'):t('startRec')}
         </button>
         ${S.vt&&!S.rec?`<div style="font-size:11px;color:var(--w-tm);margin-top:8px">${S.lang==='tr'?'Kayıt tamamlandı. Not türünü seçip Oluştur\'a basın.':'Recording saved. Select a note type and click Generate.'}</div>`:''}
@@ -1731,10 +1734,6 @@ function renderSessionScreen(){
       ${S.inputTab==='photo'?`<div class="input-panel">
         ${S.pp?`<img src="${S.pp}" class="photo-preview" alt="notes">`:''}
         <div class="voice-hint">${S.pp?t('photoUploaded'):t('photoHint')}</div>
-        <div style="display:flex;gap:6px;margin-bottom:10px">
-  <button onclick="S.voiceLang='tr-TR';document.getElementById('vlang-tr').style.fontWeight='700';document.getElementById('vlang-en').style.fontWeight='400'" id="vlang-tr" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='tr-TR'?'700':'400'}">🇹🇷 TR</button>
-  <button onclick="S.voiceLang='en-US';document.getElementById('vlang-en').style.fontWeight='700';document.getElementById('vlang-tr').style.fontWeight='400'" id="vlang-en" style="font-size:11px;padding:4px 10px;border:1px solid var(--w-tl);border-radius:4px;background:transparent;color:var(--w-ts);font-weight:${(S.voiceLang||'tr-TR')==='en-US'?'700':'400'}">🇬🇧 EN</button>
-</div>
         <input type="file" accept="image/*,image/heic,image/heif" id="photo-inp" style="display:none" onchange="handlePhoto(event)">
         <label for="photo-inp" class="photo-upload-label">${S.pp?t('photoChange'):t('photoUpload')}</label>
       </div>`:''}
@@ -1760,6 +1759,7 @@ function renderSessionScreen(){
           <div class="output-actions">
             <button class="out-btn" id="copy-btn" onclick="(()=>{const txt=S.outs[S.nt]?.text||'';navigator.clipboard.writeText(txt).then(()=>{const b=document.getElementById('copy-btn');if(b){b.textContent='${copiedLabel}';setTimeout(()=>b.textContent='${copyLabel}',1800);}});})()">${copyLabel}</button>
             <button class="out-btn" onclick="exportPDF()">${t('pdf')}</button>
+            <button class="out-btn" onclick="S.outs[S.nt]=null;renderSessionScreen()">↺ Redo</button>
           </div>
         </div>
         <div class="output-box" contenteditable="true" style="outline:none" spellcheck="false" oninput="if(!S.outs[S.nt])S.outs[S.nt]={};S.outs[S.nt].text=this.innerText;updateSession({outs:S.outs})">${hlRisk(cout.text)}</div>
@@ -1907,7 +1907,7 @@ async function generate(){
   // Word count gate — prevent fabrication from thin input
   if(S.inputTab!=='photo'){
     const wordCount=rawNotes.split(/\s+/).filter(Boolean).length;
-    if(wordCount<10){
+    if(wordCount<20){
       S.err=S.lang==='tr'
         ?'Lütfen seans hakkında daha fazla bilgi girin — en az birkaç cümle gerekli.'
         :'Please enter more detail about the session — at least a few sentences — before generating.';
