@@ -8,6 +8,28 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: { message: "ANTHROPIC_API_KEY not set." } });
   }
 
+  // ── AUTH CHECK: require a valid Supabase session token ──
+  const authHeader = req.headers['authorization'] || '';
+  const token = authHeader.replace('Bearer ', '').trim();
+  if (!token) {
+    return res.status(401).json({ error: { message: "Unauthorized." } });
+  }
+
+  // Verify the token against Supabase
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
+    const verify = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+      }
+    });
+    if (!verify.ok) {
+      return res.status(401).json({ error: { message: "Invalid session. Please log in again." } });
+    }
+  }
+
   const { system, messages, max_tokens = 1600 } = req.body;
 
   try {
