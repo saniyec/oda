@@ -1162,7 +1162,7 @@ let S={
   cid:null,sid:null,calSelected:null,
   activeScreen:'screen-dash',
   nt:'process',inputTab:'text',
-  vt:'',pb64:null,pmime:null,pp:null,rec:false,
+  vt:'',pb64:null,pmime:null,pp:null,rec:false,voiceLang:'tr-TR',
   transcribed:null,
   outs:{},rn:'',
   gen:false,gp:false,err:'',
@@ -1762,7 +1762,13 @@ function renderSessionScreen(){
             <button class="out-btn" onclick="S.outs[S.nt]=null;renderSessionScreen()">↺ Redo</button>
           </div>
         </div>
-        <div class="output-box" contenteditable="true" style="outline:none" spellcheck="false" oninput="if(!S.outs[S.nt])S.outs[S.nt]={};S.outs[S.nt].text=this.innerText;updateSession({outs:S.outs})">${hlRisk(cout.text)}</div>
+        \${cout.isPrivateReflection ? `
+        <div style="background:rgba(196,168,96,0.06);border:1px solid var(--gold-border);border-radius:var(--r);padding:12px 15px;margin-bottom:10px">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:5px">✦ \${S.lang==='tr'?'Özel Yansıma Alanı':'Private Reflection Space'}</div>
+          <div style="font-size:12px;color:var(--w-ts);line-height:1.65">\${S.lang==='tr'?'Bu not yalnızca sizin için. Seansın iç deneyimini — duygularınızı, beden duyumlarınızı, tepkilerinizi — kendi sözcüklerinizle yazın. Yapay zeka bu notu oluşturmaz.':'This note is yours alone. Write your internal experience of the session — feelings, bodily sensations, reactions — in your own words. AI does not generate this.'}</div>
+        </div>
+        <div class="output-box" contenteditable="true" style="outline:none;min-height:120px" spellcheck="false" oninput="if(!S.outs[S.nt])S.outs[S.nt]={};S.outs[S.nt].text=this.innerText;updateSession({outs:S.outs})">\${cout.text||''}</div>
+        ` : `<div class="output-box" contenteditable="true" style="outline:none" spellcheck="false" oninput="if(!S.outs[S.nt])S.outs[S.nt]={};S.outs[S.nt].text=this.innerText;updateSession({outs:S.outs})">\${hlRisk(cout.text)}</div>`}
         <div class="sup-bar">
           <span class="sup-bar-label">${t('supStatus')}</span>
           <span class="sup-status sup-${sup.st}">${sup.st==='draft'?t('draft'):sup.st==='submitted'?t('submitted')+(sup.sa?' · '+new Date(sup.sa).toLocaleDateString():''):t('reviewed')}</span>
@@ -1887,7 +1893,8 @@ async function generate(){
   // Karşıaktarım notu için API çağrısı yapma
   if(S.nt==='ct'){
     S.err='';
-    S.outs['ct']={text:'',genAt:new Date().toISOString()};
+    // CT notes are written by the therapist — mark as private reflection, no AI
+    if(!S.outs['ct'])S.outs['ct']={text:'',genAt:new Date().toISOString(),isPrivateReflection:true};
     updateSession({outs:S.outs});
     renderSessionScreen();
     return;
@@ -1917,6 +1924,10 @@ async function generate(){
   }
 
   S.err='';S.gen=true;renderSessionScreen();
+  // Auth headers initialised here so the photo transcription branch can use them
+  const _sess=supa?(await supa.auth.getSession())?.data?.session:null;
+  const authHeaders={'Content-Type':'application/json'};
+  if(_sess?.access_token)authHeaders['Authorization']='Bearer '+_sess.access_token;
   const cl=S.clients.find(c=>c.id===S.cid);
   const mod=cl?.mod||'integrative';
   const clientCtx=[
@@ -1987,9 +1998,6 @@ HARD RULES:
     } else {
       messages=[{role:'user',content:`THERAPIST'S SESSION NOTES:\n\n${rawNotes}`}];
     }
-    const session=supa?(await supa.auth.getSession())?.data?.session:null;
-    const authHeaders={'Content-Type':'application/json'};
-    if(session?.access_token)authHeaders['Authorization']='Bearer '+session.access_token;
     const res=await fetch('/api/generate',{method:'POST',headers:authHeaders,body:JSON.stringify({system:sys,messages,max_tokens:1800})});
     if(!res.ok){const errText=await res.text();throw new Error('Server error '+res.status+': '+errText.slice(0,200));}
     const d=await res.json();
@@ -2012,7 +2020,10 @@ async function generateTreatmentPlan(){
   const lang=S.lang==='tr'?'Turkish':'English';
   const prompt=`Write a structured clinical treatment plan in ${lang}.\nClient: ${cl.age?cl.age+' year old ':''} ${cl.gender||''}\nPresenting concern: ${cl.presenting||'Not specified'}\nDiagnosis: ${[cl.icd10,cl.dsm5].filter(Boolean).join(' / ')||'Not specified'}\nModality: ${modL(cl.mod||'integrative')}\n\nInclude: PRESENTING PROBLEMS, TREATMENT GOALS (3–5 specific measurable), THERAPEUTIC APPROACH, FREQUENCY & DURATION, RISK CONSIDERATIONS, PROGRESS INDICATORS`;
   try{
-    const res=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:`You are a senior clinical psychologist. Write in ${lang}. Output only the treatment plan — no preamble.`,messages:[{role:'user',content:prompt}],max_tokens:1100})});
+    const _tpSess=supa?(await supa.auth.getSession())?.data?.session:null;
+    const _tpHeaders={'Content-Type':'application/json'};
+    if(_tpSess?.access_token)_tpHeaders['Authorization']='Bearer '+_tpSess.access_token;
+    const res=await fetch('/api/generate',{method:'POST',headers:_tpHeaders,body:JSON.stringify({system:`You are a senior clinical psychologist. Write in ${lang}. Output only the treatment plan — no preamble.`,messages:[{role:'user',content:prompt}],max_tokens:1100})});
     if(!res.ok)throw new Error('Server error '+res.status);
     const d=await res.json();if(d.error)throw new Error(d.error.message);
     const txt=d.content.map(b=>b.text||'').join('');
