@@ -4,13 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Oda — Terapistlerin klinik alanı</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Seans notlarınızı DAP, süreç notu, risk değerlendirmesine dönüştürün. Türk psikologlar için, KVKK uyumlu.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0D0F0C;--bg2:#141712;--bg3:#1A1E17;
+  --bg:#0D0F0C;--bg2:#141712;--bg3:#1A1E17;--bg4:#1F2419;
   --gold:#B89A5A;--gold-l:#D4B87A;--gold-d:#8A7040;
+  --gold-bg:rgba(184,154,90,0.08);--gold-border:rgba(184,154,90,0.28);
   --text:#EDE9E0;--tm:#6A6860;--ts:#A8A49C;
-  --border:rgba(255,255,255,0.065);--border-g:rgba(184,154,90,0.28);
+  --border:rgba(255,255,255,0.065);--border2:rgba(255,255,255,0.04);
+  --blue:#4A9CC4;--green:#4CAF77;--red:#E07070;
   --serif:'Cormorant Garamond',Georgia,serif;
   --sans:'DM Sans',system-ui,sans-serif;
 }
@@ -18,820 +21,701 @@
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;line-height:1.6;overflow-x:hidden}
 a{color:inherit;text-decoration:none}
+button{font-family:var(--sans);cursor:pointer}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 48px;border-bottom:1px solid var(--border);background:rgba(13,15,12,0.94);backdrop-filter:blur(14px)}
-.nav-logo{display:flex;align-items:center;gap:11px;cursor:pointer}
-.nav-logo-text{font-family:var(--serif);font-size:24px;font-weight:500;color:var(--text);letter-spacing:0.02em;line-height:1}
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 48px;
+  border-bottom:1px solid var(--border);
+  background:rgba(13,15,12,0.97);
+  backdrop-filter:blur(16px);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;cursor:pointer}
+.nav-logo-text{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--text);letter-spacing:.02em}
 .nav-logo-text span{color:var(--gold)}
-.nav-links{display:flex;align-items:center;gap:30px}
-.nav-links a{font-size:13px;color:var(--ts);transition:color 0.2s}
-.nav-links a:hover{color:var(--text)}
-.nav-right{display:flex;align-items:center;gap:12px}
+.nav-right{display:flex;align-items:center;gap:10px}
 .lang-toggle{display:flex;border:1px solid var(--border);border-radius:2px;overflow:hidden}
-.lang-btn{padding:5px 13px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;border:none;color:var(--tm);transition:all 0.2s;font-family:var(--sans)}
+.lang-btn{padding:5px 12px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;border:none;color:var(--tm);transition:all .15s}
 .lang-btn.active{background:var(--gold);color:var(--bg)}
-.nav-cta{font-size:13px;font-weight:500;padding:8px 20px;border:1px solid var(--gold);color:var(--gold);background:transparent;cursor:pointer;transition:all 0.2s;font-family:var(--sans);border-radius:2px}
-.nav-cta:hover{background:var(--gold);color:var(--bg)}
-.nav-app-btn{font-size:13px;font-weight:500;padding:8px 18px;background:var(--gold);color:var(--bg);border:none;cursor:pointer;font-family:var(--sans);border-radius:2px;transition:background 0.2s;text-decoration:none;display:inline-block}
-.nav-app-btn:hover{background:var(--gold-l)}
+.nav-try{font-size:13px;font-weight:500;padding:8px 18px;background:var(--gold);color:var(--bg);border:none;border-radius:2px;transition:background .15s;display:inline-block;text-decoration:none}
+.nav-try:hover{background:var(--gold-l)}
 
-/* ELEPHANT SVG LOGO */
-.elephant-logo svg{display:block}
-
-/* HERO */
-.hero{padding:148px 48px 100px;max-width:1140px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
-.hero-label{display:inline-flex;align-items:center;gap:9px;font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
-.hero-label::before{content:'';width:20px;height:1px;background:var(--gold);display:inline-block}
-h1{font-family:var(--serif);font-size:56px;font-weight:500;line-height:1.08;letter-spacing:-0.01em;margin-bottom:20px}
+/* ── HERO ── */
+.hero{
+  padding:156px 48px 88px;
+  max-width:1060px;margin:0 auto;
+}
+.hero-kicker{
+  display:inline-flex;align-items:center;gap:10px;
+  font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:26px;
+}
+.hero-kicker::before{content:'';width:18px;height:1px;background:var(--gold)}
+h1{
+  font-family:var(--serif);
+  font-size:74px;font-weight:500;line-height:1.02;letter-spacing:-.015em;
+  margin-bottom:28px;max-width:820px;
+}
 h1 em{font-style:italic;color:var(--gold-l)}
-.hero-p{font-size:15px;font-weight:300;color:var(--ts);line-height:1.78;margin-bottom:30px;max-width:400px}
-.hero-form{display:flex;max-width:400px;margin-bottom:10px}
-.hero-form input{flex:1;padding:12px 15px;background:var(--bg3);border:1px solid var(--border);border-right:none;color:var(--text);font-family:var(--sans);font-size:14px;font-weight:300;outline:none;border-radius:2px 0 0 2px}
-.hero-form input::placeholder{color:var(--tm)}
-.hero-form input:focus{border-color:var(--border-g)}
-.hero-form button{padding:12px 20px;background:var(--gold);border:1px solid var(--gold);color:var(--bg);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:background 0.2s;border-radius:0 2px 2px 0;white-space:nowrap}
-.hero-form button:hover{background:var(--gold-l)}
-.hero-note{font-size:12px;color:var(--tm);margin-top:4px}
-.success{font-size:13px;color:var(--gold);margin-top:8px;display:none}
-.hero-actions{display:flex;align-items:center;gap:14px;margin-bottom:10px}
-.hero-try-btn{padding:12px 22px;background:var(--gold);border:none;color:var(--bg);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border-radius:2px;transition:background 0.2s;text-decoration:none;display:inline-block}
-.hero-try-btn:hover{background:var(--gold-l)}
-.hero-wl-btn{padding:12px 20px;border:1px solid var(--border);color:var(--ts);font-family:var(--sans);font-size:13px;font-weight:400;cursor:pointer;border-radius:2px;background:transparent;transition:all 0.2s}
-.hero-wl-btn:hover{border-color:var(--border-g);color:var(--text)}
+.hero-sub{
+  font-size:16px;font-weight:300;color:var(--ts);
+  line-height:1.82;margin-bottom:36px;max-width:560px;
+}
+.hero-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.btn-gold{
+  display:inline-block;padding:13px 26px;
+  background:var(--gold);color:var(--bg);
+  font-size:13px;font-weight:500;border-radius:2px;border:none;
+  transition:background .15s;cursor:pointer;text-decoration:none;
+}
+.btn-gold:hover{background:var(--gold-l)}
+.btn-outline{
+  display:inline-block;padding:13px 22px;
+  border:1px solid var(--border);color:var(--ts);
+  font-size:13px;font-weight:400;border-radius:2px;
+  background:transparent;transition:all .15s;cursor:pointer;text-decoration:none;
+}
+.btn-outline:hover{border-color:var(--gold-border);color:var(--text)}
+.hero-note{font-size:12px;color:var(--tm);line-height:1.6}
 
-/* ANIMATED DEMO */
-.demo-shell{background:var(--bg2);border:1px solid var(--border);position:relative;border-radius:3px;overflow:hidden}
-.demo-shell::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.demo-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
-.demo-dots{display:flex;gap:5px}
-.demo-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.12)}
-.demo-title{font-size:11px;color:var(--tm);letter-spacing:0.04em}
-.demo-badge{font-size:10px;padding:2px 8px;background:rgba(184,154,90,0.12);color:var(--gold);border:1px solid var(--border-g);border-radius:2px}
-.demo-body{padding:18px}
+/* ── PREVIEW SHELL ── */
+.preview-wrap{padding:0 48px 80px;max-width:1060px;margin:0 auto}
+.preview-shell{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px;overflow:hidden;position:relative;
+}
+.preview-shell::before{
+  content:'';position:absolute;top:-1px;left:12%;right:50%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,154,90,.55),transparent);
+}
+.preview-topbar{
+  display:flex;align-items:center;gap:7px;
+  padding:11px 16px;border-bottom:1px solid var(--border);
+}
+.pdot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.08)}
+.preview-label{font-size:11px;color:var(--tm);margin-left:6px;letter-spacing:.04em;flex:1}
+/* Note type tabs on preview */
+.preview-tabs{display:flex;gap:2px;margin-left:auto}
+.preview-tab{
+  font-size:10px;padding:3px 9px;border:1px solid var(--border);
+  color:var(--tm);background:transparent;border-radius:2px;
+  cursor:pointer;transition:all .15s;font-family:var(--sans);
+}
+.preview-tab.active{border-color:var(--gold-border);color:var(--gold);background:var(--gold-bg)}
 
-/* NOTES INPUT side */
-.demo-notes-label{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--tm);margin-bottom:8px}
-.demo-notes-raw{font-size:12px;line-height:1.75;color:rgba(255,255,255,0.45);font-style:italic;min-height:64px;border:1px solid rgba(255,255,255,0.06);padding:10px 12px;border-radius:2px;background:rgba(255,255,255,0.025)}
-.demo-arrow-row{display:flex;align-items:center;justify-content:center;padding:12px 0;gap:8px}
-.demo-arrow-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-g))}
-.demo-arrow-line.r{background:linear-gradient(90deg,var(--border-g),transparent)}
-.demo-arrow-icon{font-size:18px;color:var(--gold);animation:pulse-gold 2s ease-in-out infinite}
-@keyframes pulse-gold{0%,100%{opacity:0.6}50%{opacity:1}}
+.preview-body{display:grid;grid-template-columns:1fr 1fr}
+.preview-col{padding:22px 24px}
+.preview-col+.preview-col{border-left:1px solid var(--border)}
+.p-lbl{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;display:block}
+.p-lbl.raw{color:var(--tm)}
+.p-lbl.out{color:var(--gold)}
+.p-raw{font-size:12px;color:rgba(255,255,255,.32);font-style:italic;line-height:1.8}
+.p-sec-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin:12px 0 4px}
+.p-sec-lbl:first-child{margin-top:0}
+.p-sec-txt{font-size:12px;color:var(--ts);line-height:1.72;margin-bottom:6px}
+.p-private-banner{
+  background:rgba(184,154,90,.06);border:1px solid var(--gold-border);
+  border-radius:2px;padding:10px 12px;margin-bottom:10px;
+}
+.p-private-lbl{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.p-private-txt{font-size:12px;color:var(--ts);line-height:1.7}
+.p-risk-txt{font-size:12px;color:var(--ts);line-height:1.72}
+.risk-hl{background:rgba(224,112,112,.15);color:var(--red);border-radius:2px;padding:0 3px}
 
-/* OUTPUT side */
-.demo-out-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.demo-out-label{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold)}
-.demo-out-tag{font-size:10px;padding:2px 8px;background:rgba(39,174,96,0.1);color:#4CAF77;border:1px solid rgba(39,174,96,0.2);border-radius:10px}
-.demo-section{margin-bottom:10px}
-.demo-sec-lbl{font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-.demo-sec-txt{font-size:12px;line-height:1.7;color:var(--ts)}
-.demo-risk{background:rgba(231,76,60,0.12);color:#E07070;border-radius:2px;padding:0 2px}
-.demo-cursor{display:inline-block;width:2px;height:12px;background:var(--gold);animation:blink 1s step-end infinite;vertical-align:middle;margin-left:1px}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* ── SECTION WRAPPER ── */
+.sec{padding:80px 48px;max-width:1060px;margin:0 auto}
+.sec.narrow{max-width:740px}
+hr{border:none;border-top:1px solid var(--border)}
+.eyebrow{font-size:11px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:14px}
+h2{font-family:var(--serif);font-size:42px;font-weight:500;line-height:1.12;margin-bottom:14px}
+h2 em{font-style:italic;color:var(--gold-l)}
+.sec-intro{font-size:14px;color:var(--ts);line-height:1.82;max-width:540px;margin-bottom:40px}
 
-/* TYPE TABS */
-.demo-tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
-.demo-tab{font-size:10px;padding:3px 8px;border:1px solid var(--border);color:var(--tm);cursor:pointer;border-radius:2px;background:transparent;font-family:var(--sans);transition:all 0.15s}
-.demo-tab.active{border-color:var(--gold);color:var(--gold);background:rgba(184,154,90,0.08)}
+/* ── HOW ── */
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.how-left p{font-size:14px;color:var(--ts);line-height:1.85;margin-bottom:18px}
+.how-left p:last-child{margin-bottom:0}
+.how-left strong{color:var(--text);font-weight:500}
+.how-steps{display:flex;flex-direction:column;gap:0}
+.how-step{padding:20px 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start}
+.how-step:first-child{border-top:1px solid var(--border)}
+.how-n{font-family:var(--serif);font-size:28px;font-weight:500;color:var(--gold-border);line-height:1;padding-top:2px}
+.how-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.how-d{font-size:13px;color:var(--ts);line-height:1.65}
 
-/* STATS */
-.stats-wrap{max-width:1140px;margin:0 auto;padding:0 48px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:3px}
-.stat{padding:36px 32px;border-right:1px solid var(--border)}
-.stat:last-child{border-right:none}
-.stat-n{font-family:var(--serif);font-size:46px;font-weight:500;color:var(--gold);line-height:1;margin-bottom:7px}
-.stat-l{font-size:13px;color:var(--ts);line-height:1.5;max-width:190px}
-.divider{border:none;border-top:1px solid var(--border);max-width:1140px;margin:0 auto}
-section{padding:86px 48px;max-width:1140px;margin:0 auto}
-.sl{font-size:11px;font-weight:500;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:13px;display:block}
-.sh{font-family:var(--serif);font-size:38px;font-weight:500;line-height:1.18;margin-bottom:13px;max-width:560px}
-.sh em{font-style:italic;color:var(--gold-l)}
-.ss{font-size:15px;color:var(--ts);line-height:1.72;max-width:480px;margin-bottom:48px}
+/* ── NOTE TYPES ── */
+.notes-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px}
+.notes-col{background:var(--bg);padding:32px 30px}
+.notes-tag{font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:2px;margin-bottom:24px;display:inline-block}
+.tag-off{background:rgba(74,156,196,.1);color:var(--blue);border:1px solid rgba(74,156,196,.2)}
+.tag-prv{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold-border)}
+.note-item{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--border2)}
+.note-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.note-name{font-size:15px;font-weight:500;color:var(--text);margin-bottom:5px}
+.note-desc{font-size:12px;color:var(--tm);line-height:1.65}
+.note-detail{font-size:11px;color:var(--gold-d);margin-top:4px;font-style:italic}
 
-/* STEPS */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:3px}
-.step{padding:34px 26px;border-right:1px solid var(--border)}
-.step:last-child{border-right:none}
-.step-n{font-family:var(--serif);font-size:44px;font-weight:500;color:var(--border-g);line-height:1;margin-bottom:13px}
-.step-t{font-size:15px;font-weight:500;color:var(--text);margin-bottom:7px}
-.step-d{font-size:13px;color:var(--ts);line-height:1.65}
+/* ── MODALITIES ── */
+.mod-intro{font-size:13px;color:var(--ts);line-height:1.75;margin-bottom:18px;max-width:560px}
+.mod-pills{display:flex;flex-wrap:wrap;gap:6px}
+.mod-pill{font-size:12px;padding:5px 14px;border:1px solid var(--border);color:var(--ts);border-radius:2px;transition:all .15s}
+.mod-pill:hover{border-color:var(--gold-border);color:var(--gold)}
 
-/* FEATURES */
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px}
-.feat{padding:28px 24px;background:var(--bg);transition:background 0.2s;border-radius:0}
-.feat:hover{background:var(--bg2)}
-.feat-icon{font-size:17px;margin-bottom:12px}
-.feat-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:6px}
-.feat-d{font-size:12px;color:var(--ts);line-height:1.65}
-.feat-tag{font-size:10px;padding:2px 8px;border-radius:10px;margin-top:8px;display:inline-block;font-weight:500}
-.ft-built{background:rgba(46,160,67,0.1);color:#4CAF77;border:1px solid rgba(46,160,67,0.18)}
+/* ── FOUNDER ── */
+.founder-wrap{border:1px solid var(--border);border-radius:3px;overflow:hidden;position:relative}
+.founder-wrap::before{content:'';position:absolute;top:-1px;left:8%;right:64%;height:1px;background:linear-gradient(90deg,transparent,rgba(184,154,90,.45),transparent)}
+.founder-body{padding:48px}
+.founder-pull{
+  font-family:var(--serif);font-size:24px;font-weight:400;font-style:italic;
+  color:var(--text);line-height:1.6;margin-bottom:30px;max-width:680px;
+  padding-bottom:28px;border-bottom:1px solid var(--border);
+}
+.founder-text{font-size:13px;color:var(--ts);line-height:1.9;max-width:680px}
+.founder-text p{margin-bottom:16px}
+.founder-text p:last-child{margin-bottom:0}
+.founder-text strong{color:var(--text);font-weight:500}
+.founder-footer{
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+  padding:22px 48px;border-top:1px solid var(--border);background:var(--bg2);
+}
+.founder-name{font-family:var(--serif);font-size:19px;font-weight:500;margin-bottom:2px}
+.founder-title{font-size:12px;color:var(--tm);line-height:1.6}
+.founder-tags{display:flex;flex-wrap:wrap;gap:5px}
+.f-tag{font-size:11px;padding:3px 9px;border:1px solid var(--border);color:var(--tm);border-radius:2px}
 
-/* MODALITIES */
-.mods-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:26px}
-.mod-pill{font-size:12px;padding:5px 13px;border:1px solid var(--border);color:var(--ts);transition:all 0.2s;border-radius:2px}
-.mod-pill:hover{border-color:var(--border-g);color:var(--gold)}
+/* ── PRICING ── */
+.pricing-wrap{max-width:440px;margin:0 auto}
+.price-card{
+  border:1px solid var(--gold-border);border-radius:3px;
+  padding:36px;background:var(--bg2);position:relative;
+}
+.price-card::before{
+  content:'';position:absolute;top:-1px;left:18%;right:18%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.price-plan{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--ts);margin-bottom:12px}
+.price-num{font-family:var(--serif);font-size:54px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
+.price-num span{font-size:16px;font-family:var(--sans);font-weight:300;color:var(--ts)}
+.price-annual{font-size:12px;color:var(--gold);margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.price-feats{list-style:none;margin-bottom:28px}
+.price-feats li{font-size:13px;color:var(--ts);padding:8px 0;display:flex;gap:10px;border-bottom:1px solid var(--border2)}
+.price-feats li:last-child{border-bottom:none}
+.price-feats li::before{content:'—';color:var(--gold-d);flex-shrink:0}
+.price-cta{
+  width:100%;padding:13px;background:var(--gold);border:none;color:var(--bg);
+  font-size:14px;font-weight:500;border-radius:2px;transition:background .15s;margin-bottom:10px;
+}
+.price-cta:hover{background:var(--gold-l)}
+.price-footnote{font-size:12px;color:var(--tm);text-align:center;line-height:1.7}
+.price-footnote a{color:var(--gold)}
+.price-contact-strip{
+  margin-top:18px;padding:14px 16px;
+  background:var(--bg3);border-radius:2px;border:1px solid var(--border);
+  font-size:12px;color:var(--ts);line-height:1.65;
+}
+.price-contact-strip a{color:var(--gold)}
 
-/* NOTE TYPES */
-.note-types{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:3px}
-.nc{padding:32px;border-right:1px solid var(--border)}
-.nc:last-child{border-right:none}
-.nc-lbl{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;padding:3px 9px;margin-bottom:20px;display:inline-block;border-radius:2px}
-.nc-off{background:rgba(60,130,180,0.1);color:#6AADCC;border:1px solid rgba(60,130,180,0.18)}
-.nc-prv{background:rgba(180,130,60,0.1);color:#D4A050;border:1px solid rgba(180,130,60,0.18)}
-.ni{margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border)}
-.ni:last-child{border:none;margin-bottom:0;padding-bottom:0}
-.ni-n{font-size:14px;font-weight:500;color:var(--text);margin-bottom:3px}
-.ni-d{font-size:12px;color:var(--tm);line-height:1.5}
-
-/* SUPERVISION WORKFLOW */
-.sup-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:3px}
-.sup-card{padding:28px 24px;border-right:1px solid var(--border);position:relative}
-.sup-card:last-child{border-right:none}
-.sup-badge{font-size:10px;padding:3px 9px;border-radius:10px;margin-bottom:14px;display:inline-block;font-weight:500}
-.sb-draft{background:rgba(255,255,255,0.05);color:var(--ts);border:1px solid var(--border)}
-.sb-sub{background:rgba(41,128,185,0.1);color:#6AADCC;border:1px solid rgba(41,128,185,0.18)}
-.sb-rev{background:rgba(39,174,96,0.1);color:#4CAF77;border:1px solid rgba(39,174,96,0.18)}
-.sup-card-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px}
-.sup-card-d{font-size:12px;color:var(--ts);line-height:1.6}
-.sup-arrow{position:absolute;right:-14px;top:50%;transform:translateY(-50%);color:var(--gold-d);font-size:18px;z-index:2}
-
-/* SECURITY */
-.sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px}
-.sec-item{padding:26px 24px;background:var(--bg)}
-.sec-icon{font-size:15px;margin-bottom:11px;color:var(--gold)}
-.sec-t{font-size:14px;font-weight:500;color:var(--text);margin-bottom:5px}
-.sec-d{font-size:12px;color:var(--ts);line-height:1.65}
-
-/* FOUNDER */
-.founder{display:grid;grid-template-columns:1fr 2fr;gap:44px;align-items:start;border:1px solid var(--border);padding:40px;border-radius:3px}
-.founder-name{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:5px}
-.founder-title{font-size:12px;color:var(--ts);line-height:1.65;margin-bottom:14px}
-.founder-tags{display:flex;flex-wrap:wrap;gap:6px}
-.founder-tag{font-size:11px;padding:3px 9px;border:1px solid var(--border);color:var(--tm);border-radius:2px}
-.founder-bio{font-size:13px;line-height:1.88;color:var(--ts)}
-.founder-bio p{margin-bottom:13px}
-.founder-bio p:last-child{margin-bottom:0}
-.founder-bio strong{color:var(--text);font-weight:500}
-
-/* PRICING */
-.price-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:3px}
-.price-card{padding:32px 28px;border-right:1px solid var(--border);position:relative}
-.price-card:last-child{border-right:none}
-.price-card.feat-c{background:var(--bg2)}
-.price-card.feat-c::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.price-badge{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;padding:3px 9px;background:rgba(184,154,90,0.1);color:var(--gold);border:1px solid var(--border-g);display:inline-block;margin-bottom:12px;border-radius:2px}
-.price-tier{font-size:13px;font-weight:500;letter-spacing:0.04em;color:var(--ts);margin-bottom:6px}
-.price-num{font-family:var(--serif);font-size:38px;font-weight:500;color:var(--text);line-height:1;margin-bottom:4px}
-.price-num span{font-size:14px;color:var(--tm);font-family:var(--sans);font-weight:300}
-.price-desc{font-size:12px;color:var(--tm);margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.price-feats{list-style:none}
-.price-feats li{font-size:12px;color:var(--ts);padding:5px 0;display:flex;gap:8px;align-items:flex-start}
-.price-feats li::before{content:'—';color:var(--gold);flex-shrink:0}
-.price-btn{display:block;width:100%;margin-top:24px;padding:10px;text-align:center;font-size:13px;font-weight:500;border:1px solid var(--border);color:var(--ts);background:transparent;cursor:pointer;transition:all 0.2s;font-family:var(--sans);border-radius:2px}
-.price-btn:hover,.price-btn.fp{border-color:var(--gold);color:var(--gold)}
-.price-btn.fp:hover{background:var(--gold);color:var(--bg)}
-
-/* FAQ */
+/* ── FAQ ── */
 .faq-item{border-bottom:1px solid var(--border)}
-.faq-q{width:100%;text-align:left;padding:17px 0;background:transparent;border:none;color:var(--text);font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:space-between;font-family:var(--sans)}
+.faq-q{
+  width:100%;text-align:left;padding:17px 0;background:transparent;border:none;
+  color:var(--text);font-size:14px;cursor:pointer;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+}
 .faq-q:hover{color:var(--gold)}
-.faq-q .icon{font-size:18px;color:var(--gold);flex-shrink:0}
-.faq-a{font-size:13px;color:var(--ts);line-height:1.75;padding-bottom:16px;display:none}
+.faq-icon{font-size:16px;color:var(--gold);flex-shrink:0;margin-top:1px;transition:transform .2s}
+.faq-a{font-size:13px;color:var(--ts);line-height:1.82;padding-bottom:16px;display:none}
 
-/* QUOTE */
-.quote-sec{padding:66px 48px;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
-.quote-inner{max-width:680px;margin:0 auto;text-align:center}
-.quote-t{font-family:var(--serif);font-size:26px;font-weight:400;font-style:italic;line-height:1.55;color:var(--text);margin-bottom:18px}
-.quote-a{font-size:12px;color:var(--tm)}
+/* ── ACCESS OVERLAY ── */
+.access-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,0.88);z-index:500;
+  align-items:center;justify-content:center;padding:20px;
+}
+.access-overlay.open{display:flex}
+.access-modal{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:4px;padding:32px;max-width:420px;width:100%;position:relative;
+}
+.access-modal::before{
+  content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,154,90,.5),transparent);
+}
+.access-modal h3{font-family:var(--serif);font-size:26px;font-weight:500;margin-bottom:6px}
+.access-modal .sub{font-size:13px;color:var(--ts);margin-bottom:22px;line-height:1.65}
+.a-input{
+  width:100%;padding:11px 14px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:2px;color:var(--text);
+  font-family:var(--sans);font-size:14px;margin-bottom:10px;outline:none;
+  transition:border .15s;
+}
+.a-input:focus{border-color:var(--gold-border)}
+.a-btn{
+  width:100%;padding:12px;background:var(--gold);border:none;
+  color:var(--bg);font-size:14px;font-weight:500;border-radius:2px;
+  transition:background .15s;margin-bottom:8px;
+}
+.a-btn:hover{background:var(--gold-l)}
+.a-cancel{
+  width:100%;padding:10px;background:transparent;
+  border:1px solid var(--border);color:var(--ts);font-size:13px;border-radius:2px;
+}
+.a-iban{
+  display:none;margin-top:16px;padding:16px;
+  background:var(--bg3);border:1px solid var(--gold-border);border-radius:2px;
+}
+.a-iban.show{display:block}
+.a-iban-lbl{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.a-iban-val{font-size:14px;font-weight:500;color:var(--text);margin-bottom:10px;letter-spacing:.04em;font-family:monospace}
+.a-iban-note{font-size:12px;color:var(--ts);line-height:1.7}
+.a-success{
+  display:none;padding:16px;margin-top:12px;
+  background:rgba(76,175,119,.1);border:1px solid rgba(76,175,119,.2);
+  border-radius:2px;font-size:13px;color:var(--green);line-height:1.65;
+}
 
-/* CTA */
-.cta-sec{padding:86px 48px;text-align:center}
-.cta-h{font-family:var(--serif);font-size:40px;font-weight:500;line-height:1.2;margin-bottom:12px}
-.cta-h em{font-style:italic;color:var(--gold-l)}
-.cta-p{font-size:15px;color:var(--ts);margin-bottom:32px}
-.cta-form{display:flex;max-width:420px;margin:0 auto}
-.cta-form input{flex:1;padding:12px 15px;background:var(--bg2);border:1px solid var(--border);border-right:none;color:var(--text);font-family:var(--sans);font-size:14px;font-weight:300;outline:none;border-radius:2px 0 0 2px}
-.cta-form input:focus{border-color:var(--border-g)}
-.cta-form button{padding:12px 20px;background:var(--gold);border:1px solid var(--gold);color:var(--bg);font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;border-radius:0 2px 2px 0}
-.cta-form button:hover{background:var(--gold-l)}
-
-/* FOOTER */
-footer{border-top:1px solid var(--border);padding:28px 48px;display:flex;align-items:center;justify-content:space-between;max-width:100%}
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:24px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
 .f-logo{display:flex;align-items:center;gap:9px}
-.f-logo-text{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--ts)}
-.f-logo-text span{color:var(--gold)}
-.f-links{display:flex;gap:20px}
-.f-links a{font-size:12px;color:var(--tm);transition:color 0.2s}
+.f-logo-t{font-family:var(--serif);font-size:20px;font-weight:500;color:var(--ts)}
+.f-logo-t span{color:var(--gold)}
+.f-links{display:flex;gap:18px}
+.f-links a{font-size:12px;color:var(--tm);transition:color .15s}
 .f-links a:hover{color:var(--ts)}
 .f-copy{font-size:12px;color:var(--tm)}
 
-/* MOBILE */
-@media(max-width:800px){
-  nav{padding:13px 18px}
-  .nav-links{display:none}
-  .hero{grid-template-columns:1fr;padding:110px 18px 56px;gap:36px}
-  section{padding:56px 18px}
-  .stats-wrap{padding:0 18px}
-  .stats,.steps,.feat-grid,.note-types,.sup-grid,.sec-grid,.price-grid{grid-template-columns:1fr}
-  .stat,.step,.nc,.sup-card,.price-card{border-right:none;border-bottom:1px solid var(--border)}
-  .founder{grid-template-columns:1fr;padding:22px;gap:20px}
-  footer{flex-direction:column;gap:12px;text-align:center;padding:24px 18px}
-  h1{font-size:38px}
-  .sh{font-size:30px}
+/* ── MOBILE ── */
+@media(max-width:820px){
+  nav{padding:12px 18px}
+  h1{font-size:44px}
+  .hero{padding:116px 20px 60px}
+  .preview-wrap{padding:0 20px 56px}
+  .preview-body{grid-template-columns:1fr}
+  .preview-col+.preview-col{border-left:none;border-top:1px solid var(--border)}
+  .preview-tabs{display:none}
+  .sec{padding:56px 20px}
+  .how-grid{grid-template-columns:1fr;gap:36px}
+  .notes-grid{grid-template-columns:1fr}
+  .notes-col+.notes-col{border-top:1px solid var(--border)}
+  .founder-body{padding:28px 22px}
+  .founder-footer{padding:18px 22px}
+  footer{flex-direction:column;gap:12px;text-align:center;padding:22px 20px}
 }
 </style>
 </head>
 <body>
 
+<!-- ACCESS MODAL -->
+<div class="access-overlay" id="access-overlay">
+  <div class="access-modal">
+    <h3 id="am-h">Erişim Al</h3>
+    <p class="sub" id="am-sub">14 gün ücretsiz deneme. Kredi kartı gerekmez.</p>
+    <input class="a-input" id="am-name" type="text" placeholder="Ad Soyad">
+    <input class="a-input" id="am-email" type="email" placeholder="E-posta">
+    <div class="a-iban" id="am-iban">
+      <div class="a-iban-lbl" id="am-iban-lbl">Ödeme Bilgileri</div>
+      <!-- ⚠️ BURAYA GERÇEK IBAN'INI YAZ / REPLACE WITH YOUR REAL IBAN -->
+      <div class="a-iban-val">TR12 0006 2000 7550 0006 2943 26</div>
+      <div class="a-iban-note" id="am-iban-note">Aylık ₺299 tutarını yukarıdaki IBAN'a EFT/havale olarak gönderin. Açıklama: e-posta adresiniz. Ödeme doğrulandıktan sonra 24 saat içinde hesabınız aktif edilir.</div>
+    </div>
+    <div class="a-success" id="am-success"></div>
+    <button class="a-btn" id="am-btn" onclick="handleAccess()"><span id="am-btn-t">Devam et →</span></button>
+    <button class="a-cancel" onclick="closeAccess()">İptal</button>
+  </div>
+</div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-    <div class="elephant-logo">
-      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-        <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
-        <circle cx="12" cy="13.5" r="6.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
-        <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="#B89A5A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
-        <circle cx="13.5" cy="11.5" r="1.2" fill="#B89A5A"/>
-        <path d="M6.5 13 Q5 13.5 5.5 16.5" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.55"/>
-        <path d="M31 17 Q34 15.5 32.5 20" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.45"/>
-        <path d="M19 28.5 Q20 31 22 30" stroke="#B89A5A" stroke-width="1.1" fill="none" stroke-linecap="round" opacity="0.4"/>
-      </svg>
-    </div>
-    <div class="nav-logo-text">Oda<span>.</span></div>
-  </div>
-  <div class="nav-links">
-    <a href="#how"><span data-en="How it works" data-tr="Nasıl çalışır">Nasıl çalışır</span></a>
-    <a href="#features"><span data-en="Features" data-tr="Özellikler">Özellikler</span></a>
-    <a href="#notes"><span data-en="Note types" data-tr="Not türleri">Not türleri</span></a>
-    <a href="#pricing"><span data-en="Pricing" data-tr="Fiyatlar">Fiyatlar</span></a>
-    <a href="#founder"><span data-en="About" data-tr="Hakkında">Hakkında</span></a>
-  </div>
-  <div class="nav-right">
-    <div class="lang-toggle">
-      <button class="lang-btn" id="btn-tr" onclick="setLang('tr')">TR</button>
-      <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
-    </div>
-    <button class="nav-cta" onclick="scrollWL()"><span data-tr="Bekleme listesi" data-en="Join waitlist">Join waitlist</span></button>
-    <a href="/oda-app.html" class="nav-app-btn" id="nav-app-link"><span data-tr="Uygulamayı dene →" data-en="Try the app →">Try the app →</span></a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<div style="padding:0 0;max-width:100%">
-<div class="hero">
-  <div>
-    <div class="hero-label" data-tr="Terapistler ve psikologlar için" data-en="For therapists & psychologists">For therapists & psychologists</div>
-    <h1 data-tr="Ham notlarından <em>klinik belge.</em> Saniyeler içinde." data-en="From rough notes to <em>clinical document.</em> In seconds.">From rough notes to <em>clinical document.</em> In seconds.</h1>
-    <p class="hero-p" data-tr="Oda, seans sonrası ham notlarını — sesli, fotoğraflı veya yazılı — DAP, Süreç Notu, Risk Değerlendirmesi ve daha fazlasına dönüştürür. Türkçe ve İngilizce. Tüm modaliteler için." data-en="Oda turns your post-session notes — typed, dictated, or photographed — into DAP notes, Process Notes, Risk Assessments, and more. In Turkish and English. For every modality.">Oda turns your post-session notes — typed, dictated, or photographed — into DAP notes, Process Notes, Risk Assessments, and more. In Turkish and English. For every modality.</p>
-    <div class="hero-actions">
-      <a href="/oda-app.html" class="hero-try-btn" id="hero-app-link" data-tr="Uygulamayı ücretsiz dene →" data-en="Try the app free →">Try the app free →</a>
-      <button class="hero-wl-btn" onclick="document.getElementById('wl-section').scrollIntoView({behavior:'smooth'})" data-tr="Bekleme listesi" data-en="Join waitlist">Join waitlist</button>
-    </div>
-    <div class="hero-note" data-tr="Kayıt gerekmez · Kredi kartı yok · Şu an kullanıma açık" data-en="No signup required · No credit card · Available now">No signup required · No credit card · Available now</div>
-  </div>
-
-  <!-- ANIMATED DEMO -->
-  <div class="demo-shell">
-    <div class="demo-topbar">
-      <div class="demo-dots">
-        <div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div>
-      </div>
-      <div class="demo-title" id="demo-client-label">Client A — Session 7</div>
-      <div class="demo-badge" id="demo-note-badge">DAP Note</div>
-    </div>
-    <div class="demo-body">
-      <div class="demo-notes-label" data-tr="Ham Notlar" data-en="Raw Notes">Raw Notes</div>
-      <div class="demo-notes-raw" id="demo-raw-notes"></div>
-      <div class="demo-arrow-row">
-        <div class="demo-arrow-line"></div>
-        <div class="demo-arrow-icon" id="demo-spinner">⟳</div>
-        <div class="demo-arrow-line r"></div>
-      </div>
-      <div class="demo-out-header">
-        <div class="demo-out-label" id="demo-out-label">DAP Note</div>
-        <div class="demo-out-tag" id="demo-out-tag">Official</div>
-      </div>
-      <div id="demo-output">
-        <div class="demo-section">
-          <div class="demo-sec-lbl">Data</div>
-          <div class="demo-sec-txt" id="demo-data-txt"></div>
-        </div>
-        <div class="demo-section" id="demo-section2">
-          <div class="demo-sec-lbl" id="demo-lbl2">Assessment</div>
-          <div class="demo-sec-txt" id="demo-assessment-txt"></div>
-        </div>
-        <div class="demo-section" id="demo-section3">
-          <div class="demo-sec-lbl" id="demo-lbl3">Plan</div>
-          <div class="demo-sec-txt" id="demo-plan-txt"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
-
-<hr class="divider">
-
-<!-- STATS -->
-<div class="stats-wrap" style="padding-top:64px;padding-bottom:64px">
-  <div class="stats">
-    <div class="stat"><div class="stat-n">5</div><div class="stat-l" data-tr="not türü — resmi kayıttan özel süpervizyon materyaline" data-en="note types — official chart to private supervision material">note types — official chart to private supervision material</div></div>
-    <div class="stat"><div class="stat-n">6</div><div class="stat-l" data-tr="terapötik modalite — BDT, Psikanalitik, Şema, DBT, ACT, Bütünleşik" data-en="modalities — CBT, Psychoanalytic, Schema, DBT, ACT, Integrative">modalities — CBT, Psychoanalytic, Schema, DBT, ACT, Integrative</div></div>
-    <div class="stat"><div class="stat-n">2</div><div class="stat-l" data-tr="dil — Türkçe ve İngilizce, doğru klinik terminoloji ile" data-en="languages — Turkish and English, with correct clinical terminology">languages — Turkish and English, with correct clinical terminology</div></div>
-  </div>
-</div>
-
-<hr class="divider">
-
-<!-- HOW IT WORKS -->
-<section id="how">
-  <span class="sl" data-tr="Nasıl çalışır" data-en="How it works">How it works</span>
-  <h2 class="sh" data-tr="Üç adım. <em>Otuz saniye.</em>" data-en="Three steps. <em>Thirty seconds.</em>">Three steps. <em>Thirty seconds.</em></h2>
-  <p class="ss" data-tr="Öğrenme eğrisi yok. Seans sonrası ne olduğunu gir — Oda gerisini halleder." data-en="No learning curve. Enter what happened after the session — Oda does the rest.">No learning curve. Enter what happened after the session — Oda does the rest.</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-n">01</div>
-      <div class="step-t" data-tr="Notlarını gir" data-en="Enter your notes">Enter your notes</div>
-      <div class="step-d" data-tr="Kısaltmalar, bilinç akışı, sesli dikte veya el yazılı notun fotoğrafı — seans hemen ardından, nasıl geliyorsa." data-en="Shorthand, stream of consciousness, voice dictation, or a photo of handwritten notes — however comes naturally right after the session.">Shorthand, stream of consciousness, voice dictation, or a photo of handwritten notes — however comes naturally right after the session.</div>
-    </div>
-    <div class="step">
-      <div class="step-n">02</div>
-      <div class="step-t" data-tr="Modalite ve not türünü seç" data-en="Choose modality and note type">Choose modality and note type</div>
-      <div class="step-d" data-tr="Terapötik modaliteni ve not türünü seç — DAP, Süreç Notu, Risk Değerlendirmesi, Karşıaktarım. Yapay zeka buna göre yazar." data-en="Select your modality and note type — DAP, Process Note, Risk Assessment, Countertransference. The AI writes accordingly.">Select your modality and note type — DAP, Process Note, Risk Assessment, Countertransference. The AI writes accordingly.</div>
-    </div>
-    <div class="step">
-      <div class="step-n">03</div>
-      <div class="step-t" data-tr="Gözden geçir ve dışa aktar" data-en="Review and export">Review and export</div>
-      <div class="step-d" data-tr="Not saniyeler içinde gelir. İncele, düzenle, kopyala veya PDF'e aktar. Risk dili otomatik vurgulanır. Her şey danışan klasörüne kaydedilir." data-en="Note arrives in seconds. Review, edit, copy, or export to PDF. Risk language is highlighted automatically. Everything saves to the client folder.">Note arrives in seconds. Review, edit, copy, or export to PDF. Risk language highlighted automatically. Saved to the client folder.</div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- FEATURES -->
-<section id="features">
-  <span class="sl" data-tr="Özellikler" data-en="Features">Features</span>
-  <h2 class="sh" data-tr="Klinik çalışman için <em>gerçekten inşa edildi</em>" data-en="<em>Actually built</em> for clinical work">&#x3C;em>Actually built&#x3C;/em> for clinical work</h2>
-  <p class="ss" data-tr="Başka ülke, başka terapist için yapılmış bir araç değil. Oda, KVKK ile, psikanalitik çerçeveyle ve Türkiye pratiğinin gerçekleriyle tasarlandı." data-en="Not a tool built for another country's therapist and translated. Oda was designed with KVKK, psychoanalytic frameworks, and the realities of Turkish clinical practice from the start.">Not a tool built for another country's therapist and translated. Designed with KVKK, psychoanalytic frameworks, and Turkish clinical practice from the start.</p>
-  <div class="feat-grid">
-    <div class="feat">
-      <div class="feat-icon">🗂</div>
-      <div class="feat-t" data-tr="Danışan klasörleri" data-en="Client folders">Client folders</div>
-      <div class="feat-d" data-tr="Her danışan için kronolojik seans geçmişi, ICD-10/DSM-5 tanı alanları, tedavi planı ve takvim." data-en="Chronological session history, ICD-10/DSM-5 diagnosis fields, treatment plan, and session calendar per client.">Chronological session history, ICD-10/DSM-5 fields, treatment plan, and calendar per client.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">📋</div>
-      <div class="feat-t" data-tr="5 not türü" data-en="5 note types">5 note types</div>
-      <div class="feat-d" data-tr="Klinik Not (DAP), Risk Değerlendirmesi, Seans Özeti — resmi için. Süreç Notu, Karşıaktarım — süpervizyon için." data-en="Clinical Note (DAP), Risk Assessment, Session Summary — for the chart. Process Note, Countertransference — for supervision.">Clinical Note (DAP), Risk Assessment, Session Summary — official. Process Note, Countertransference — supervision.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">📊</div>
-      <div class="feat-t" data-tr="Sonuç ölçümleri" data-en="Outcome measures">Outcome measures</div>
-      <div class="feat-d" data-tr="PHQ-9, GAD-7, BDI-II, BAI — seans bazında gir, ağırlık seviyeleri ve mini trend grafiğiyle görüntüle." data-en="PHQ-9, GAD-7, BDI-II, BAI — enter per session, view with severity levels and mini sparkline trend chart.">PHQ-9, GAD-7, BDI-II, BAI — entered per session with severity levels and sparkline trends.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">🔒</div>
-      <div class="feat-t" data-tr="Özel / resmi ayrımı" data-en="Private vs. official separation">Private vs. official separation</div>
-      <div class="feat-d" data-tr="Süreç notları ve karşıaktarım notları açıkça ÖZEL olarak işaretlenir. Resmi tıbbi kayıttan ayrı — KVKK ve klinik etiğin gerektirdiği gibi." data-en="Process and countertransference notes explicitly marked PRIVATE. Separate from the official chart — as KVKK and clinical ethics require.">Process and countertransference notes marked PRIVATE. Separate from the official chart, as KVKK and ethics require.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">🎙</div>
-      <div class="feat-t" data-tr="Ses, fotoğraf, yazı girişi" data-en="Voice, photo, and text input">Voice, photo, and text input</div>
-      <div class="feat-d" data-tr="Seans notlarını yaz, sesle dikte et veya el yazılı notun fotoğrafını yükle. Yapay zeka el yazısını okur." data-en="Type session notes, dictate by voice, or upload a photo of handwritten notes. AI reads the handwriting.">Type notes, dictate by voice, or photograph handwritten notes. AI reads the handwriting.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">👁</div>
-      <div class="feat-t" data-tr="Risk sözcüğü vurgulama" data-en="Risk word highlighting">Risk word highlighting</div>
-      <div class="feat-d" data-tr="Klinik risk dili — intihar, kendine zarar, kriz — Türkçe ve İngilizce otomatik vurgulanır." data-en="Clinical risk language — suicidal ideation, self-harm, crisis — automatically flagged in Turkish and English.">Risk language — suicidal ideation, self-harm, crisis — automatically flagged in Turkish and English.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">📄</div>
-      <div class="feat-t" data-tr="PDF dışa aktarma" data-en="PDF export">PDF export</div>
-      <div class="feat-d" data-tr="Danışan kodu, seans numarası, tarih, ICD-10 ve özel/resmi başlıkla biçimlendirilmiş PDF." data-en="Formatted PDF with client code, session number, date, ICD-10, and private/official header.">Formatted PDF with client code, date, ICD-10, and private/official watermark.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">📅</div>
-      <div class="feat-t" data-tr="Dahili takvim" data-en="Built-in calendar">Built-in calendar</div>
-      <div class="feat-d" data-tr="Haftalık tekrarlayan seans günlerini ayarla. Takvimde planlanmış seanslar görünür — tek tıkla yeni seans başlat." data-en="Set recurring weekly session days. Scheduled sessions appear on the calendar — start a new session with one click.">Set recurring session days. Sessions appear on the calendar — start one with a single click.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-    <div class="feat">
-      <div class="feat-icon">🌍</div>
-      <div class="feat-t" data-tr="Tam iki dilli" data-en="Fully bilingual">Fully bilingual</div>
-      <div class="feat-d" data-tr="Türkçe veya İngilizce gir, istediğin dilde çıktı al. Her iki dilde de doğru klinik terminoloji." data-en="Enter in Turkish or English, output in either language. Accurate clinical terminology in both.">Input in Turkish or English, output in either. Correct clinical terminology in both.</div>
-      <span class="feat-tag ft-built" data-tr="Hazır" data-en="Built">Built</span>
-    </div>
-  </div>
-  <div>
-    <span class="sl" style="display:block;margin-top:48px;margin-bottom:9px" data-tr="Desteklenen modaliteler" data-en="Modalities supported">Modalities supported</span>
-    <div class="mods-row">
-      <span class="mod-pill">CBT</span>
-      <span class="mod-pill">Psychoanalytic</span>
-      <span class="mod-pill">Psychodynamic</span>
-      <span class="mod-pill">Schema Therapy</span>
-      <span class="mod-pill">DBT</span>
-      <span class="mod-pill">ACT</span>
-      <span class="mod-pill">Integrative</span>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- NOTE TYPES -->
-<section id="notes">
-  <span class="sl" data-tr="Not türleri" data-en="Note types">Note types</span>
-  <h2 class="sh" data-tr="Resmi kayıt ve özel süpervizyon <em>ayrı tutulur</em>" data-en="Official chart and private supervision <em>kept separate</em>">Official chart and private supervision <em>kept separate</em></h2>
-  <p class="ss" data-tr="Bu ayrım klinik etik açısından zorunludur. Oda bunu görsel olarak ve dışa aktarılan PDF'lerde uygular." data-en="This separation is an ethical requirement. Oda enforces it visually and in exported PDFs.">This separation is an ethical requirement. Oda enforces it visually and in exported PDFs.</p>
-  <div class="note-types">
-    <div class="nc">
-      <span class="nc-lbl nc-off" data-tr="Resmi tıbbi kayıt notları" data-en="Official chart notes">Official chart notes</span>
-      <div class="ni">
-        <div class="ni-n">Clinical Note (DAP)</div>
-        <div class="ni-d" data-tr="Veri, Değerlendirme, Plan — bireysel pratik standardı. Kısa, klinik, hukuken savunulabilir." data-en="Data, Assessment, Plan — the standard for private practice. Brief, clinical, legally defensible.">Data, Assessment, Plan — standard for private practice. Brief, clinical, legally defensible.</div>
-      </div>
-      <div class="ni">
-        <div class="ni-n" data-tr="Risk Değerlendirmesi" data-en="Risk Assessment">Risk Assessment</div>
-        <div class="ni-d" data-tr="İntihar düşüncesi, kendine zarar, koruyucu faktörler, güvenlik planı — sistematik kapsam." data-en="Suicidal ideation, self-harm, protective factors, safety plan — systematic coverage.">Suicidal ideation, self-harm, protective factors, safety plan — systematic coverage.</div>
-      </div>
-      <div class="ni">
-        <div class="ni-n" data-tr="Seans Özeti" data-en="Session Summary">Session Summary</div>
-        <div class="ni-d" data-tr="Temalar, sunum, içgörüler ve sonraki seans planının kısa anlatı kaydı." data-en="Brief narrative record of themes, presentation, insights, and next session plan.">Brief narrative of themes, presentation, insights, and next session plan.</div>
-      </div>
-    </div>
-    <div class="nc">
-      <span class="nc-lbl nc-prv" data-tr="Özel süpervizyon notları" data-en="Private supervision notes">Private supervision notes</span>
-      <div class="ni">
-        <div class="ni-n" data-tr="Süreç Notu" data-en="Process Note">Process Note</div>
-        <div class="ni-d" data-tr="Seans anlatısının ayrıntılı kronolojisi — süpervizyon için. Tam cümleler, sessizlikler, duygulanım geçişleri. Resmi kayıttan fiziksel olarak ayrı." data-en="Detailed chronological narrative of the session — for supervision. Full sentences, silences, affect shifts. Physically separate from the official chart.">Detailed narrative for supervision — full sentences, silences, affect shifts. Physically separate from the chart.</div>
-      </div>
-      <div class="ni">
-        <div class="ni-n" data-tr="Karşıaktarım Notu" data-en="Countertransference Note">Countertransference Note</div>
-        <div class="ni-d" data-tr="Terapistin kendi duygusal tepkileri, düşünceler, beden duyumları. Birinci şahıs, dürüst, savunmasız. Yalnızca süpervizyon için." data-en="Therapist's own emotional reactions, thoughts, bodily sensations. First person, honest, undefended. For supervision only.">Therapist's own reactions, thoughts, bodily sensations. First person, honest. For supervision only.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SUPERVISION WORKFLOW -->
-<section id="supervision">
-  <span class="sl" data-tr="Süpervizyon iş akışı" data-en="Supervision workflow">Supervision workflow</span>
-  <h2 class="sh" data-tr="Notlarını süpervizyon için <em>takip et</em>" data-en="Track your notes <em>through supervision</em>">Track your notes <em>through supervision</em></h2>
-  <p class="ss" data-tr="Her oluşturulan not için süpervizyon durumu takip edilir. İleride: süpervizörünüz notu Oda içinde doğrudan inceleyecek." data-en="Supervision status is tracked for every generated note. Coming next: your supervisor reviews the note directly inside Oda.">Supervision status is tracked for every generated note. Coming next: your supervisor reviews directly inside Oda.</p>
-  <div class="sup-grid">
-    <div class="sup-card">
-      <div class="sup-badge sb-draft" data-tr="Taslak" data-en="Draft">Draft</div>
-      <div class="sup-card-t" data-tr="Not oluşturuldu" data-en="Note generated">Note generated</div>
-      <div class="sup-card-d" data-tr="İncelemenizi ve onayınızı bekliyor. Düzenlenebilir, kopyalanabilir, PDF'e aktarılabilir." data-en="Awaiting your review and approval. Editable, copyable, exportable to PDF.">Awaiting your review. Editable, copyable, exportable to PDF.</div>
-      <div class="sup-arrow">→</div>
-    </div>
-    <div class="sup-card">
-      <div class="sup-badge sb-sub" data-tr="Gönderildi" data-en="Submitted">Submitted</div>
-      <div class="sup-card-t" data-tr="Süpervizöre gönderildi" data-en="Submitted to supervisor">Submitted to supervisor</div>
-      <div class="sup-card-d" data-tr="Gönderim tarihi kaydedilir. Not değiştirilemez olarak işaretlenir." data-en="Submission date recorded. Note marked as pending review.">Submission date recorded. Note marked as pending review.</div>
-      <div class="sup-arrow">→</div>
-    </div>
-    <div class="sup-card">
-      <div class="sup-badge sb-rev" data-tr="✓ İncelendi" data-en="✓ Reviewed">✓ Reviewed</div>
-      <div class="sup-card-t" data-tr="Süpervizyon tamamlandı" data-en="Supervision complete">Supervision complete</div>
-      <div class="sup-card-d" data-tr="Not incelendi olarak işaretlendi. Süpervizyon günlüğünde kayıtlı." data-en="Note marked as reviewed. Logged in supervision record.">Note marked as reviewed. Logged in supervision record.</div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- SECURITY -->
-<section id="security">
-  <span class="sl" data-tr="Gizlilik & KVKK" data-en="Privacy & KVKK">Privacy & KVKK</span>
-  <h2 class="sh" data-tr="Klinik <em>gizlilik</em> temelinde inşa edildi" data-en="Built on clinical <em>privacy</em>">Built on clinical <em>privacy</em></h2>
-  <p class="ss" data-tr="Danışanlarınızın verilerinden siz sorumlusunuz. Oda, bu sorumluluğu yerine getirmenizi kolaylaştıracak şekilde tasarlandı." data-en="You are responsible for your clients' data. Oda is designed to make that responsibility easy to fulfil.">You are responsible for your clients' data. Oda is designed to make that easy to fulfil.</p>
-  <div class="sec-grid">
-    <div class="sec-item">
-      <div class="sec-icon">🇹🇷</div>
-      <div class="sec-t" data-tr="KVKK uyumlu" data-en="KVKK compliant">KVKK compliant</div>
-      <div class="sec-d" data-tr="Oda, Türkiye Kişisel Verilerin Korunması Kanunu kapsamında çalışır. Siz veri sorumlusu, biz veri işleyicisiyiz. Her oturum başında KVKK bildirimi." data-en="Oda operates under Turkey's KVKK. You are the data controller, we are the processor. KVKK notice at every session start.">Oda operates under KVKK. You are the data controller. KVKK acknowledgement shown at session start.</div>
-    </div>
-    <div class="sec-item">
-      <div class="sec-icon">🔐</div>
-      <div class="sec-t" data-tr="Kimlik bilgisi asla girilmez" data-en="No identifying data entered">No identifying data entered</div>
-      <div class="sec-d" data-tr="Sistem yalnızca anonimleştirilmiş kodlar için tasarlanmıştır — gerçek isimler değil. Yapay zekaya gönderilen notlar tanımlayıcı bilgi içermez." data-en="The system is designed for anonymised codes only — not real names. Notes sent to AI contain no identifying information.">Designed for anonymised codes only — no real names. Notes sent to AI contain no identifying information.</div>
-    </div>
-    <div class="sec-item">
-      <div class="sec-icon">💾</div>
-      <div class="sec-t" data-tr="Yerel depolama" data-en="Local storage">Local storage</div>
-      <div class="sec-d" data-tr="Danışan kayıtları şu anda yalnızca tarayıcınızda depolanır — hiçbir yere yüklenmez. Not metni yapay zeka işleme için sunucudan geçer." data-en="Client records are stored in your browser only — uploaded nowhere. Note text passes through the server for AI processing.">Records stored in your browser only. Note text passes through the server for AI processing only.</div>
-    </div>
-    <div class="sec-item">
-      <div class="sec-icon">⚖</div>
-      <div class="sec-t" data-tr="Özel not ayrımı uygulama" data-en="Private note separation enforced">Private note separation enforced</div>
-      <div class="sec-d" data-tr="Süreç notları ve karşıaktarım notları görsel olarak ve PDF'lerde ÖZEL olarak işaretlenir. Resmi tıbbi belgelerden her zaman ayrı." data-en="Process and countertransference notes are visually and on PDF marked PRIVATE. Always separate from official medical documentation.">Process and countertransference notes marked PRIVATE visually and on every PDF export.</div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- FOUNDER -->
-<section id="founder">
-  <span class="sl" data-tr="Oda'yı kim kurdu" data-en="Who built Oda">Who built Oda</span>
-  <h2 class="sh" data-tr="Bir klinisyen tarafından, <em>klinisyenler için</em>" data-en="Built by a clinician, <em>for clinicians</em>">Built by a clinician, <em>for clinicians</em></h2>
-  <div class="founder">
-    <div>
-      <div class="founder-name">Saniye Caz</div>
-      <div class="founder-title" data-tr="Klinik Psikoloji Y.Lisans · Bahçeşehir Üniversitesi<br>Psikoloji Lisans · Bilkent Üniversitesi<br>Türk Psikologlar Derneği Üyesi" data-en="M.Sc. Clinical Psychology · Bahçeşehir University<br>B.A. Psychology · Bilkent University<br>Member, Turkish Psychologists Association">M.Sc. Clinical Psychology · Bahçeşehir University<br>B.A. Psychology · Bilkent University<br>Member, Turkish Psychologists Association</div>
-      <div class="founder-tags">
-        <span class="founder-tag" data-tr="Azınlık stresi" data-en="Minority stress">Minority stress</span>
-        <span class="founder-tag" data-tr="LGBTQIA+ onaylayıcı" data-en="LGBTQIA+ affirming">LGBTQIA+ affirming</span>
-        <span class="founder-tag">CBT · Schema · Psychodynamic</span>
-        <span class="founder-tag" data-tr="Dijital ruh sağlığı" data-en="Digital mental health">Digital mental health</span>
-        <span class="founder-tag">Radboud · Bilkent UMRAM</span>
-      </div>
-    </div>
-    <div class="founder-bio">
-      <p data-tr='Oda belirli bir hayal kırıklığından doğdu. Psikiyatrik yatarak tedavi ortamlarında, dijital ruh sağlığı platformlarında ve bireysel pratikte — Türkçe <em>ve</em> İngilizce, BDT <em>ve</em> psikanalitik çerçevelerle — yıllar çalıştıktan sonra, hep aynı sorunla karşılaştım: <strong>başka bir ülkedeki başka bir terapist için inşa edilmiş dökümantasyon araçları.</strong>' data-en='Oda was born out of a specific frustration. After years working across psychiatric inpatient settings, digital mental health platforms, and private practice — in Turkish <em>and</em> English, with CBT <em>and</em> psychoanalytic frameworks — I kept running into the same problem: <strong>documentation tools built for a different therapist in a different country.</strong>'>Oda was born from a specific frustration. After years across psychiatric inpatient settings, digital mental health platforms, and private practice — in Turkish <em>and</em> English, CBT <em>and</em> psychoanalytic — I kept hitting the same wall: <strong>documentation tools built for a different therapist in a different country.</strong></p>
-      <p data-tr="Hiçbir araç, süreç notunun ilerleme notundan temelden farklı olduğunu anlamıyordu. Hiçbiri karşıaktarım notunun ne olduğunu bilmiyordu. Hiçbiri gerçek klinik kelime dağarcığıyla Türkçe çalışmıyordu. Hiçbiri KVKK'yı ciddiye almıyordu." data-en="No tool understood that a process note is fundamentally different from a progress note. None knew what a countertransference note was. None worked in Turkish with real clinical vocabulary. None took KVKK seriously.">No tool understood that a process note is fundamentally different from a progress note. None knew what a countertransference note was. None worked in Turkish. None took KVKK seriously.</p>
-      <p data-tr="Oda'yı kendim ihtiyaç duyduğum için inşa ettim. Yüzlerce DAP notu yazmış, psikanalitik süpervizyonda oturmuş, LGBTQIA+ danışanlarla çalışmış ve Radboud ile Bilkent UMRAM'da araştırma yapmış biri tarafından tasarlandı. <strong>Klinik bilgi içine işlenmiş durumda.</strong>" data-en="I built Oda because I needed it. Designed by someone who has written hundreds of DAP notes, sat in psychoanalytic supervision, worked with LGBTQIA+ clients navigating institutional distrust in Turkey, and done research at Radboud and Bilkent UMRAM. <strong>The clinical knowledge is built in.</strong>">I built Oda because I needed it. Designed by someone who's written hundreds of DAP notes, sat in psychoanalytic supervision, worked with LGBTQIA+ clients in Turkey, and researched at Radboud and Bilkent UMRAM. <strong>The clinical knowledge is built in.</strong></p>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- PRICING -->
-<section id="pricing">
-  <span class="sl" data-tr="Fiyatlandırma" data-en="Pricing">Pricing</span>
-  <h2 class="sh" data-tr="Sade, şeffaf <em>fiyatlandırma</em>" data-en="Simple, transparent <em>pricing</em>">Simple, transparent <em>pricing</em></h2>
-  <p class="ss" data-tr="Şu an ücretsiz deneyin. Bekleme listesine katılın — lansmanda bilgilendireceğiz." data-en="Try it now for free. Join the waitlist — we'll notify you at launch.">Try it now for free. Join the waitlist — we'll notify you at launch.</p>
-  <div class="price-grid">
-    <div class="price-card">
-      <div class="price-tier" data-tr="Bireysel" data-en="Solo">Solo</div>
-      <div class="price-num">₺299 <span data-tr="/ ay" data-en="/ month">/ month</span></div>
-      <div class="price-desc" data-tr="Bireysel pratikte çalışan terapistler için" data-en="For individual practitioners in private practice">For individual practitioners in private practice</div>
-      <ul class="price-feats">
-        <li data-tr="Sınırsız danışan ve seans" data-en="Unlimited clients & sessions">Unlimited clients & sessions</li>
-        <li data-tr="Tüm 5 not türü" data-en="All 5 note types">All 5 note types</li>
-        <li data-tr="Ses, fotoğraf ve yazı girişi" data-en="Voice, photo & text input">Voice, photo & text input</li>
-        <li data-tr="Sonuç ölçümleri (PHQ-9, GAD-7, BDI, BAI)" data-en="Outcome measures (PHQ-9, GAD-7, BDI, BAI)">Outcome measures (PHQ-9, GAD-7, BDI, BAI)</li>
-        <li data-tr="PDF dışa aktarma" data-en="PDF export">PDF export</li>
-        <li data-tr="Türkçe ve İngilizce" data-en="Turkish & English">Turkish & English</li>
-      </ul>
-      <button class="price-btn" onclick="scrollWL()" data-tr="Bekleme listesine katıl" data-en="Join waitlist">Join waitlist</button>
-    </div>
-    <div class="price-card feat-c">
-      <div class="price-badge" data-tr="En popüler" data-en="Most popular">Most popular</div>
-      <div class="price-tier" data-tr="Klinik" data-en="Clinic">Clinic</div>
-      <div class="price-num">₺799 <span data-tr="/ ay" data-en="/ month">/ month</span></div>
-      <div class="price-desc" data-tr="Küçük klinikler ve grup pratikler için" data-en="For small clinics and group practices">For small clinics and group practices</div>
-      <ul class="price-feats">
-        <li data-tr="Bireysel'deki her şey" data-en="Everything in Solo">Everything in Solo</li>
-        <li data-tr="5 terapist hesabına kadar" data-en="Up to 5 therapist accounts">Up to 5 therapist accounts</li>
-        <li data-tr="Paylaşılan süpervizyon iş akışı" data-en="Shared supervision workflow">Shared supervision workflow</li>
-        <li data-tr="Öncelikli destek" data-en="Priority support">Priority support</li>
-      </ul>
-      <button class="price-btn fp" onclick="scrollWL()" data-tr="Bekleme listesine katıl" data-en="Join waitlist">Join waitlist</button>
-    </div>
-    <div class="price-card">
-      <div class="price-tier" data-tr="Uluslararası" data-en="International">International</div>
-      <div class="price-num">$19 <span data-tr="/ ay" data-en="/ month">/ month</span></div>
-      <div class="price-desc" data-tr="İngilizce konuşan terapistler için" data-en="For English-speaking practitioners">For English-speaking practitioners</div>
-      <ul class="price-feats">
-        <li data-tr="Bireysel'deki her şey" data-en="Everything in Solo">Everything in Solo</li>
-        <li data-tr="İngilizce öncelikli arayüz" data-en="English-first interface">English-first interface</li>
-        <li data-tr="USD faturalama" data-en="USD billing">USD billing</li>
-      </ul>
-      <button class="price-btn" onclick="scrollWL()" data-tr="Bekleme listesine katıl" data-en="Join waitlist">Join waitlist</button>
-    </div>
-  </div>
-</section>
-
-<hr class="divider">
-
-<!-- FAQ -->
-<section id="faq">
-  <span class="sl" data-tr="SSS" data-en="FAQ">FAQ</span>
-  <h2 class="sh" data-tr="Terapistlerin <em>gerçekten</em> sorduğu sorular" data-en="Questions therapists <em>actually</em> ask">Questions therapists <em>actually</em> ask</h2>
-  <div id="faq-container"></div>
-</section>
-
-<!-- QUOTE -->
-<div class="quote-sec">
-  <div class="quote-inner">
-    <div class="quote-t" data-tr='"Dökümantasyon eylemi, klinisyenin teknik becerileriyle çatışma eğilimindedir — ta ki dökümantasyon sistemin değil, klinisyenin ihtiyaçları etrafında şekillenene kadar."' data-en='"The act of documenting tends to conflict with the clinician\'s technical skills — unless the documentation is built around the clinician\'s needs, not the system\'s."'>"The act of documenting tends to conflict with the clinician's technical skills — unless it's built around the clinician's needs, not the system's."</div>
-    <div class="quote-a" data-tr="Amerikan Psikanaliz Derneği — Psikanalitik Uygulama Komitesi" data-en="American Psychoanalytic Association — Committee on Psychoanalytic Practice">American Psychoanalytic Association — Committee on Psychoanalytic Practice</div>
-  </div>
-</div>
-
-<!-- CTA / WAITLIST -->
-<div class="cta-sec" id="wl-section">
-  <h2 class="cta-h" data-tr="Bürokratik işlerin klinik zamanını <em>çalmasına izin verme.</em>" data-en="Stop letting paperwork steal <em>clinical time.</em>">Stop letting paperwork steal <em>clinical time.</em></h2>
-  <p class="cta-p" data-tr="Şimdi ücretsiz dene ya da bekleme listesine katıl." data-en="Try it free now, or join the waitlist for launch updates.">Try it free now, or join the waitlist for launch updates.</p>
-  <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap">
-    <a href="/oda-app.html" id="cta-app-link" style="padding:13px 26px;background:var(--gold);color:var(--bg);font-family:var(--sans);font-size:13px;font-weight:500;border-radius:2px;text-decoration:none" data-tr="Uygulamayı ücretsiz dene →" data-en="Try the app free →">Try the app free →</a>
-  </div>
-  <div class="cta-form">
-    <input type="email" id="cta-email" data-ph-tr="e-posta@adresiniz.com" data-ph-en="your@email.com" placeholder="your@email.com">
-    <button onclick="joinWL('cta')"><span data-tr="Listeye katıl" data-en="Join waitlist">Join waitlist</span></button>
-  </div>
-  <div class="success" id="cta-s" data-tr="Listedesiniz. Yakında haberdar edeceğiz." data-en="You're on the list. We'll be in touch.">You're on the list. We'll be in touch.</div>
-</div>
-
-<footer>
-  <div class="f-logo">
-    <svg width="22" height="22" viewBox="0 0 34 34" fill="none">
+    <svg width="26" height="26" viewBox="0 0 34 34" fill="none">
       <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
       <circle cx="12" cy="13.5" r="6.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
       <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="#B89A5A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
       <circle cx="13.5" cy="11.5" r="1.2" fill="#B89A5A"/>
     </svg>
-    <div class="f-logo-text">Oda<span>.</span></div>
+    <span class="nav-logo-text">Oda<span>.</span></span>
+  </div>
+  <div class="nav-right">
+    <div class="lang-toggle">
+      <button class="lang-btn active" id="btn-tr" onclick="setLang('tr')">TR</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <a href="/oda-app.html" class="nav-try" id="nav-try-link" data-tr="Uygulamayı dene →" data-en="Try the app →">Uygulamayı dene →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-kicker" data-tr="Türk psikologlar ve terapistler için" data-en="For Turkish psychologists & therapists">Türk psikologlar ve terapistler için</span>
+  <h1 data-tr="Seans bitti.<br><em>Notlar hazır.</em>" data-en="Session over.<br><em>Notes ready.</em>">Seans bitti.<br><em>Notlar hazır.</em></h1>
+  <p class="hero-sub" data-tr="Ham seans notlarınızı — kısa, dağınık, sesli ya da el yazılı — DAP notu, süreç notu, risk değerlendirmesine dönüştürün. Çalıştığınız modalitede. Düşündüğünüz dilde. KVKK uyumlu." data-en="Turn raw session notes — brief, scattered, dictated, or handwritten — into DAP notes, process notes, risk assessments. In your modality. In your language. KVKK compliant.">Ham seans notlarınızı — kısa, dağınık, sesli ya da el yazılı — DAP notu, süreç notu, risk değerlendirmesine dönüştürün. Çalıştığınız modalitede. Düşündüğünüz dilde. KVKK uyumlu.</p>
+  <div class="hero-actions">
+    <a href="/oda-app.html" class="btn-gold" id="hero-try-link" data-tr="Ücretsiz dene →" data-en="Try free →">Ücretsiz dene →</a>
+    <button class="btn-outline" onclick="document.getElementById('pricing-sec').scrollIntoView({behavior:'smooth'})" data-tr="Fiyatlandırma" data-en="Pricing">Fiyatlandırma</button>
+  </div>
+  <p class="hero-note" data-tr="Kayıt gerekmez · Kredi kartı yok · Şu an kullanıma açık" data-en="No signup · No credit card · Available now">Kayıt gerekmez · Kredi kartı yok · Şu an kullanıma açık</p>
+</div>
+
+<!-- PRODUCT PREVIEW -->
+<div class="preview-wrap">
+  <div class="preview-shell">
+    <div class="preview-topbar">
+      <div class="pdot"></div><div class="pdot"></div><div class="pdot"></div>
+      <span class="preview-label" id="preview-client-lbl">Danışan B — Seans 4 · Psikanalitik</span>
+      <div class="preview-tabs">
+        <button class="preview-tab active" onclick="showPreview('dap',this)" data-tr="DAP Notu" data-en="DAP Note">DAP Notu</button>
+        <button class="preview-tab" onclick="showPreview('process',this)" data-tr="Süreç Notu" data-en="Process Note">Süreç Notu</button>
+        <button class="preview-tab" onclick="showPreview('risk',this)" data-tr="Risk" data-en="Risk">Risk</button>
+      </div>
+    </div>
+    <div class="preview-body">
+      <div class="preview-col">
+        <span class="p-lbl raw" data-tr="Seans notu (ham)" data-en="Raw session notes">Seans notu (ham)</span>
+        <div class="p-raw" id="preview-raw"></div>
+      </div>
+      <div class="preview-col">
+        <span class="p-lbl out" id="preview-out-lbl">DAP Notu</span>
+        <div id="preview-out"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- HOW IT WORKS -->
+<div class="sec">
+  <div class="how-grid">
+    <div class="how-left">
+      <span class="eyebrow" data-tr="Nasıl çalışır" data-en="How it works">Nasıl çalışır</span>
+      <h2 data-tr="Klinik belgeleme için <em>gerçekten işe yarayan</em> yapay zeka" data-en="AI that <em>actually works</em> for clinical documentation">Klinik belgeleme için <em>gerçekten işe yarayan</em> yapay zeka</h2>
+      <p data-tr="Genel bir metin üretici değil. Oda, DAP'ın süreç notundan temelden farklı olduğunu biliyor. Psikanalitik seansın BDT seansından farklı bir dil gerektirdiğini biliyor. Resmi kayıt ile süpervizyon materyalinin asla karışmaması gerektiğini biliyor." data-en="Not a general text generator. Oda knows a DAP note is fundamentally different from a process note. That a psychoanalytic session requires different language than a CBT session. That the official chart and supervision material must never be mixed.">Genel bir metin üretici değil. Oda, DAP'ın süreç notundan temelden farklı olduğunu biliyor. Psikanalitik seansın BDT seansından farklı bir dil gerektirdiğini biliyor. Resmi kayıt ile süpervizyon materyalinin asla karışmaması gerektiğini biliyor.</p>
+      <p data-tr="<strong>Klinik yargı her zaman sizde.</strong> Oda yapıyı ve dili üstlenir. Siz çıktıyı inceler, düzenler ve onaylarsınız." data-en="<strong>Clinical judgment stays with you.</strong> Oda handles structure and language. You review, edit, and sign off."><strong>Klinik yargı her zaman sizde.</strong> Oda yapıyı ve dili üstlenir. Siz çıktıyı inceler, düzenler ve onaylarsınız.</p>
+    </div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-n">01</div>
+        <div>
+          <div class="how-t" data-tr="Notunuzu girin" data-en="Enter your notes">Notunuzu girin</div>
+          <div class="how-d" data-tr="Yazarak, sesli dikte ederek veya el yazılı notunuzun fotoğrafını yükleyerek. Yapay zeka el yazısını okur. Ne kadar kısa ya da dağınık olursa olsun." data-en="Type, dictate by voice, or upload a photo of handwritten notes. AI reads the handwriting. However brief or scattered.">Yazarak, sesli dikte ederek veya el yazılı notunuzun fotoğrafını yükleyerek. Yapay zeka el yazısını okur. Ne kadar kısa ya da dağınık olursa olsun.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">02</div>
+        <div>
+          <div class="how-t" data-tr="Modalite ve not türünü seçin" data-en="Choose modality and note type">Modalite ve not türünü seçin</div>
+          <div class="how-d" data-tr="BDT, psikanalitik, şema, DBT, ACT veya bütünleşik. Klinik Not (DAP), Süreç Notu, Risk Değerlendirmesi, Karşıaktarım veya Seans Özeti. Yapay zeka buna göre yazar." data-en="CBT, psychoanalytic, schema, DBT, ACT, or integrative. Clinical Note (DAP), Process Note, Risk Assessment, Countertransference, or Session Summary. AI writes accordingly.">BDT, psikanalitik, şema, DBT, ACT veya bütünleşik. Klinik Not (DAP), Süreç Notu, Risk Değerlendirmesi, Karşıaktarım veya Seans Özeti. Yapay zeka buna göre yazar.</div>
+        </div>
+      </div>
+      <div class="how-step">
+        <div class="how-n">03</div>
+        <div>
+          <div class="how-t" data-tr="İnceleyin, düzenleyin, dışa aktarın" data-en="Review, edit, export">İnceleyin, düzenleyin, dışa aktarın</div>
+          <div class="how-d" data-tr="Not saniyeler içinde gelir. Risk dili otomatik kırmızıya döner. Düzenleyebilir, kopyalayabilir veya PDF olarak dışa aktarabilirsiniz. Her şey danışan klasörünüze kaydedilir." data-en="Note arrives in seconds. Risk language auto-highlighted. Edit, copy, or export to PDF. Everything saves to the client folder.">Not saniyeler içinde gelir. Risk dili otomatik kırmızıya döner. Düzenleyebilir, kopyalayabilir veya PDF olarak dışa aktarabilirsiniz. Her şey danışan klasörünüze kaydedilir.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- NOTE TYPES -->
+<div class="sec">
+  <span class="eyebrow" data-tr="Not türleri" data-en="Note types">Not türleri</span>
+  <h2 data-tr="Resmi kayıt ile süpervizyon <em>asla karışmaz</em>" data-en="Official chart and supervision <em>never mixed</em>">Resmi kayıt ile süpervizyon <em>asla karışmaz</em></h2>
+  <p class="sec-intro" data-tr="Bu ayrım klinik etik açısından zorunludur. Süreç notları ve karşıaktarım notları her zaman ÖZEL olarak işaretlenir — görsel olarak, PDF dışa aktarımında ve süpervizyon iş akışında. Resmi tıbbi belgeyle hiçbir zaman dosyalanmaz." data-en="This separation is a clinical ethics requirement. Process and countertransference notes are always marked PRIVATE — visually, on PDF export, and in the supervision workflow. Never filed with the official chart.">Bu ayrım klinik etik açısından zorunludur. Süreç notları ve karşıaktarım notları her zaman ÖZEL olarak işaretlenir — görsel olarak, PDF dışa aktarımında ve süpervizyon iş akışında. Resmi tıbbi belgeyle hiçbir zaman dosyalanmaz.</p>
+  <div class="notes-grid">
+    <div class="notes-col">
+      <span class="notes-tag tag-off" data-tr="Resmi tıbbi kayıt" data-en="Official chart">Resmi tıbbi kayıt</span>
+      <div class="note-item">
+        <div class="note-name">Clinical Note (DAP)</div>
+        <div class="note-desc" data-tr="Veri, Değerlendirme, Plan. Kısa, klinik, hukuken savunulabilir." data-en="Data, Assessment, Plan. Brief, clinical, legally defensible.">Veri, Değerlendirme, Plan. Kısa, klinik, hukuken savunulabilir.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-name" data-tr="Risk Değerlendirmesi" data-en="Risk Assessment">Risk Değerlendirmesi</div>
+        <div class="note-desc" data-tr="İntihar düşüncesi, kendine zarar, koruyucu faktörler, güvenlik planı. Sistematik kapsam." data-en="Suicidal ideation, self-harm, protective factors, safety plan. Systematic coverage.">İntihar düşüncesi, kendine zarar, koruyucu faktörler, güvenlik planı. Sistematik kapsam.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-name" data-tr="Seans Özeti" data-en="Session Summary">Seans Özeti</div>
+        <div class="note-desc" data-tr="Ana temalar, sunum, bir sonraki seans planı. Kısa anlatı kaydı." data-en="Main themes, presentation, next session plan. Brief narrative record.">Ana temalar, sunum, bir sonraki seans planı. Kısa anlatı kaydı.</div>
+      </div>
+    </div>
+    <div class="notes-col">
+      <span class="notes-tag tag-prv" data-tr="Özel — Yalnızca süpervizyon" data-en="Private — Supervision only">Özel — Yalnızca süpervizyon</span>
+      <div class="note-item">
+        <div class="note-name" data-tr="Süreç Notu" data-en="Process Note">Süreç Notu</div>
+        <div class="note-desc" data-tr="Seansın kronolojik anlatısı. Danışanın tam cümleleri, sessizlikler, duygulanım geçişleri, aktarım materyali. Resmi kayıttan fiziksel olarak ayrı." data-en="Chronological narrative of the session. Client's exact words, silences, affect shifts, transference material. Physically separate from the official chart.">Seansın kronolojik anlatısı. Danışanın tam cümleleri, sessizlikler, duygulanım geçişleri, aktarım materyali. Resmi kayıttan fiziksel olarak ayrı.</div>
+        <div class="note-detail" data-tr="Modaliteye göre yazar: psikanalitik, BDT, şema, DBT veya ACT diliyle." data-en="Writes in modality language: psychoanalytic, CBT, schema, DBT, or ACT.">Modaliteye göre yazar: psikanalitik, BDT, şema, DBT veya ACT diliyle.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-name" data-tr="Karşıaktarım Notu" data-en="Countertransference Note">Karşıaktarım Notu</div>
+        <div class="note-desc" data-tr="Terapistin kendi iç deneyimi. Yapay zeka bu notu oluşturmaz — yalnızca özel bir alan açar. Çünkü bu not tamamen size aittir." data-en="The therapist's own internal experience. AI does not generate this — it opens a private space. Because this note belongs entirely to you.">Terapistin kendi iç deneyimi. Yapay zeka bu notu oluşturmaz — yalnızca özel bir alan açar. Çünkü bu not tamamen size aittir.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:28px">
+    <p class="mod-intro" data-tr="Desteklenen modaliteler — her biri kendi klinik çerçevesinde, kendi terminolojisiyle yazar:" data-en="Supported modalities — each writes in its own clinical framework, its own terminology:">Desteklenen modaliteler — her biri kendi klinik çerçevesinde, kendi terminolojisiyle yazar:</p>
+    <div class="mod-pills">
+      <span class="mod-pill">Psikanalitik</span>
+      <span class="mod-pill">Psikodinamik</span>
+      <span class="mod-pill">BDT / CBT</span>
+      <span class="mod-pill">Şema Terapisi</span>
+      <span class="mod-pill">DBT</span>
+      <span class="mod-pill">ACT</span>
+      <span class="mod-pill" data-tr="Bütünleşik" data-en="Integrative">Bütünleşik</span>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- FOUNDER -->
+<div class="sec">
+  <span class="eyebrow" data-tr="Neden Oda var" data-en="Why Oda exists">Neden Oda var</span>
+  <div class="founder-wrap">
+    <div class="founder-body">
+      <div class="founder-pull" data-tr='"Yıllarca aradım — kendi pratik için. Süreç notunun ilerleme notundan farkını anlayan, karşıaktarımın ne olduğunu bilen, KVKK\'yı ciddiye alan, Türkçe klinik terminolojiyle gerçekten çalışan bir araç. Bulamadım. O yüzden yaptım."' data-en='"For years I looked — for my own practice. Something that understood why a process note is different from a progress note. That knew what countertransference was. That took KVKK seriously. That actually worked in Turkish clinical language. I couldn\'t find it. So I built it."'>"Yıllarca aradım — kendi pratik için. Süreç notunun ilerleme notundan farkını anlayan, karşıaktarımın ne olduğunu bilen, KVKK'yı ciddiye alan, Türkçe klinik terminolojiyle gerçekten çalışan bir araç. Bulamadım. O yüzden yaptım."</div>
+      <div class="founder-text">
+        <p data-tr="Psikiyatrik yatarak tedavi ortamlarında, dijital ruh sağlığı platformlarında ve bireysel pratikte çalıştım — Türkçe ve İngilizce, BDT ve psikanalitik çerçevelerle. Her ortamda aynı sorunla karşılaştım: <strong>başka bir ülkedeki başka bir terapist için yapılmış dökümantasyon araçları.</strong>" data-en="I've worked across psychiatric inpatient settings, digital mental health platforms, and private practice — in Turkish and English, CBT and psychoanalytic. Everywhere the same problem: <strong>documentation tools built for a different therapist in a different country.</strong>">Psikiyatrik yatarak tedavi ortamlarında, dijital ruh sağlığı platformlarında ve bireysel pratikte çalıştım — Türkçe ve İngilizce, BDT ve psikanalitik çerçevelerle. Her ortamda aynı sorunla karşılaştım: <strong>başka bir ülkedeki başka bir terapist için yapılmış dökümantasyon araçları.</strong></p>
+        <p data-tr="Hiçbir araç, süreç notunun ilerleme notundan neden farklı olduğunu anlamıyordu. Hiçbiri karşıaktarımın ne olduğunu bilmiyordu. Hiçbiri KVKK'yı ciddiye almıyordu. Hiçbiri psikanalitik çerçevede Türkçe klinik dil kullanmıyordu." data-en="No tool understood why a process note differs from a progress note. None knew what countertransference was. None took KVKK seriously. None used psychoanalytic Turkish clinical language.">Hiçbir araç, süreç notunun ilerleme notundan neden farklı olduğunu anlamıyordu. Hiçbiri karşıaktarımın ne olduğunu bilmiyordu. Hiçbiri KVKK'yı ciddiye almıyordu. Hiçbiri psikanalitik çerçevede Türkçe klinik dil kullanmıyordu.</p>
+        <p data-tr="Oda'yı kendim ihtiyaç duyduğum için yaptım. LGBTQIA+ danışanlarla çalışmış, azınlık stresi üzerine araştırma yapmış ve psikanalitik süpervizyon deneyimi olan biri tarafından. Klinik bilgi içine işlenmiş." data-en="I built Oda because I needed it. Built by someone who has worked with LGBTQIA+ clients, researched minority stress, and sat in psychoanalytic supervision. The clinical knowledge is built in.">Oda'yı kendim ihtiyaç duyduğum için yaptım. LGBTQIA+ danışanlarla çalışmış, azınlık stresi üzerine araştırma yapmış ve psikanalitik süpervizyon deneyimi olan biri tarafından. Klinik bilgi içine işlenmiş.</p>
+      </div>
+    </div>
+    <div class="founder-footer">
+      <div>
+        <div class="founder-name">Saniye Caz</div>
+        <div class="founder-title" data-tr="Klinik Psikoloji Y.Lisans · Bahçeşehir Üniversitesi<br>Psikoloji Lisans · Bilkent Üniversitesi · TPD Üyesi" data-en="M.Sc. Clinical Psychology · Bahçeşehir University<br>B.A. Psychology · Bilkent University · TPD Member">Klinik Psikoloji Y.Lisans · Bahçeşehir Üniversitesi<br>Psikoloji Lisans · Bilkent Üniversitesi · TPD Üyesi</div>
+      </div>
+      <div class="founder-tags">
+        <span class="f-tag" data-tr="Azınlık stresi" data-en="Minority stress">Azınlık stresi</span>
+        <span class="f-tag">LGBTQIA+ affirming</span>
+        <span class="f-tag">CBT · Schema · Psychodynamic</span>
+        <span class="f-tag">Radboud · Bilkent UMRAM</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- PRICING -->
+<div class="sec" id="pricing-sec">
+  <span class="eyebrow" data-tr="Fiyatlandırma" data-en="Pricing">Fiyatlandırma</span>
+  <h2 data-tr="Tek plan. <em>Sade fiyat.</em>" data-en="One plan. <em>One price.</em>">Tek plan. <em>Sade fiyat.</em></h2>
+  <p class="sec-intro" data-tr="14 gün ücretsiz deneyin. Beğenirseniz devam edin." data-en="14 days free. Continue if it works for you.">14 gün ücretsiz deneyin. Beğenirseniz devam edin.</p>
+  <div class="pricing-wrap">
+    <div class="price-card">
+      <div class="price-plan" data-tr="Bireysel Pratik" data-en="Individual Practice">Bireysel Pratik</div>
+      <div class="price-num">₺299 <span data-tr="/ ay" data-en="/ mo">/ ay</span></div>
+      <div class="price-annual" data-tr="Yıllık ödeme: ₺2.990 — 2 ay ücretsiz" data-en="Annual billing: ₺2,990 — 2 months free">Yıllık ödeme: ₺2.990 — 2 ay ücretsiz</div>
+      <ul class="price-feats">
+        <li data-tr="Sınırsız danışan ve seans" data-en="Unlimited clients & sessions">Sınırsız danışan ve seans</li>
+        <li data-tr="5 not türü, 6 modalite" data-en="5 note types, 6 modalities">5 not türü, 6 modalite</li>
+        <li data-tr="Ses, fotoğraf ve yazı girişi" data-en="Voice, photo & text input">Ses, fotoğraf ve yazı girişi</li>
+        <li data-tr="PHQ-9, GAD-7, BDI-II, BAI takibi" data-en="PHQ-9, GAD-7, BDI-II, BAI tracking">PHQ-9, GAD-7, BDI-II, BAI takibi</li>
+        <li data-tr="Süpervizyon iş akışı" data-en="Supervision workflow">Süpervizyon iş akışı</li>
+        <li data-tr="PDF dışa aktarma · Risk vurgulama" data-en="PDF export · Risk highlighting">PDF dışa aktarma · Risk vurgulama</li>
+        <li data-tr="Türkçe ve İngilizce" data-en="Turkish & English">Türkçe ve İngilizce</li>
+      </ul>
+      <button class="price-cta" onclick="openAccess()" data-tr="Ücretsiz denemeyi başlat →" data-en="Start free trial →">Ücretsiz denemeyi başlat →</button>
+      <p class="price-footnote" data-tr='veya <a href="/oda-app.html">uygulamayı hemen deneyin</a> — kayıt gerekmez' data-en='or <a href="/oda-app.html">try the app now</a> — no signup required'>veya <a href="/oda-app.html">uygulamayı hemen deneyin</a> — kayıt gerekmez</p>
+      <div class="price-contact-strip" data-tr="Klinik veya kurum için: <a href='mailto:merhaba@oda.clinic'>merhaba@oda.clinic</a>" data-en="For clinics or institutions: <a href='mailto:merhaba@oda.clinic'>merhaba@oda.clinic</a>">Klinik veya kurum için: <a href="mailto:merhaba@oda.clinic">merhaba@oda.clinic</a></div>
+    </div>
+  </div>
+</div>
+
+<hr>
+
+<!-- FAQ -->
+<div class="sec narrow">
+  <h2 data-tr="Sık sorulan sorular" data-en="Frequently asked questions">Sık sorulan sorular</h2>
+  <div id="faq-wrap" style="margin-top:24px"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">
+    <svg width="19" height="19" viewBox="0 0 34 34" fill="none">
+      <ellipse cx="20" cy="20" rx="11" ry="8.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+      <circle cx="12" cy="13.5" r="6.5" stroke="#B89A5A" stroke-width="1.4" fill="none"/>
+      <path d="M7 17 Q4 21.5 5 26 Q5.5 28.5 8 27.5" stroke="#B89A5A" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      <circle cx="13.5" cy="11.5" r="1.2" fill="#B89A5A"/>
+    </svg>
+    <span class="f-logo-t">Oda<span>.</span></span>
   </div>
   <div class="f-links">
-    <a href="#" data-tr="Gizlilik" data-en="Privacy">Privacy</a>
-    <a href="#" data-tr="KVKK Bildirimi" data-en="KVKK Notice">KVKK Notice</a>
+    <a href="#" data-tr="Gizlilik" data-en="Privacy">Gizlilik</a>
+    <a href="#" data-tr="KVKK Bildirimi" data-en="KVKK Notice">KVKK Bildirimi</a>
     <a href="mailto:merhaba@oda.clinic">merhaba@oda.clinic</a>
   </div>
-  <div class="f-copy" data-tr="© 2026 Oda. Terapistlerin klinik alanı." data-en="© 2026 Oda. Your clinical space.">© 2026 Oda. Your clinical space.</div>
+  <div class="f-copy">© 2026 Oda.</div>
 </footer>
 
 <script>
-// ── DEMO ANIMATION ──────────────────────────────────────
-const DEMOS = {
-  en: [
-    {
-      noteType: 'Clinical Note (DAP)',
-      outLabel: 'Clinical Note (DAP)',
-      outTag: 'Official',
-      outTagStyle: 'background:rgba(41,128,185,0.1);color:#6AADCC;border:1px solid rgba(41,128,185,0.18)',
-      raw: 'late, seemed distracted, talked about manager again — "always overlooked, never taken seriously" — mentioned father briefly then moved on, flat affect, long pause after I reflected it back',
-      lbl2: 'Assessment', lbl3: 'Plan',
-      data: 'Client arrived 8 minutes late, subdued affect throughout. Reported recurring difficulties with manager — a pervasive sense of being overlooked. Spontaneously raised his father briefly before deflecting.',
-      assessment: 'Transference material consistent with earlier sessions. Intellectualisation as primary defence remains prominent. The paternal reference, though brief, may warrant further exploration.',
-      plan: 'Continue weekly frequency. In next session, gently return to paternal material. Monitor affect around authority figures.'
+// ─────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────
+const PREVIEW_DATA = {
+  dap: {
+    tr: {
+      lbl: 'DAP Notu',
+      raw: '"annemi düşündüm seans boyunca — söyleyemedim" — uzun sessizlik — sesi kırıldı — tekrar müdürlük meselesine döndü — "kimse ciddiye almıyor"',
+      html: `<div class="p-sec-lbl">Veri</div>
+<div class="p-sec-txt">Danışan, annesini seans boyunca düşündüğünü ancak bunu dile getiremediğini ifade etti. Uzun bir sessizlik oluştu. Ses tonu değişti. Ardından müdürüyle ilgili yinelenen temaya döndü: "Kimse ciddiye almıyor."</div>
+<div class="p-sec-lbl">Değerlendirme</div>
+<div class="p-sec-txt">Seans materyali, önceki seanslarla tutarlı biçimde otorite figürleriyle ilgili duygulanımı yansıttı. Anne referansı kısaca gün yüzüne çıktı ve ardından savunmacı biçimde örtüldü.</div>
+<div class="p-sec-lbl">Plan</div>
+<div class="p-sec-txt">Haftalık sıklık korunacak. Bir sonraki seansta anne temasına dikkatli biçimde dönülecek. Aktarım materyali süpervizyona taşınacak.</div>`
     },
-    {
-      noteType: 'Process Note',
-      outLabel: 'Process Note',
-      outTag: 'PRIVATE',
-      outTagStyle: 'background:rgba(180,130,60,0.1);color:#D4A050;border:1px solid rgba(180,130,60,0.18)',
-      raw: 'late, seemed distracted, talked about manager again — "always overlooked, never taken seriously" — mentioned father briefly then moved on, flat affect, long pause after I reflected it back',
-      lbl2: 'Significant moment', lbl3: 'My experience',
-      data: 'Client arrived 8 minutes late without comment. He settled slowly, eyes down. He opened with the manager — "always overlooked, never taken seriously" — his voice flat, almost rehearsed. Long silence followed my reflection.',
-      assessment: 'He mentioned his father mid-sentence, then pivoted immediately. He seemed not to notice. The pivot felt like a door closing.',
-      plan: 'I felt the urge to name the connection. I held it. Something in me wanted to protect him from it — worth bringing to supervision.'
+    en: {
+      lbl: 'DAP Note',
+      raw: '"I kept thinking about my mother — couldn\'t say it" — long silence — voice broke — back to the manager again — "nobody takes me seriously"',
+      html: `<div class="p-sec-lbl">Data</div>
+<div class="p-sec-txt">Client reported thinking about his mother throughout the session but being unable to say it aloud. A long silence followed. Voice quality shifted. He returned to the recurring manager theme: "Nobody takes me seriously."</div>
+<div class="p-sec-lbl">Assessment</div>
+<div class="p-sec-txt">Session material reflected transference around authority figures, consistent with prior sessions. The maternal reference surfaced briefly before being defensively covered over.</div>
+<div class="p-sec-lbl">Plan</div>
+<div class="p-sec-txt">Continue weekly frequency. Return to maternal theme carefully next session. Transference material to supervision.</div>`
+    }
+  },
+  process: {
+    tr: {
+      lbl: 'Süreç Notu · ÖZEL',
+      raw: '"annemi düşündüm seans boyunca — söyleyemedim" — uzun sessizlik — sesi kırıldı — tekrar müdürlük meselesine döndü — "kimse ciddiye almıyor"',
+      html: `<div class="p-private-banner"><div class="p-private-lbl">✦ Özel — Yalnızca Süpervizyon</div><div class="p-private-txt">Bu not resmi tıbbi kayıtta dosyalanmaz.</div></div>
+<div class="p-sec-txt">Danışan odaya girdiğinde yüklü bir sessizlikle oturdu — başladığı şeyin etrafında döndü. "Annemi düşündüm seans boyunca" dedi — ses tonu düz, neredeyse provaya çekilmiş gibi. Sonra hemen müdüre geçti. Sanki kapıyı kapatmıştı.</div>
+<div class="p-sec-txt">Anne referansı seans ortasında, cümle arasında geldi. Kendisi fark etmemiş gibiydi. Yansıttığımda uzun bir sessizlik oluştu. Ses tonu değişti.</div>
+<div class="p-sec-txt">[YZ yorumu: anne-müdür bağlantısı aktarım materyali olabilir — süpervizyona taşı]</div>`
     },
-    {
-      noteType: 'Risk Assessment',
-      outLabel: 'Risk Assessment',
-      outTag: 'Official',
-      outTagStyle: 'background:rgba(41,128,185,0.1);color:#6AADCC;border:1px solid rgba(41,128,185,0.18)',
-      raw: 'client mentioned feeling "invisible" and "exhausted by everything" — no active SI reported, denied plan or intent, protective factors: daughter, therapeutic relationship, future planning present',
-      lbl2: 'Risk factors', lbl3: 'Safety plan',
-      data: 'Client reported feeling "invisible" and "exhausted by everything." No active suicidal ideation reported. Denied plan, intent, or means access.',
-      assessment: '<span style="background:rgba(231,76,60,0.12);color:#E07070;border-radius:2px;padding:0 2px">Passive ideation</span> not explicitly ruled out and warrants monitoring. No imminent risk indicators present this session.',
-      plan: 'Safety plan reviewed and remains in place. Protective factors confirmed: daughter, therapeutic alliance, active future orientation. Continue weekly monitoring.'
+    en: {
+      lbl: 'Process Note · PRIVATE',
+      raw: '"I kept thinking about my mother — couldn\'t say it" — long silence — voice broke — back to the manager again — "nobody takes me seriously"',
+      html: `<div class="p-private-banner"><div class="p-private-lbl">✦ Private — Supervision Only</div><div class="p-private-txt">This note is not filed in the official chart.</div></div>
+<div class="p-sec-txt">He came in and sat with a weighted silence — circling something he hadn't started. "I kept thinking about my mother through the whole session" — voice flat, almost rehearsed. Then immediately to the manager. As if a door had closed.</div>
+<div class="p-sec-txt">The maternal reference arrived mid-sentence. He didn't seem to notice it himself. When I reflected it back, a long silence. Voice quality shifted.</div>
+<div class="p-sec-txt">[AI note: mother-manager connection may be transference material — bring to supervision]</div>`
     }
-  ],
-  tr: [
-    {
-      noteType: 'Klinik Not (DAP)',
-      outLabel: 'Klinik Not (DAP)',
-      outTag: 'Resmi',
-      outTagStyle: 'background:rgba(41,128,185,0.1);color:#6AADCC;border:1px solid rgba(41,128,185,0.18)',
-      raw: 'geç geldi, dalgın görünüyordu, yöneticisinden tekrar bahsetti — "hep görmezden geliniyor, ciddiye alınmıyor" — babasından kısaca söz etti sonra geçti, düz duygulanım',
-      lbl2: 'Değerlendirme', lbl3: 'Plan',
-      data: 'Danışan 8 dakika geç geldi, seans boyunca baskılanmış duygulanım. Yöneticisiyle tekrarlayan güçlükler bildirdi — görmezden gelinme hissi. Spontan olarak babasından kısaca söz etti, ardından konuyu değiştirdi.',
-      assessment: 'Aktarım materyali önceki seanslarla tutarlı. Entelektüelleştirme birincil savunma olarak belirgin. Baba referansı kısa olsa da daha fazla araştırma gerektirebilir.',
-      plan: 'Haftalık seansı sürdür. Bir sonraki seansta baba materyaline nazikçe dön. Otorite figürleri etrafındaki duygulanımı izle.'
-    }
-  ]
-};
-
-let demoLang = 'en';
-let demoIdx = 0;
-let typeTimer = null;
-
-function typeText(el, text, speed, cb) {
-  el.innerHTML = '';
-  let i = 0;
-  function tick() {
-    if (i < text.length) {
-      el.innerHTML = text.slice(0, ++i) + '<span class="demo-cursor"></span>';
-      typeTimer = setTimeout(tick, speed);
-    } else {
-      el.innerHTML = text;
-      if (cb) cb();
+  },
+  risk: {
+    tr: {
+      lbl: 'Risk Değerlendirmesi',
+      raw: '"bazen her şeyden yoruluyorum" — pasif ideasyonu doğrudan reddetti — plan ya da niyet yok — koruyucu faktörler: kızı, terapötik ilişki',
+      html: `<div class="p-sec-lbl">Suisidal İdeayon</div>
+<div class="p-sec-txt">Danışan "<span class="risk-hl">bazen her şeyden yoruluyorum</span>" ifadesini kullandı. Aktif suisidal ideayon reddedildi. Plan, niyet veya araç erişimi bildirilmedi.</div>
+<div class="p-sec-lbl">Risk Faktörleri</div>
+<div class="p-sec-txt">Pasif yorgunluk ifadesi izlenmesi gerekiyor. Aktif risk göstergesi bu seansta mevcut değil.</div>
+<div class="p-sec-lbl">Koruyucu Faktörler</div>
+<div class="p-sec-txt">Kızı. Terapötik ilişki. Aktif gelecek yönelimi.</div>
+<div class="p-sec-lbl">Klinik Eylem</div>
+<div class="p-sec-txt">Güvenlik planı gözden geçirildi, yürürlükte. Haftalık izleme sürdürülecek.</div>`
+    },
+    en: {
+      lbl: 'Risk Assessment',
+      raw: '"sometimes I\'m tired of everything" — actively denied SI — no plan or intent — protective factors: daughter, therapeutic relationship',
+      html: `<div class="p-sec-lbl">Suicidal Ideation</div>
+<div class="p-sec-txt">Client stated "<span class="risk-hl">sometimes I'm tired of everything</span>." Active suicidal ideation denied. No plan, intent, or means access reported.</div>
+<div class="p-sec-lbl">Risk Factors</div>
+<div class="p-sec-txt">Passive fatigue expression warrants monitoring. No active risk indicators this session.</div>
+<div class="p-sec-lbl">Protective Factors</div>
+<div class="p-sec-txt">Daughter. Therapeutic relationship. Active future orientation confirmed.</div>
+<div class="p-sec-lbl">Clinical Action</div>
+<div class="p-sec-txt">Safety plan reviewed, remains in place. Continue weekly monitoring.</div>`
     }
   }
-  tick();
-}
+};
 
-function runDemo(idx) {
-  const set = DEMOS[demoLang] || DEMOS['en'];
-  const d = set[idx % set.length];
-  if (!d) return;
-
-  clearTimeout(typeTimer);
-  document.getElementById('demo-note-badge').textContent = d.noteType;
-  document.getElementById('demo-out-label').textContent = d.outLabel;
-  const outTag = document.getElementById('demo-out-tag');
-  outTag.textContent = d.outTag;
-  outTag.style.cssText = d.outTagStyle;
-  document.getElementById('demo-lbl2').textContent = d.lbl2;
-  document.getElementById('demo-lbl3').textContent = d.lbl3;
-
-  document.getElementById('demo-data-txt').innerHTML = '';
-  document.getElementById('demo-assessment-txt').innerHTML = '';
-  document.getElementById('demo-plan-txt').innerHTML = '';
-
-  typeText(document.getElementById('demo-raw-notes'), d.raw, 22, () => {
-    setTimeout(() => {
-      const spinner = document.getElementById('demo-spinner');
-      spinner.style.animation = 'spin 0.6s linear infinite';
-      spinner.textContent = '⟳';
-      setTimeout(() => {
-        spinner.style.animation = 'pulse-gold 2s ease-in-out infinite';
-        spinner.textContent = '✦';
-        typeText(document.getElementById('demo-data-txt'), d.data, 14, () => {
-          typeText(document.getElementById('demo-assessment-txt'), d.assessment, 14, () => {
-            typeText(document.getElementById('demo-plan-txt'), d.plan, 16, () => {
-              setTimeout(() => {
-                demoIdx = (demoIdx + 1) % ((DEMOS[demoLang] || DEMOS['en']).length);
-                runDemo(demoIdx);
-              }, 4200);
-            });
-          });
-        });
-      }, 900);
-    }, 500);
-  });
-}
-
-const style = document.createElement('style');
-style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
-document.head.appendChild(style);
-
-setTimeout(() => runDemo(0), 800);
-
-// ── LANGUAGE ──────────────────────────────────────────────
 const FAQS = {
   tr:[
-    {q:'Oda şu an kullanıma açık mı?',a:'Evet. Uygulamayı /oda-app.html adresinde kayıt gerektirmeden hemen kullanabilirsiniz. Danışan verileri tarayıcınızda saklanır. Yapay zeka not oluşturma için API gereklidir.'},
-    {q:'KVKK uyumlu mu?',a:'Evet. Oda KVKK uyumunu temel alarak tasarlanmıştır. Danışan kayıtları yalnızca yerel tarayıcınızda depolanır. Yapay zeka işlemesi için gönderilen notlar tanımlayıcı bilgi içermez — sistem gerçek isimler yerine anonimleştirilmiş kodlar kullanır.'},
-    {q:'Resmi notlar ile özel notlar arasındaki fark nedir?',a:'Resmi notlar (Klinik Not/DAP, Risk Değerlendirmesi, Seans Özeti) tıbbi kayıt için tasarlanmıştır — kısa, klinik, hukuken savunulabilir. Özel notlar (Süreç Notu, Karşıaktarım) yalnızca siz ve süpervizörünüz içindir, açıkça ÖZEL olarak işaretlenir ve resmi tıbbi kayıtta asla dosyalanmamalıdır.'},
-    {q:'Psikanalitik pratik için de çalışıyor mu?',a:'Evet. Bu özellikle tasarım önceliğiydi. Süreç Notu ve Karşıaktarım Notu psikanalitik çalışma için özel olarak tasarlanmıştır — aktarım, karşıaktarım, savunma mekanizmaları diliyle. Her modalite (BDT, Psikodinamik, Şema, DBT, ACT) kendi klinik çerçevesinde çıktı üretir.'},
-    {q:'Yapay zeka çıktısı klinik açıdan doğru mu?',a:'Yapay zeka her modalite ve not türü için doğru klinik terminoloji kullanacak şekilde yapılandırılmıştır. Ancak tüm yapay zeka tarafından oluşturulan notlar klinik kullanımdan önce sizin tarafınızdan incelenmelidir. Yapay zeka klinik yargının yerini almaz.'}
+    {q:'Oda şu an kullanıma açık mı?',
+     a:'Evet. <a href="/oda-app.html" style="color:var(--gold)">oda-iota.vercel.app/oda-app.html</a> adresinde kayıt gerektirmeden hemen kullanabilirsiniz. Danışan verileri yalnızca kendi tarayıcınızda saklanır.'},
+    {q:'KVKK uyumlu mu?',
+     a:'Oda, KVKK uyumunu temel alarak tasarlandı. Danışan kayıtları yalnızca kendi tarayıcınızda depolanır. Yapay zeka işlemi için gönderilen notlar tanımlayıcı bilgi içermez — sistem gerçek isimler yerine anonim kodlar kullanır. KVKK kapsamında veri sorumlusu sizsiniz.'},
+    {q:'Resmi not ile özel not arasındaki fark nedir?',
+     a:'Resmi notlar (DAP, Risk Değerlendirmesi, Seans Özeti) tıbbi kayıt için — kısa, klinik, hukuken savunulabilir. Özel notlar (Süreç Notu, Karşıaktarım) yalnızca siz ve süpervizörünüz için, açıkça ÖZEL olarak işaretlenir. Resmi kayıtta asla dosyalanmamalıdır. Bu ayrım etik bir zorunluluktur.'},
+    {q:'Psikanalitik pratik için çalışıyor mu?',
+     a:'Evet — bu özellikle tasarım önceliğiydi. Süreç Notu, psikanalitik çalışma için yapılandırıldı: aktarım, karşıaktarım, savunma mekanizmaları diliyle. Her modalite kendi klinik çerçevesinde çıktı üretir.'},
+    {q:'Yapay zekanın çıktısı ne kadar güvenilir?',
+     a:'Oda yalnızca notlarınızda açıkça yer alanı yazar — varsaymaz, uydurmaz. Girdiniz yetersizse daha kısa bir not üretir. Her çıktı klinik kullanımdan önce sizin tarafınızdan incelenmelidir. Klinik yargı her zaman sizde kalır.'},
   ],
   en:[
-    {q:'Is Oda available now?',a:'Yes. You can use the app at /oda-app.html immediately — no signup required. Client data is stored in your browser. An API connection is needed for AI note generation.'},
-    {q:'Is Oda KVKK compliant?',a:'Yes. Oda is designed with KVKK compliance at its core. Client records are stored in your browser only. Notes sent for AI processing contain no identifying information — the system requires anonymised codes, not real names.'},
-    {q:"What's the difference between official notes and private notes?",a:'Official notes (Clinical Note/DAP, Risk Assessment, Session Summary) are designed for the medical chart — brief, clinical, legally defensible. Private notes (Process Note, Countertransference) are for you and your supervisor only, explicitly marked PRIVATE, and should never be filed in the official chart.'},
-    {q:'Does it work for psychoanalytic practice?',a:'Yes — this was a specific design priority. The Process Note and Countertransference Note are built specifically for psychoanalytic work — using transference, countertransference, and defence mechanism language. Every modality (CBT, Psychodynamic, Schema, DBT, ACT) generates output in its own clinical framework.'},
-    {q:'Is the AI output clinically accurate?',a:'The AI is configured to use correct clinical terminology for each modality and note type. However, all AI-generated notes must be reviewed by you before clinical use. The AI handles format and language structure — you provide the clinical judgment.'}
+    {q:'Is Oda available now?',
+     a:'Yes. Use it at <a href="/oda-app.html" style="color:var(--gold)">oda-iota.vercel.app/oda-app.html</a> immediately — no signup required. Client data is stored in your browser only.'},
+    {q:'Is Oda KVKK compliant?',
+     a:'Oda was designed with KVKK compliance at its core. Client records stay in your browser only. Notes sent for AI processing contain no identifying information — the system uses anonymised codes, never real names. You remain the data controller under KVKK.'},
+    {q:"What's the difference between official notes and private notes?",
+     a:'Official notes (DAP, Risk Assessment, Session Summary) are for the medical chart — brief, clinical, legally defensible. Private notes (Process Note, Countertransference) are for you and your supervisor only, explicitly marked PRIVATE. They should never be filed in the official chart. This separation is an ethical requirement.'},
+    {q:'Does it work for psychoanalytic practice?',
+     a:'Yes — this was a specific design priority. The Process Note is built for psychoanalytic work: using transference, countertransference, and defence mechanism language. Every modality generates output in its own clinical framework.'},
+    {q:'How reliable is the AI output?',
+     a:'Oda only writes what is explicitly in your notes — it does not infer or fabricate. If your input is thin, the output will be shorter. Every output must be reviewed by you before clinical use. The clinical judgment always remains yours.'},
   ]
 };
 
-let lang = 'en';
+// ─────────────────────────────────────────
+// LANGUAGE
+// ─────────────────────────────────────────
+let lang = 'tr';
+let currentPreview = 'dap';
 
 function setLang(l) {
   lang = l;
-  demoLang = l;
-  demoIdx = 0;
   document.getElementById('btn-tr').classList.toggle('active', l==='tr');
   document.getElementById('btn-en').classList.toggle('active', l==='en');
   document.querySelectorAll('[data-'+l+']').forEach(el => {
     const v = el.getAttribute('data-'+l);
-    if (v) el.innerHTML = v;
+    if(v) el.innerHTML = v;
   });
-  document.querySelectorAll('input[data-ph-'+l+']').forEach(el => {
-    el.placeholder = el.getAttribute('data-ph-'+l);
-  });
-  // Keep all "Try the app" links in sync with current language
-  const appParam = l === 'en' ? '?lang=en' : '';
-  ['nav-app-link','hero-app-link','cta-app-link'].forEach(function(id) {
+  const param = l==='en' ? '?lang=en' : '';
+  ['nav-try-link','hero-try-link'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.href = '/oda-app.html' + appParam;
+    if(el) el.href = '/oda-app.html' + param;
   });
+  const pl = document.getElementById('preview-client-lbl');
+  if(pl) pl.textContent = l==='tr' ? 'Danışan B — Seans 4 · Psikanalitik' : 'Client B — Session 4 · Psychoanalytic';
+  updateAccessLang();
+  renderPreview(currentPreview);
   buildFAQ();
-  clearTimeout(typeTimer);
-  setTimeout(() => runDemo(0), 300);
 }
 
+// ─────────────────────────────────────────
+// PREVIEW
+// ─────────────────────────────────────────
+function showPreview(type, btn) {
+  currentPreview = type;
+  document.querySelectorAll('.preview-tab').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderPreview(type);
+}
+
+function renderPreview(type) {
+  const d = PREVIEW_DATA[type]?.[lang] || PREVIEW_DATA[type]?.['tr'];
+  if(!d) return;
+  document.getElementById('preview-raw').textContent = d.raw;
+  document.getElementById('preview-out-lbl').textContent = d.lbl;
+  document.getElementById('preview-out').innerHTML = d.html;
+}
+
+// ─────────────────────────────────────────
+// FAQ
+// ─────────────────────────────────────────
 function buildFAQ() {
-  const c = document.getElementById('faq-container');
-  c.innerHTML = FAQS[lang].map((f,i) =>
-    `<div class="faq-item"><button class="faq-q" onclick="toggleFAQ(${i})"><span>${f.q}</span><span class="icon" id="fi-${i}">+</span></button><div class="faq-a" id="fa-${i}">${f.a}</div></div>`
+  const el = document.getElementById('faq-wrap');
+  el.innerHTML = FAQS[lang].map((f,i) =>
+    `<div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(${i})">
+        <span>${f.q}</span>
+        <span class="faq-icon" id="fi-${i}">+</span>
+      </button>
+      <div class="faq-a" id="fa-${i}">${f.a}</div>
+    </div>`
   ).join('');
 }
 
@@ -843,26 +727,93 @@ function toggleFAQ(i) {
   ic.textContent = open ? '+' : '−';
 }
 
-function joinWL(src) {
-  const inp = document.getElementById(src==='hero' ? 'hero-email' : 'cta-email');
-  const s = document.getElementById(src==='hero' ? 'hero-s' : 'cta-s');
-  if (!inp || !inp.value.includes('@')) {
-    if (inp) { inp.style.borderColor='rgba(220,80,80,0.5)'; setTimeout(()=>inp.style.borderColor='',1500); }
-    return;
-  }
-  inp.parentElement.style.display = 'none';
-  s.style.display = 'block';
+// ─────────────────────────────────────────
+// ACCESS / PAYMENT FLOW
+// ─────────────────────────────────────────
+let accessStep = 0;
+
+function updateAccessLang() {
+  const tr = lang === 'tr';
+  const set = (id, v) => { const el=document.getElementById(id); if(el) el.textContent=v; };
+  set('am-h', tr ? 'Erişim Al' : 'Get Access');
+  document.getElementById('am-sub').textContent = tr
+    ? '14 gün ücretsiz deneme. Kredi kartı gerekmez.'
+    : '14-day free trial. No credit card required.';
+  document.getElementById('am-name').placeholder = tr ? 'Ad Soyad' : 'Full name';
+  document.getElementById('am-email').placeholder = tr ? 'E-posta' : 'Email address';
+  set('am-btn-t', tr ? 'Devam et →' : 'Continue →');
+  set('am-iban-lbl', tr ? 'Ödeme Bilgileri' : 'Payment Details');
+  document.getElementById('am-iban-note').textContent = tr
+    ? 'Aylık ₺299 tutarını yukarıdaki IBAN\'a EFT/havale olarak gönderin. Açıklama: e-posta adresiniz. Ödemeniz doğrulandıktan sonra 24 saat içinde hesabınız aktif edilir.'
+    : 'Transfer ₺299/month to the IBAN above via bank transfer. Reference: your email address. Your account will be activated within 24 hours of payment confirmation.';
 }
 
-function scrollWL() {
-  document.getElementById('wl-section').scrollIntoView({behavior:'smooth'});
+function openAccess() {
+  accessStep = 0;
+  document.getElementById('am-iban').classList.remove('show');
+  document.getElementById('am-success').style.display = 'none';
+  document.getElementById('am-name').style.display = '';
+  document.getElementById('am-email').style.display = '';
+  document.getElementById('am-btn').style.display = '';
+  updateAccessLang();
+  document.getElementById('access-overlay').classList.add('open');
+  setTimeout(() => document.getElementById('am-name').focus(), 80);
 }
 
-buildFAQ();
-  // If Supabase drops an auth token here by mistake, forward to the app
-  if (window.location.hash && window.location.hash.includes('access_token')) {
-    window.location.replace('/oda-app.html' + window.location.hash);
+function closeAccess() {
+  document.getElementById('access-overlay').classList.remove('open');
+}
+
+function handleAccess() {
+  const name  = (document.getElementById('am-name').value || '').trim();
+  const email = (document.getElementById('am-email').value || '').trim();
+  const tr = lang === 'tr';
+
+  if (!name) { shake('am-name'); return; }
+  if (!email || !email.includes('@')) { shake('am-email'); return; }
+
+  if (accessStep === 0) {
+    accessStep = 1;
+    document.getElementById('am-iban').classList.add('show');
+    document.getElementById('am-btn-t').textContent = tr ? 'Ödemeyi yaptım →' : 'I\'ve made the payment →';
+    // Notify (best-effort, no blocking)
+    fetch('/api/notify-signup', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({name, email, lang, plan:'₺299/ay', ts: new Date().toISOString()})
+    }).catch(()=>{});
+  } else {
+    document.getElementById('am-iban').classList.remove('show');
+    document.getElementById('am-name').style.display = 'none';
+    document.getElementById('am-email').style.display = 'none';
+    document.getElementById('am-btn').style.display = 'none';
+    const s = document.getElementById('am-success');
+    s.style.display = 'block';
+    s.textContent = tr
+      ? '✓ Teşekkürler. Ödemeniz doğrulandıktan sonra 24 saat içinde e-postanıza aktivasyon bağlantısı gönderilecek.'
+      : '✓ Thank you. Once your payment is confirmed, you\'ll receive an activation link within 24 hours.';
   }
+}
+
+function shake(id) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.borderColor = 'rgba(224,112,112,0.6)';
+  el.animate([{transform:'translateX(-4px)'},{transform:'translateX(4px)'},{transform:'translateX(0)'}], {duration:200});
+  setTimeout(() => el.style.borderColor = '', 1500);
+}
+
+document.getElementById('access-overlay').addEventListener('click', function(e){
+  if(e.target===this) closeAccess();
+});
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+if(window.location.hash && window.location.hash.includes('access_token')){
+  window.location.replace('/oda-app.html' + window.location.hash);
+}
+setLang('tr');
 </script>
 </body>
 </html>
