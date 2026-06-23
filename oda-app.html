@@ -567,6 +567,42 @@ body{overflow:auto;height:auto}
 
 <div id="print-area"></div>
 
+<!-- PAYWALL SCREEN -->
+<div id="paywall-screen" style="display:none;position:fixed;inset:0;background:var(--bg);z-index:9998;display:none;align-items:center;justify-content:center;padding:24px">
+  <div style="width:100%;max-width:400px;text-align:center">
+    <div style="font-family:var(--serif);font-size:36px;font-weight:500;color:var(--text);margin-bottom:6px">Oda<span style="color:var(--gold)">.</span></div>
+    <div id="paywall-state-trial" style="display:none">
+      <div style="font-size:13px;color:var(--ts);margin-bottom:24px;line-height:1.65" id="trial-days-msg"></div>
+      <div style="padding:16px;background:var(--bg3);border:1px solid var(--gold-border);border-radius:var(--r-sm);margin-bottom:20px">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px">Deneme sürümü</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.6" id="trial-info-msg"></div>
+      </div>
+      <button onclick="dismissPaywall()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:var(--r-sm);color:var(--bg);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:8px">Uygulamaya devam et →</button>
+      <button onclick="window.location.href='/'" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ts);font-size:13px;cursor:pointer">Abonelik bilgisi →</button>
+    </div>
+    <div id="paywall-state-expired" style="display:none">
+      <div style="font-size:13px;color:var(--ts);margin-bottom:24px;line-height:1.65" id="expired-msg"></div>
+      <div style="padding:16px;background:var(--bg3);border:1px solid var(--gold-border);border-radius:var(--r-sm);margin-bottom:20px">
+        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:6px">Bireysel Plan</div>
+        <div style="font-family:var(--serif);font-size:32px;font-weight:500;color:var(--text);margin-bottom:2px">₺299<span style="font-size:14px;font-weight:300;color:var(--ts);font-family:var(--sans)"> / ay</span></div>
+        <div style="font-size:11px;color:var(--gold);margin-bottom:10px">Yıllık: ₺2.990 — 2 ay ücretsiz</div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.65" id="iban-instruction-msg"></div>
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-top:8px;font-family:monospace;letter-spacing:.04em" id="paywall-iban">TR12 0006 2000 7550 0006 2943 26</div>
+      </div>
+      <button onclick="showPaywallNotified()" style="width:100%;padding:13px;background:var(--gold);border:none;border-radius:var(--r-sm);color:var(--bg);font-size:14px;font-weight:500;cursor:pointer;margin-bottom:8px" id="paywall-paid-btn">Ödemeyi yaptım — bildir</button>
+      <button onclick="signOut()" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ts);font-size:13px;cursor:pointer">Farklı hesapla giriş yap</button>
+    </div>
+    <div id="paywall-state-pending" style="display:none">
+      <div style="padding:18px;background:rgba(76,175,119,.08);border:1px solid rgba(76,175,119,.2);border-radius:var(--r-sm);margin-bottom:20px">
+        <div style="font-size:24px;margin-bottom:8px">✓</div>
+        <div style="font-size:14px;font-weight:500;color:var(--green);margin-bottom:6px" id="pending-title-msg"></div>
+        <div style="font-size:12px;color:var(--ts);line-height:1.65" id="pending-body-msg"></div>
+      </div>
+      <button onclick="signOut()" style="width:100%;padding:11px;background:transparent;border:1px solid var(--border);border-radius:var(--r-sm);color:var(--ts);font-size:13px;cursor:pointer">Çıkış yap</button>
+    </div>
+  </div>
+</div>
+
 <!-- AUTH SCREEN -->
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
@@ -1272,7 +1308,19 @@ function renderCurrentScreen(){
 // ══════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════
-function acceptKVKK(){localStorage.setItem('oda_kvkk','1');S.kvkk=true;document.getElementById('kvkk-overlay').style.display='none';showApp();}
+function acceptKVKK(){
+  localStorage.setItem('oda_kvkk','1');S.kvkk=true;
+  document.getElementById('kvkk-overlay').style.display='none';
+  // Check access before showing app
+  checkAccess().then(access=>{
+    if(access.ok){
+      if(access.reason==='trial'&&access.daysLeft<=3)showPaywall(access);
+      else showApp();
+    } else {
+      showPaywall(access);
+    }
+  }).catch(()=>showApp()); // fallback: show app if check fails
+}
 function showApp(){document.getElementById('app').style.display='flex';setLang(S.lang);renderDashboard();}
 function closeSettings(){document.getElementById('settings-overlay').style.display='none';}
 function openSettings(){
@@ -2568,6 +2616,127 @@ load();
   if(enBtn)enBtn.style.color=!isTR?'var(--bg)':'var(--w-text)';
 })();
 
+// ══════════════════════════════════════════════════════
+// ACCESS CONTROL
+// ══════════════════════════════════════════════════════
+async function checkAccess(){
+  if(!supa||!currentUser)return{ok:false,reason:'noauth'};
+  const isTR=S.lang==='tr';
+
+  // 1. Check approved_users table
+  try{
+    const{data:approved}=await supa
+      .from('approved_users')
+      .select('id,plan')
+      .eq('email',currentUser.email)
+      .maybeSingle();
+    if(approved)return{ok:true,reason:'approved'};
+  }catch(e){
+    // Table may not exist yet — treat as unapproved but don't block
+    console.warn('approved_users check failed:',e.message);
+  }
+
+  // 2. Check / set trial start
+  try{
+    let{data:profile}=await supa
+      .from('profiles')
+      .select('first_login_at')
+      .eq('id',currentUser.id)
+      .maybeSingle();
+
+    if(!profile?.first_login_at){
+      const now=new Date().toISOString();
+      await supa.from('profiles').upsert({
+        id:currentUser.id,
+        first_login_at:now,
+        updated_at:now
+      },{onConflict:'id'});
+      profile={first_login_at:now};
+    }
+
+    const firstLogin=new Date(profile.first_login_at);
+    const daysSince=Math.floor((Date.now()-firstLogin.getTime())/(1000*60*60*24));
+    const trialDays=14;
+    const daysLeft=trialDays-daysSince;
+
+    if(daysLeft>0)return{ok:true,reason:'trial',daysLeft,daysSince};
+    return{ok:false,reason:'expired',daysSince};
+  }catch(e){
+    // If profiles table issue, allow access rather than block
+    console.warn('Trial check failed:',e.message);
+    return{ok:true,reason:'fallback'};
+  }
+}
+
+function showPaywall(accessResult){
+  const isTR=S.lang==='tr';
+  const pw=document.getElementById('paywall-screen');
+  if(!pw)return;
+
+  // Hide all states
+  ['paywall-state-trial','paywall-state-expired','paywall-state-pending'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+  pw.style.display='flex';
+
+  if(accessResult.reason==='trial'){
+    const d=accessResult.daysLeft;
+    const el=document.getElementById('paywall-state-trial');
+    if(el)el.style.display='block';
+    const msg=document.getElementById('trial-days-msg');
+    if(msg)msg.textContent=isTR
+      ?`Deneme süreniz — ${d} gün kaldı.`
+      :`Your free trial — ${d} day${d!==1?'s':''} remaining.`;
+    const info=document.getElementById('trial-info-msg');
+    if(info)info.textContent=isTR
+      ?'14 günlük ücretsiz denemenizde tüm özelliklere erişiminiz var. Süre dolmadan önce abone olmak için ana sayfayı ziyaret edin.'
+      :'You have full access during your 14-day free trial. Visit the homepage before it ends to subscribe.';
+  } else if(accessResult.reason==='expired'){
+    const el=document.getElementById('paywall-state-expired');
+    if(el)el.style.display='block';
+    const msg=document.getElementById('expired-msg');
+    if(msg)msg.textContent=isTR
+      ?'14 günlük deneme süreniz doldu. Erişime devam etmek için abone olun.'
+      :'Your 14-day trial has ended. Subscribe to continue.';
+    const inst=document.getElementById('iban-instruction-msg');
+    if(inst)inst.textContent=isTR
+      ?'Aşağıdaki IBAN'a aylık ₺299 EFT/havale gönderin. Açıklama: e-posta adresiniz.'
+      :'Send ₺299/month to the IBAN below. Reference: your email address.';
+  }
+}
+
+function dismissPaywall(){
+  const pw=document.getElementById('paywall-screen');
+  if(pw)pw.style.display='none';
+}
+
+async function showPaywallNotified(){
+  const isTR=S.lang==='tr';
+  // Send notification
+  fetch('/api/notify-signup',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      name:'',email:currentUser?.email||'',
+      lang:S.lang,plan:'₺299/ay',
+      source:'paywall',ts:new Date().toISOString()
+    })
+  }).catch(()=>{});
+
+  // Show pending state
+  ['paywall-state-trial','paywall-state-expired'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.style.display='none';
+  });
+  const pending=document.getElementById('paywall-state-pending');
+  if(pending)pending.style.display='block';
+  const pt=document.getElementById('pending-title-msg');
+  if(pt)pt.textContent=isTR?'Bildiriminiz alındı':'Notification received';
+  const pb=document.getElementById('pending-body-msg');
+  if(pb)pb.textContent=isTR
+    ?'Ödemeniz doğrulandıktan sonra 24 saat içinde hesabınız aktif edilecek ve size e-posta gönderilecek.'
+    :'Once your payment is confirmed, your account will be activated within 24 hours and you'll receive an email.';
+}
+
 // ── BOOT WITH SUPABASE ────────────────────────────────
 async function boot(){
   const ok=initSupabase();
@@ -2589,8 +2758,16 @@ async function boot(){
     currentUser=session.user;
     await loadFromSupabase();
     await migrateLocalStorage();
-    if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
-    else showApp();
+    if(!S.kvkk){document.getElementById('kvkk-overlay').style.display='flex';}
+    else{
+      const access=await checkAccess();
+      if(access.ok){
+        if(access.reason==='trial'&&access.daysLeft<=3)showPaywall(access); // gentle reminder when <3 days left
+        else showApp();
+      } else {
+        showPaywall(access);
+      }
+    }
   } else {
     showAuthScreen();
   }
@@ -2602,8 +2779,16 @@ async function boot(){
       document.getElementById('auth-screen').style.display='none';
       await loadFromSupabase();
       await migrateLocalStorage();
-      if(!S.kvkk)document.getElementById('kvkk-overlay').style.display='flex';
-      else showApp();
+      if(!S.kvkk){document.getElementById('kvkk-overlay').style.display='flex';}
+      else{
+        const access=await checkAccess();
+        if(access.ok){
+          if(access.reason==='trial'&&access.daysLeft<=3)showPaywall(access);
+          else showApp();
+        } else {
+          showPaywall(access);
+        }
+      }
     }
     if(event==='SIGNED_OUT'){
       currentUser=null;
